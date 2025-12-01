@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Navbar </title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav class="navbar shadow-sm fixed-top bg-white">
+        <img src="static\Logo.png" class="logo">
+        <ul>
+                <li><a href="{{ url_for('add_orders') }}">Add Orders</a></li>
+                <li><a href="{{ url_for('track_orders') }}">Track Orders</a></li>
+                <li><a href="{{ url_for('payments') }}">Payment</a></li>
+                <li><a href="{{ url_for('profile') }}">Profile</a></li>
+                <li><a href="{{ url_for('login') }}" id="login"> Login </a></li>
+        </ul>
+    </nav>
+</body>
+</html>
