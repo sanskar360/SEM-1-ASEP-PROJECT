@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
+     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <header>
+        <nav>
+            {% include 'nav.html' %}
+        </nav>
+    </header>
+
+    <img id="banner" src="{{ url_for('static', filename='baner.png') }}">
+
+    <div class="imp">
+        <h2> Importance Of Proper Laundry Service </h2>
+    </div>
+    <!-- cards -->
+        {% include 'containers.html' %}
+
+    <div class="services">
+        <h2>Everything Your Wardrobe Needs</h2>
+        <P>Professional Laundry Services Tailored For Your Needs. Quality Care For Every Fabric</P>
+    </div>
+
+    <section class="services-section">
+        <h2 class="services-title">Our Laundry Services</h2>
+
+        <div class="services-container">
+
+            <div class="service-card">
+                <img src="{{ url_for('static', filename='icons/wash.png') }}" class="service-icon">
+                <h3>Washing & Cleaning</h3>
+                <p>Deep and gentle cleaning using modern machines to remove dirt, sweat and stains.</p>
+            </div>
+
+            <div class="service-card">
+                <img src="{{ url_for('static', filename='icons/iron.png') }}" class="service-icon">
+                <h3>Ironing & Press</h3>
+                <p>Neat and crisp ironing for all clothes, ensuring a smooth and fresh finish.</p>
+            </div>
+
+            <div class="service-card">
+                <img src="{{ url_for('static', filename='icons/dryclean.png') }}" class="service-icon">
+                <h3>Dry Cleaning</h3>
+                <p>Professional dry-cleaning for delicate fabrics, suits, sarees, and special garments.</p>
+            </div>
+
+            <div class="service-card">
+                <img src="{{ url_for('static', filename='icons/folding.png') }}" class="service-icon">
+                <h3>Folding & Packaging</h3>
+                <p>Clothes are folded neatly and hygienically packed, ready for your wardrobe.</p>
+            </div>
+
+            <div class="service-card">
+                <img src="{{ url_for('static', filename='icons/pickup.jpeg') }}" class="service-icon">
+                <h3>Pickup & Delivery</h3>
+                <p>Convenient doorstep collection and delivery with real-time tracking.</p>
+            </div>
+
+            <div class="service-card">
+                <img src="{{ url_for('static', filename='icons/stain.png') }}" class="service-icon">
+                <h3>Stain Removal</h3>
+                <p>Advanced stain-treatment techniques for tough spots without damaging fabric.</p>
+            </div>
+
+        </div>
+    </section>
+     
+    <div class="about-section">
+        <img src="{{ url_for('static', filename='About Us.png') }}" class="about-img">
+    </div>
+
+
+    <footer>
+    <div class="footer">
+        <div class="row">
+
+            <div class="col-lg-4 col-md-12 mb-3 footer-brand">
+                <img src="{{ url_for('static', filename='Logo.png') }}" class="logo">
+                <ul class="last">
+                    <li><h3>Designed and built with love by the</h3></li>
+                    <li><h3><a href="">Bootstrap team</a> with the help of our contributors.</li></h3>
+                </ul>
+            </div>
+
+            <div class="col-lg-3 col-md-6 mb-3">
+                <ul class="links">
+                    <li class="title">Links</li>
+                    <li><a href="{{ url_for('add_orders') }}">Add Orders</a></li>
+                    <li><a href="{{ url_for('track_orders') }}">Track Orders</a></li>
+                    <li><a href="{{ url_for('payments') }}">Payment</a></li>
+                    <li><a href="{{ url_for('profile') }}">Profile</a></li>
+                </ul>
+            </div>
+
+            <div class="col-lg-3 col-md-6 mb-3">
+                <ul class="contact_details">
+                    <li class="title">Helpline</li>
+                    <li>7894561230</li>
+                    <li class="title">Email</li>
+                    <li>VegaVastra@123gmail.com</li>
+                </ul>
+            </div>
+
+        </div>
+
+        <div class="copy">
+            <p>© 2025 All Rights Reserved — <b>Vega Vastra</b></p>
+        </div>
+    </div>
+</footer>
