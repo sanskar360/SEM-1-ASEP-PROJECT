@@ -28,3 +28,8 @@ def profile():
 def login():
     return render_template("login.html")
 
+@app.route('/signup')
+def signup():
+    return render_template("sign_up.html")
+
+
