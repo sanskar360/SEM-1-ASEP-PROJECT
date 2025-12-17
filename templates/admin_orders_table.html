@@ -11,7 +11,7 @@
     <nav>
             {% include 'nav.html' %}
     </nav>
-    <h2 class="t1">Your Order Details</h2>
+    <h2 class="t1">Orders Details</h2>
     <div class="table">
         <table class="order-table">
             <thead>
@@ -23,6 +23,7 @@
                     <th>Suggestions</th>
                     <th>Order Status</th>
                     <th>Payment Method</th>
+                    <th>Payment Status</th>
                 </tr>
             </thead>
 
@@ -34,8 +35,28 @@
                         <td>{{ order.service }}</td>
                         <td>{{ order.num_of_items }}</td>
                         <td>{{ order.suggesstions }}</td>
-                        <td>{{ order.order_status }}</td>
+                        <td>
+                            <form method="POST" action="{{ url_for('track_orders') }}">
+                                <input type="hidden" name="order_id" value="{{ order.id }}">
+                                
+                                <select name="order_status">
+                                <option value="Order Placed" {% if order.order_status == 'Order Placed' %}selected{% endif %}>
+                                    Order Placed
+                                </option>
+
+                                <option value="Order Pending" {% if order.order_status == 'Order Pending' %}selected{% endif %}>
+                                    Order Pending
+                                </option>
+
+                                <option value="Out for Delivery" {% if order.order_status == 'Out for Delivery' %}selected{% endif %}>
+                                    Out for Delivery
+                                </option>
+                                </select>
+                                <button type="submit">Update</button>
+                            </form>
+                        </td>
                         <td>{{ order.patment_method}}</td>
+                        <td>{{ order.payment_status}}</td>
                     </tr>
                 {% endfor %}    
             </tbody>

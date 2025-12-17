@@ -22,7 +22,7 @@
 
                 <div class="hi">
                     <span> Hello,</span>
-                    <span>Username</span>        <!-- Place Username From database here --> 
+                    <span>{{ session.email }}</span>       
                 </div>
             </div>
             <div class="p1">
@@ -31,49 +31,46 @@
                     <li class="add"><a href="{{ url_for('track_orders') }}" class="atag">Track Orders</a></li>
                     <li class="add"><a href="{{ url_for('payments') }}" class="atag">Payment</a></li>
                     <li class="add"><a href="{{ url_for('profile') }}" class="atag">Profile</a></li>
-                    <li class="add"><a href="{{ url_for('login') }}" class="atag"> Logout </a></li>
+                    <li class="add"><a href="{{ url_for('logout') }}" class="atag"> Logout </a></li>
                 </ul>
             </div>
         </div>
         <div class="edit-page">
-            <h2>Personal Information</h2>
+            <h2 class="pi">Personal Information</h2>
+            <div class="container1">
+                <div  class="imfo">
+                    <h3 class="h3">Username</h3>
+                    <div class="space">
+                        <p>{{ session.username }}</p>
+                    </div>
+                </div>
 
-            <h3 class="h3">Username</h3>
-
-            <div  class="imfo">
-                <div class="space">
-                    <p>Username From Data Base</p>
+                <div  class="imfo">
+                    <h3 class="h3">Email</h3>
+                    <div class="space">
+                        <p>{{ session.email }}</p>
+                    </div>
                 </div>
             </div>
+            <br><br>
+            <div class="container2">
+                <div class="imfo">
+                    <h3 class="h3">Phone Number</h3>
+                    <div class="space">
+                        {{ address.phone_no}}
+                    </div>
+                </div>
 
-
-            <h3 class="h3">Email</h3>
-
-            <div  class="imfo">
-                <div class="space">
-                    <p>Username From Data Base</p>
+                <div  class="imfo1">
+                    <h3 class="h3">Alternate Phone Number </h3>
+                    <div class="space">
+                        {{ address.alternate_phone_no}}
+                    </div>
                 </div>
             </div>
-
-
-            <h3 class="h3">Phone Number</h3>
-
-            <div class="imfo">
-                <div class="space">
-                    <p>Username From Data Base</p>
-                </div>
+            <div class="img3">
+                <img id="img3" src="{{ url_for('static', filename='image3.jpg') }}">
             </div>
-
-
-            <h3 class="h3">Alternate Phone Number </h3>
-
-            <div  class="imfo">
-                <div class="space">
-                    <p>Username From Data Base</p>
-                </div>
-            </div>
-
-
         </div>
     </div>
 </body>

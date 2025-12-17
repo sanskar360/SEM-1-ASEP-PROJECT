@@ -2,7 +2,7 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
 <div class="sign_up-form">
-    <form>
+    <form action="/signup", method="POST">
         <label>Email id</label>
         <input type="email" name="email" placeholder="Enter Your Email">
 
@@ -10,7 +10,7 @@
         <input type="text" name="username" placeholder="Enter Your Username">
 
         <label>Password</label>
-        <input type="number" name="password" placeholder="Enter Your Password">
+        <input type="number" name="passwords" placeholder="Enter Your Password">
 
         <button type="submit">Submit</button>
     </form>

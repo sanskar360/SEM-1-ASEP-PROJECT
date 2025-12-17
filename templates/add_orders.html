@@ -10,23 +10,34 @@
 
 <body>
    {% include 'nav.html' %}
-
+    {% with messages = get_flashed_messages(with_categories = true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            {% if category == "success" %}
+                <div class="popup {{ category }}"> {{ message }} </div>
+            {% endif %}
+            {% if category == "error" %}
+                <div class="popup {{ category }}"> {{ message }} </div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+{% endwith %}
    <div class="form-container">
         <form action="" method="POST" class="order-form">
 
             <h3 class="section-heading">Address Details</h3>
 
             <label>Name</label>
-            <input type="text" name="name" placeholder="Enter Your Name" class="form-input">
+            <input type="text" name="user_name" placeholder="Enter Your Name" class="form-input">
 
             <label>Phone No.</label>
-            <input type="number" name="phone_no" placeholder="Enter Your Phone Number" class="form-input">
+            <input type="number" name="phone_no" placeholder="+91 " class="form-input">
 
             <label>Pincode</label>
             <input type="number" name="pincode" placeholder="Enter Pincode of Your Area" class="form-input">
 
             <label>Alternate Phone No.</label>
-            <input type="number" name="alternate" placeholder="Enter Your Alternate Number" class="form-input">
+            <input type="tel" name="alternate_phone_no" placeholder="+91 " class="form-input">
 
             <label>State</label>
             <input type="text" name="state" placeholder="Enter Name of Your State" class="form-input">
@@ -35,7 +46,7 @@
             <input type="text" name="city" placeholder="Enter Name of Your City" class="form-input">
 
             <label>House Number or House Name</label>
-            <input type="text" name="house" placeholder="Enter House Name or Number" class="form-input">
+            <input type="text" name="house_no" placeholder="Enter House Name or Number" class="form-input">
 
             <h3 class="section-heading">Order Details</h3>
 
@@ -50,21 +61,23 @@
             </select>
 
             <label>Date</label>
-            <input type="date" name="date" class="form-input">
+            <input type="date" name="order_date" class="form-input">
 
             <label>Enter Number of Items</label>
-            <input type="number" name="number" placeholder="Enter total items" class="form-input">
+            <input type="number" name="num_of_items" placeholder="Enter total items" class="form-input">
 
             <label>Any Special Instructions</label>
-            <textarea name="suggestions" rows="5" placeholder="Write your suggestions or special instructions here" class="form-input textarea"></textarea>
+            <textarea name="suggesstions" rows="5" placeholder="Write your suggestions or special instructions here" class="form-input textarea"></textarea>
 
             <label>Select Payment Method</label>
-            <select name="payment" class="form-select form-input">
+            <select name="patment_method" class="form-select form-input">
                 <option value="">-- Select Payment Method --</option>
                 <option value="cash_on_delivery">Cash on Delivery</option>
                 <option value="upi">UPI</option>
             </select>
-
+            <button class="add_orders">
+            <b class="order">Place Order</b>
+            </button>
         </form>
    </div>
 </body>

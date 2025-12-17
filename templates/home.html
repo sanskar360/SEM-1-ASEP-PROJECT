@@ -9,6 +9,19 @@
 </head>
 
 <body>
+    {% include 'nav.html' %}
+    {% with messages = get_flashed_messages(with_categories = true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            {% if category == "success" %}
+                <div class="popup {{ category }}"> {{ message }} </div>
+            {% endif %}
+            {% if category == "error" %}
+                <div class="popup {{ category }}"> {{ message }} </div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+{% endwith %}
     <header>
         <nav>
             {% include 'nav.html' %}

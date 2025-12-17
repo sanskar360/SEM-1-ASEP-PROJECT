@@ -11,18 +11,15 @@
     <nav>
             {% include 'nav.html' %}
     </nav>
-    <h2 class="t1">Your Order Details</h2>
+    <h2 class="t1">Users Details</h2>
     <div class="table">
         <table class="order-table">
             <thead>
                 <tr>
                     <th>SR. NO.</th>
-                    <th>Date</th>
-                    <th>Service</th>
-                    <th>Number of Items</th>
-                    <th>Suggestions</th>
-                    <th>Order Status</th>
-                    <th>Payment Method</th>
+                    <th>Email</th>
+                    <th>Username</th>
+                    <th>Password</th>
                 </tr>
             </thead>
 
@@ -30,12 +27,9 @@
                 {% for order in orders %}
                     <tr>
                         <td>{{ loop.index }}</td>
-                        <td>{{ order.order_date }}</td>
-                        <td>{{ order.service }}</td>
-                        <td>{{ order.num_of_items }}</td>
-                        <td>{{ order.suggesstions }}</td>
-                        <td>{{ order.order_status }}</td>
-                        <td>{{ order.patment_method}}</td>
+                        <td>{{ users.email }}</td>
+                        <td>{{ users.username }}</td>
+                        <td>{{ users.password }}</td>
                     </tr>
                 {% endfor %}    
             </tbody>
