@@ -1,9 +1,50 @@
 from flask import Flask, render_template,request, redirect, url_for, flash, session
-from database import load_orders_from_db, add_user_to_db, add_order_to_db, login_user_from_db, user_from_addresses_db,load_users_from_db, load_orders_for_admin_from_db, update_order_status_in_db
 from sqlalchemy import create_engine, text
+from datetime import date, timedelta
+from database import load_orders_from_db, add_user_to_db, add_order_to_db, login_user_from_db, user_from_addresses_db,load_users_from_db, load_orders_for_admin_from_db, update_order_status_in_db, load_users_for_admin_from_db, update_payment_status_in_db, get_todays_orders_count
 
 app = Flask(__name__)
 app.secret_key = "mysecret123"
+
+
+def predict_date(service, items):
+    
+        if service == "iron" and items >= 10:
+            days = 5
+        elif service == "iron":
+            days = 6
+
+        elif service == "wash_fold" and items >= 10:
+            days = 5
+        elif service == "wash_fold":
+            days = 2
+
+        elif service == "dry_clean" and items >= 10:
+            days = 6
+        elif service == "dry_clean":
+            days = 3
+
+        elif service == "steam_iron" and items >= 10:
+            days = 5
+        elif service == "steam_iron":
+            days = 2
+
+        elif service == "wash_iron" and items >= 10:
+            days = 5
+        elif service == "wash_iron":
+            days = 3
+        else:
+            days = 2
+
+        todays_orders = get_todays_orders_count()
+        if todays_orders > 20:
+            days += 1
+
+        return date.today() + timedelta(days=days)
+
+@app.context_processor
+def inject_admin_id():
+    return dict(ADMIN_ID=ADMIN_ID)
 
 
 @app.route("/")
@@ -13,7 +54,6 @@ def home():
 ADMIN_ID = 13
 @app.route("/track_orders", methods=["GET", "POST"])  
 def track_orders():
-    print("METHOD:", request.method)
 
     user_id = session.get("user_id")
 
@@ -23,13 +63,9 @@ def track_orders():
     user_id = int(user_id)
 
     if request.method == "POST" and user_id == ADMIN_ID:
-        print("🔥 POST BLOCK ENTERED")
 
         order_id = request.form.get("order_id")
         order_status = request.form.get("order_status")
-        print("➡️ ORDER_ID:", order_id)
-        print("➡️ ORDER_STATUS:", order_status)
-
 
         update_order_status_in_db(order_id, order_status)
 
@@ -43,21 +79,34 @@ def track_orders():
     return render_template("track_orders.html", orders = orders)
 
 
-@app.route("/payments")
+@app.route("/payments", methods=["GET", "POST"])
 def payments():
     user_id = session.get("user_id")
 
-    orders = load_orders_from_db(user_id)
+    if user_id is None:
+        return redirect(url_for("login"))
 
+    if request.method == "POST" and user_id == ADMIN_ID:
+        payment_status = request.form.get("payment_status")
+        order_id = request.form.get("order_id")
+        update_payment_status_in_db(order_id, payment_status) 
+        return redirect(url_for("payments"))
+    
+    if user_id == ADMIN_ID:
+            orders = load_orders_for_admin_from_db()
+            return render_template("admin_payments.html", orders=orders)
+        
+    orders = load_orders_from_db(user_id)
     return render_template("payments.html", orders = orders)
 
 
 @app.route("/profile")
 def profile():
+    if user_id is None:
+        return redirect(url_for("login"))
+    
     user_id = session.get("user_id")
-
     address =  user_from_addresses_db(user_id)
-
     return render_template("profile.html", address=address)
 
 
@@ -87,36 +136,47 @@ def login():
     session["email"] = result.email
 
     flash("Login Successful!", "success")
-
     return redirect(url_for("home")) 
 
 
 @app.route("/add_orders", methods=["GET", "POST"])
 def add_orders():
+    user_id = session.get("user_id")
+    if user_id == ADMIN_ID:
+        users = load_users_for_admin_from_db()
+        return render_template("admin_users_table.html", users = users)
+    
     if request.method == "POST":
+        service = request.form.get("service")
+        items = int(request.form.get("num_of_items"))
+
+
+        delivery_date = predict_date(service,items)
+
         order_data = {
-            "user_name": request.form.get("user_name"),
-            "phone_no": request.form.get("phone_no"),
-            "pincode": request.form.get("pincode"),
-            "alternate_phone_no": request.form.get("alternate_phone_no"),
-            "state": request.form.get("state"),
-            "city": request.form.get("city"),
-            "house_no": request.form.get("house_no"),
-            "service": request.form.get("service"),
-            "order_date": request.form.get("order_date"),
-            "num_of_items": request.form.get("num_of_items"),
-            "patment_method": request.form.get("patment_method"),
-            "suggesstions": request.form.get("suggesstions"),
-        }
-
+                "user_name": request.form.get("user_name"),
+                "phone_no": request.form.get("phone_no"),
+                "pincode": request.form.get("pincode"),
+                "alternate_phone_no": request.form.get("alternate_phone_no"),
+                "state": request.form.get("state"),
+                "city": request.form.get("city"),
+                "house_no": request.form.get("house_no"),
+                "service": request.form.get("service"),
+                "num_of_items": request.form.get("num_of_items"),
+                "patment_method": request.form.get("patment_method"),
+                "suggesstions": request.form.get("suggesstions"),
+                "delivery_date": delivery_date
+            }
+            
         result = add_order_to_db(order_data)
-
+            
         if result.get("error"):
-            flash(result["error"], "error")
-            return redirect(url_for("add_orders"))
+                flash(result["error"], "error")
+                return redirect(url_for("add_orders"))
 
         flash("Order added successfully!", "success")
         return redirect(url_for("add_orders"))
+
 
     return render_template("add_orders.html")
 
@@ -148,14 +208,14 @@ def logout():
 
 @app.route("/admin_users_table")
 def admin_users_table():
-
-    id = 1
-
-    users = load_users_from_db(id)
-
-    return render_template("admin_users_table", users = users)
+    return render_template("admin_users_table")
 
 
 @app.route("/admin_orders_table")
 def admin_orders_table():
     return render_template("admin_orders_table")
+
+
+@app.route("/admin_payments")
+def admin_payments():
+    return render_template("admin_payments")

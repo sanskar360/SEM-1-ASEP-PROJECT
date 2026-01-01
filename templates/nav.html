@@ -1,3 +1,22 @@
+{% if session.get("user_id") == ADMIN_ID %}
+
+<nav class="navbar shadow-sm fixed-top bg-white">
+    
+    <a href="{{ url_for('home') }}">
+        <img src="{{ url_for('static', filename='Logo.png') }}" class="logo">
+    </a>
+
+    <ul>
+        <li><a href="{{ url_for('add_orders') }}">User Imformation</a></li>
+        <li><a href="{{ url_for('track_orders') }}">Orders</a></li>
+        <li><a href="{{ url_for('payments') }}">Payments</a></li>
+        <li><a href="{{ url_for('profile') }}">Profile</a></li>
+        <li><a href="{{ url_for('login') }}" id="login"> Login </a></li>
+    </ul>
+</nav>
+
+
+{% else %}
 <nav class="navbar shadow-sm fixed-top bg-white">
     
     <a href="{{ url_for('home') }}">
@@ -12,3 +31,5 @@
         <li><a href="{{ url_for('login') }}" id="login"> Login </a></li>
     </ul>
 </nav>
+
+{% endif %}

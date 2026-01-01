@@ -12,6 +12,7 @@
             {% include 'nav.html' %}
     </nav>
     <h2 class="t1">Your Order Details</h2>
+    <p>📌Note: Delivery Date is just system prediction it may vary according to conditions.</p>
     <div class="table">
         <table class="order-table">
             <thead>
@@ -23,6 +24,7 @@
                     <th>Suggestions</th>
                     <th>Order Status</th>
                     <th>Payment Method</th>
+                    <th>Delivery Date</th>
                 </tr>
             </thead>
 
@@ -35,7 +37,9 @@
                         <td>{{ order.num_of_items }}</td>
                         <td>{{ order.suggesstions }}</td>
                         <td>{{ order.order_status }}</td>
-                        <td>{{ order.patment_method}}</td>
+                        <td>{{ order.patment_method }}</td>
+                        <td>{{ order.delivery_date }}</td>
+                        
                     </tr>
                 {% endfor %}    
             </tbody>

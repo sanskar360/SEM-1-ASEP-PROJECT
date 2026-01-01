@@ -22,14 +22,13 @@
                     <th>Password</th>
                 </tr>
             </thead>
-
             <tbody>
-                {% for order in orders %}
+                {% for user in users %}
                     <tr>
                         <td>{{ loop.index }}</td>
-                        <td>{{ users.email }}</td>
-                        <td>{{ users.username }}</td>
-                        <td>{{ users.password }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.passwords }}</td>
                     </tr>
                 {% endfor %}    
             </tbody>

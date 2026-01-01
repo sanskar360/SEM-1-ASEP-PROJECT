@@ -16,11 +16,11 @@ engine = create_engine(
     db_connection_string,
     connect_args={"ssl": {"ca": "ca1.pem"}}
 )
-
+                                                                                            
 def load_orders_from_db(user_id):
     with engine.connect() as conn:
         orders_querry = text("""
-            SELECT order_date, service, num_of_items, suggesstions, order_status, patment_method, id, user_id FROM orders
+            SELECT order_date, service, num_of_items, suggesstions, order_status, patment_method,payment_status, id, delivery_date, user_id FROM orders
             WHERE user_id = :user_id
                         """)
         result = conn.execute(orders_querry, {"user_id":user_id}).fetchall()
@@ -58,7 +58,6 @@ def add_order_to_db(order_data):
     "city": "Please Enter city",
     "house_no": "Please Enter your house number",
     "service": "Service is required",
-    "order_date": "Order date is required",
     "num_of_items": "Number of items is required"
 }
     for fields, msg in required_fields.items():
@@ -76,11 +75,12 @@ def add_order_to_db(order_data):
         conn.execute(query_address, order_data)
 
         query_order = text("""
-            INSERT INTO orders (service, order_date, num_of_items, patment_method, suggesstions, user_id)
-            VALUES (:service, :order_date, :num_of_items, :patment_method, :suggesstions, :user_id)    
+            INSERT INTO orders (service, num_of_items, patment_method, suggesstions, user_id, delivery_date)
+            VALUES (:service, :num_of_items, :patment_method, :suggesstions, :user_id, :delivery_date)    
                 """)
 
         conn.execute(query_order, order_data)
+
         conn.commit()
         
         return {"success": True}
@@ -130,8 +130,6 @@ def load_orders_for_admin_from_db():
 
         return [dict(row._mapping) for row in result]
 
-from sqlalchemy import text
-
 def update_order_status_in_db(order_id, order_status):
     if order_id is None:
         print("ERROR: order_id is None")
@@ -149,3 +147,42 @@ def update_order_status_in_db(order_id, order_status):
                 "order_id": int(order_id)
             }
         )
+
+def update_payment_status_in_db(order_id,payment_status):
+    if order_id is None:
+        return ("ERROR: order_id is None")
+
+    with engine.begin() as conn:   
+        conn.execute(
+            text("""
+                UPDATE orders
+                SET payment_status = :status
+                WHERE id = :order_id
+            """),
+            {
+                "status": payment_status,
+                "order_id": int(order_id)
+            }
+        )
+
+def load_users_for_admin_from_db():
+    with engine.connect() as conn:
+        users_querry = text("""
+            SELECT email, username, passwords FROM users
+                        """)
+        result = conn.execute(users_querry).fetchall()
+
+        return [dict(row._mapping) for row in result]
+    
+
+def get_todays_orders_count():
+    with engine.connect() as conn:
+        return conn.execute(
+            text("""
+                SELECT COUNT(*) 
+                FROM orders
+                WHERE order_date = CURDATE()
+            """)
+        ).scalar()
+
+    
