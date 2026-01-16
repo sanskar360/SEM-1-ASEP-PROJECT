@@ -1,5 +1,4 @@
 from flask import Flask, render_template,request, redirect, url_for, flash, session
-from sqlalchemy import create_engine, text
 from datetime import date, timedelta
 from database import load_orders_from_db, add_user_to_db, add_order_to_db, login_user_from_db, user_from_addresses_db,load_users_from_db, load_orders_for_admin_from_db, update_order_status_in_db, load_users_for_admin_from_db, update_payment_status_in_db, get_todays_orders_count
 
@@ -12,7 +11,7 @@ def predict_date(service, items):
         if service == "iron" and items >= 10:
             days = 5
         elif service == "iron":
-            days = 6
+            days = 3
 
         elif service == "wash_fold" and items >= 10:
             days = 5
@@ -58,6 +57,7 @@ def track_orders():
     user_id = session.get("user_id")
 
     if user_id is None:
+        flash("Login First","error")
         return redirect(url_for("login"))
     
     user_id = int(user_id)
@@ -84,6 +84,7 @@ def payments():
     user_id = session.get("user_id")
 
     if user_id is None:
+        flash("Login First","error")
         return redirect(url_for("login"))
 
     if request.method == "POST" and user_id == ADMIN_ID:
@@ -102,10 +103,11 @@ def payments():
 
 @app.route("/profile")
 def profile():
+    user_id = session.get("user_id")
     if user_id is None:
+        flash("Login First","error")
         return redirect(url_for("login"))
     
-    user_id = session.get("user_id")
     address =  user_from_addresses_db(user_id)
     return render_template("profile.html", address=address)
 
@@ -142,6 +144,11 @@ def login():
 @app.route("/add_orders", methods=["GET", "POST"])
 def add_orders():
     user_id = session.get("user_id")
+
+    if user_id is None:
+        flash("Login First","error")
+        return redirect(url_for("login"))
+    
     if user_id == ADMIN_ID:
         users = load_users_for_admin_from_db()
         return render_template("admin_users_table.html", users = users)
