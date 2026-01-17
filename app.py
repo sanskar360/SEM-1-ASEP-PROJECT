@@ -1,6 +1,6 @@
 from flask import Flask, render_template,request, redirect, url_for, flash, session
 from datetime import date, timedelta
-from database import load_orders_from_db, add_user_to_db, add_order_to_db, login_user_from_db, user_from_addresses_db,load_users_from_db, load_orders_for_admin_from_db, update_order_status_in_db, load_users_for_admin_from_db, update_payment_status_in_db, get_todays_orders_count
+from database import load_orders_from_db, add_user_to_db, add_order_to_db, login_user_from_db, user_from_addresses_db, load_orders_for_admin_from_db, update_order_status_in_db, load_users_for_admin_from_db, update_payment_status_in_db, get_todays_orders_count
 
 app = Flask(__name__)
 app.secret_key = "mysecret123"
@@ -199,9 +199,11 @@ def signup():
 
         try:
             add_user_to_db(form_data)
-            return "Signup successful!"
+            flash("Signup Successful!", "success")
+            return render_template("home.html")
         except Exception as e:
-            return "Your Entered Details Are already Registered go to login"
+            flash("Signup Unsuccessful!", "error")
+            return render_template("sign_up.html")
 
     return render_template("sign_up.html")
 
