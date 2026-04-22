@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Manage Address</title>
+</head>
+
+<body>
+    <div class="edit-page">
+
+        <h2 class="pi">Manage Addresses</h2>
+
+        <!-- ADD NEW ADDRESS -->
+        <!-- ADD BUTTON -->
+        <div class="add-address" id="openFormBtn">
+            + Add New Address
+        </div>
+
+        <!-- FORM (HIDDEN) -->
+        <form method="POST" id="addressForm" class="address-form hidden">
+
+            <div class="row">
+                <input type="text" name="user_name" placeholder="Name" required>
+                <input type="text" name="phone_no" placeholder="10-digit mobile number" required>
+            </div>
+
+            <div class="row">
+                <input type="text" name="pincode" placeholder="Pincode" required>
+                <input type="text" name="city" placeholder="City" required>
+            </div>
+
+            <input type="text" name="house_no" placeholder="Enter House Name or Number" class="form-input" required>
+
+            <div class="row">
+                <input type="text" name="state" placeholder="State" required>
+                <input type="text" name="alternate_phone_no" placeholder="Alternate Phone (Optional)">
+            </div>
+
+            <div class="form-actions">
+                <button type="submit">Save</button>
+                <button type="button" id="cancelBtn">Cancel</button>
+            </div>
+
+        </form>
+
+        <!-- ADDRESS LIST -->
+        <div class="address-list">
+
+            {% for addr in addresses %}
+            <div class="address-card">
+
+                <div class="address-top">
+                    <span class="tag">HOME</span>
+                    <a href="{{ url_for('delete_address', address_id=addr.id) }}"
+                    class="delete-btn"
+                    onclick="return confirm('Are you sure you want to delete this address?')">
+                    Delete
+                    </a>
+                </div>
+
+                <p class="name">
+                    {{ addr.user_name }} &nbsp;&nbsp; {{ addr.phone_no }}
+                </p>
+
+                <p class="addr">
+                    {{ addr.house_no }}, {{ addr.city }}, {{ addr.state }} - {{ addr.pincode }}
+                </p>
+
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+
+</html>

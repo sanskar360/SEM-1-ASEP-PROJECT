@@ -18,17 +18,17 @@
 
 <div class="login-form">
     <form action="/login" method="POST">
+
         <label>Email</label>
-        <input type="email" name="email" placeholder="Enter Your Username">
+        <input type="email" name="email" placeholder="Enter Your Username" required>
 
         <label>Password</label>
-        <input type="number" name="passwords" placeholder="Enter Your Password">
+        <input type="password" name="passwords" placeholder="Enter Your Password" required>
 
-        <button type="submit">Submit</button>
+        <button type="submit">Login</button>
 
-        <button>
-          <a href="{{ url_for('signup') }}">Sign Up!</a>
-        </button>
+        <!-- Fixed signup button -->
+        <a href="{{ url_for('signup') }}" class="signup-btn">Sign Up!</a>
 
     </form>
 </div>

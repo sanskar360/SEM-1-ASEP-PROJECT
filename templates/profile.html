@@ -15,63 +15,71 @@
             </a>
         </nav>
     </header>
-    <div class="cards">
-        <div class="sidebar">
-            <div class="profile">        
-                <img class="user" src="{{ url_for('static', filename='icons/user.png') }}">
+    <div class="profile-layout">
 
-                <div class="hi">
-                    <span> Hello,</span>
-                    <span>{{ session.email }}</span>       
-                </div>
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="profile-top">
+                <img class="user" src="{{ url_for('static', filename='icons/user.png') }}">
+                <h3>{{ session.username }}</h3>
+                <p>{{ session.email }}</p>
             </div>
-            <div class="p1">
-                <ul>
-                    <li class="add"><a href="{{ url_for('add_orders') }}" class="atag">Add Orders</a></li>
-                    <li class="add"><a href="{{ url_for('track_orders') }}" class="atag">Track Orders</a></li>
-                    <li class="add"><a href="{{ url_for('payments') }}" class="atag">Payment</a></li>
-                    <li class="add"><a href="{{ url_for('profile') }}" class="atag">Profile</a></li>
-                    <li class="add"><a href="{{ url_for('logout') }}" class="atag"> Logout </a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="edit-page">
-            <h2 class="pi">Personal Information</h2>
-            <div class="container1">
-                <div  class="imfo">
-                    <h3 class="h3">Username</h3>
-                    <div class="space">
+
+            <ul class="menu">
+                <li><a href="{{ url_for('add_orders') }}">Add Orders</a></li>
+                <li><a href="{{ url_for('track_orders') }}">Track Orders</a></li>
+                <li><a href="{{ url_for('payments') }}">Payment</a></li>
+                <li><a href="{{ url_for('manage_addresses') }}">Manage Address</a></li>
+                <li><a href="{{ url_for('logout') }}">Logout</a></li>
+            </ul>
+        </aside>
+
+
+        <!-- MAIN CONTENT -->
+        <main class="profile-content">
+
+            <h2 class="page-title">Personal Information</h2>
+
+            <!-- USER INFO CARD -->
+            <div class="card">
+                <h3>Basic Details</h3>
+
+                <div class="info-grid">
+                    <div class="info-box">
+                        <span>Username</span>
                         <p>{{ session.username }}</p>
                     </div>
-                </div>
 
-                <div  class="imfo">
-                    <h3 class="h3">Email</h3>
-                    <div class="space">
+                    <div class="info-box">
+                        <span>Email</span>
                         <p>{{ session.email }}</p>
                     </div>
                 </div>
             </div>
-            <br><br>
-            <div class="container2">
-                <div class="imfo">
-                    <h3 class="h3">Phone Number</h3>
-                    <div class="space">
-                        {{ address.phone_no}}
-                    </div>
-                </div>
 
-                <div  class="imfo1">
-                    <h3 class="h3">Alternate Phone Number </h3>
-                    <div class="space">
-                        {{ address.alternate_phone_no}}
+            <!-- CONTACT CARD -->
+            <div class="card">
+                <h3>Contact Details</h3>
+
+                <div class="info-grid">
+                    <div class="info-box">
+                        <span>Phone Number</span>
+                        <p>{{ address.phone_no }}</p>
+                    </div>
+
+                    <div class="info-box">
+                        <span>Alternate Number</span>
+                        <p>{{ address.alternate_phone_no }}</p>
                     </div>
                 </div>
             </div>
-            <div class="img3">
-                <img id="img3" src="{{ url_for('static', filename='image3.jpg') }}">
+
+            <!-- IMAGE -->
+            <div class="image-card">
+                <img src="{{ url_for('static', filename='image3.jpg') }}">
             </div>
-        </div>
+
+        </main>
     </div>
 </body>
 </html>

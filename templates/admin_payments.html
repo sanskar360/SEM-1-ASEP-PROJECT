@@ -11,45 +11,47 @@
      <nav>
             {% include 'nav.html' %}
     </nav>
-    <h2 class="t1">Your Payment Details</h2>
-    <div class="table">
-        <table class="order-table">
-            <thead>
-                <tr>
-                    <th>SR. NO.</th>
-                    <th>Date</th>
-                    <th>Order Status</th>
-                    <th>Payment Method</th>
-                    <th>Payment Status</th>
-                </tr>
-            </thead>
-             <tbody>
-                {% for order in orders %}
+    <div class="main-content">
+        <h2 class="t1">Your Payment Details</h2>
+        <div class="table">
+            <table class="order-table">
+                <thead>
                     <tr>
-                        <td>{{ loop.index }}</td>
-                        <td>{{ order.order_date }}</td>
-                        <td>{{ order.order_status }}</td>
-                        <td>{{ order.patment_method}}</td>
-                       <td>
-                            <form method="POST" action="{{ url_for('payments') }}">
-                                <input type="hidden" name="order_id" value="{{ order.id }}">
-                                
-                                <select name="payment_status">
-                                    <option value="Pending" {% if order.payment_status == 'Pending' %}selected{% endif %}>
-                                        Pending
-                                    </option>
-
-                                    <option value="Paid" {% if order.payment_status == 'Paid' %}selected{% endif %}>
-                                        Paid
-                                    </option>
-                                </select>
-                                <button type="submit">Update</button>
-                            </form>
-                        </td>
+                        <th>SR. NO.</th>
+                        <th>Date</th>
+                        <th>Order Status</th>
+                        <th>Payment Method</th>
+                        <th>Payment Status</th>
                     </tr>
-                {% endfor %}    
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ order.order_date }}</td>
+                            <td>{{ order.order_status }}</td>
+                            <td>{{ order.patment_method}}</td>
+                        <td>
+                                <form method="POST" action="{{ url_for('payments') }}">
+                                    <input type="hidden" name="order_id" value="{{ order.id }}">
+                                    
+                                    <select name="payment_status">
+                                        <option value="Pending" {% if order.payment_status == 'Pending' %}selected{% endif %}>
+                                            Pending
+                                        </option>
+
+                                        <option value="Paid" {% if order.payment_status == 'Paid' %}selected{% endif %}>
+                                            Paid
+                                        </option>
+                                    </select>
+                                    <button type="submit">Update</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}    
+                </tbody>
+            </table>
+        </div>
     </div>
 </body>
 </html>

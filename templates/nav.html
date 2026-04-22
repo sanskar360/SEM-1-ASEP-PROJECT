@@ -2,7 +2,7 @@
 
 <nav class="navbar shadow-sm fixed-top bg-white">
     
-    <a href="{{ url_for('home') }}">
+    <a href="{{ url_for('home') }}" class="logo-container">
         <img src="{{ url_for('static', filename='Logo.png') }}" class="logo">
     </a>
 
@@ -17,13 +17,15 @@
 
 
 {% else %}
-<nav class="navbar shadow-sm fixed-top bg-white">
+<nav class="navbar">
     
     <a href="{{ url_for('home') }}">
         <img src="{{ url_for('static', filename='Logo.png') }}" class="logo">
     </a>
 
-    <ul>
+    <div class="hamburger" id="hamburger">☰</div>
+
+    <ul id="navLinks">
         <li><a href="{{ url_for('add_orders') }}">Add Orders</a></li>
         <li><a href="{{ url_for('track_orders') }}">Track Orders</a></li>
         <li><a href="{{ url_for('payments') }}">Payment</a></li>

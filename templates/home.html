@@ -1,132 +1,243 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home Page</title>
-     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
-     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body>
-        {% include 'nav.html' %}
-        {% with messages = get_flashed_messages(with_categories = true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                {% if category == "success" %}
-                    <div class="popup {{ category }}"> {{ message }} </div>
-                {% endif %}
-                {% if category == "error" %}
-                    <div class="popup {{ category }}"> {{ message }} </div>
-                {% endif %}
-            {% endfor %}
-        {% endif %}
+    {% with messages = get_flashed_messages(with_categories = true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    {% if category == "success" %}
+    <div class="popup {{ category }}"> {{ message }} </div>
+    {% endif %}
+    {% if category == "error" %}
+    <div class="popup {{ category }}"> {{ message }} </div>
+    {% endif %}
+    {% endfor %}
+    {% endif %}
     {% endwith %}
-        <header>
-            <nav>
-                {% include 'nav.html' %}
-            </nav>
-        </header>
+    <header>
+        <nav>
+            {% include 'nav.html' %}
+        </nav>
+    </header>
 
-        <img id="banner" src="{{ url_for('static', filename='baner.png') }}">
+    <!-- <img id="banner" src="{{ url_for('static', filename='baner.png') }}"> -->
+    <section class="hero">
+        <div class="hero-content">
 
-        <div class="imp">
-            <h2> Importance Of Proper Laundry Service </h2>
-        </div>
-        <!-- cards -->
-            {% include 'containers.html' %}
+            <p class="tag">✨ Fresh Laundry Service</p>
+            <p class="brand">Vega Vastra</p>
 
-        <div class="services">
-            <h2>Everything Your Wardrobe Needs</h2>
-            <P>Professional Laundry Services Tailored For Your Needs. Quality Care For Every Fabric</P>
-        </div>
+            <h1>
+                Fresh & Clean <br>
+                <span>Laundry Service</span>
+            </h1>
 
-        <section class="services-section">
-            <h2 class="services-title">Our Laundry Services</h2>
+            <p class="desc">
+                Professional laundry care with fast delivery, eco-friendly cleaning,
+                and premium fabric treatment.
+            </p>
 
-            <div class="services-container">
-
-                <div class="service-card">
-                    <img src="{{ url_for('static', filename='icons/wash.png') }}" class="service-icon">
-                    <h3>Washing & Cleaning</h3>
-                    <p>Deep and gentle cleaning using modern machines to remove dirt, sweat and stains.</p>
-                </div>
-
-                <div class="service-card">
-                    <img src="{{ url_for('static', filename='icons/iron.png') }}" class="service-icon">
-                    <h3>Ironing & Press</h3>
-                    <p>Neat and crisp ironing for all clothes, ensuring a smooth and fresh finish.</p>
-                </div>
-
-                <div class="service-card">
-                    <img src="{{ url_for('static', filename='icons/dryclean.png') }}" class="service-icon">
-                    <h3>Dry Cleaning</h3>
-                    <p>Professional dry-cleaning for delicate fabrics, suits, sarees, and special garments.</p>
-                </div>
-
-                <div class="service-card">
-                    <img src="{{ url_for('static', filename='icons/folding.png') }}" class="service-icon">
-                    <h3>Folding & Packaging</h3>
-                    <p>Clothes are folded neatly and hygienically packed, ready for your wardrobe.</p>
-                </div>
-
-                <div class="service-card">
-                    <img src="{{ url_for('static', filename='icons/pickup.jpeg') }}" class="service-icon">
-                    <h3>Pickup & Delivery</h3>
-                    <p>Convenient doorstep collection and delivery with real-time tracking.</p>
-                </div>
-
-                <div class="service-card">
-                    <img src="{{ url_for('static', filename='icons/stain.png') }}" class="service-icon">
-                    <h3>Stain Removal</h3>
-                    <p>Advanced stain-treatment techniques for tough spots without damaging fabric.</p>
-                </div>
-
-            </div>
-        </section>
-        
-        <div class="about-section">
-            <img src="{{ url_for('static', filename='About Us.png') }}" class="about-img">
         </div>
 
+        <div class="hero-animation">
+            <div class="bubble"></div>
+            <div class="bubble"></div>
+            <div class="bubble"></div>
+            <div class="bubble"></div>
+            <div class="bubble"></div>
+        </div>
+    </section>
 
-        <footer>
-        <div class="footer">
-            <div class="row">
+    <div class="imp">
+        <h2> Importance Of Proper Laundry Service </h2>
+    </div>
+    <!-- cards -->
+    {% include 'containers.html' %}
 
-                <div class="col-lg-4 col-md-12 mb-3 footer-brand">
-                    <img src="{{ url_for('static', filename='Logo.png') }}" class="logo">
-                    <ul class="last">
-                        <li><h3>Designed and built with love by the</h3></li>
-                        <li><h3><a href="">Vega-Vastra team</a> with the help of our contributors.</li></h3>
-                    </ul>
-                </div>
+    <div class="services">
+        <h2>Everything Your Wardrobe Needs</h2>
+        <P>Professional Laundry Services Tailored For Your Needs. Quality Care For Every Fabric</P>
+    </div>
 
-                <div class="col-lg-3 col-md-6 mb-3">
-                    <ul class="links">
-                        <li class="title">Links</li>
-                        <li><a href="{{ url_for('add_orders') }}">Add Orders</a></li>
-                        <li><a href="{{ url_for('track_orders') }}">Track Orders</a></li>
-                        <li><a href="{{ url_for('payments') }}">Payment</a></li>
-                        <li><a href="{{ url_for('profile') }}">Profile</a></li>
-                    </ul>
-                </div>
+    <section class="services-section" id="services">
+        <h2 class="services-title">Our Laundry Services</h2>
 
-                <div class="col-lg-3 col-md-6 mb-3">
-                    <ul class="contact_details">
-                        <li class="title">Helpline</li>
-                        <li>7894561230</li>
-                        <li class="title">Email</li>
-                        <li>VegaVastra@123gmail.com</li>
-                    </ul>
-                </div>
+        <div class="services-container">
 
+            <div class="service-card">
+                <img src="{{ url_for('static', filename='icons/wash.png') }}" class="service-icon">
+                <h3>Washing & Cleaning</h3>
+                <p>Deep and gentle cleaning using modern machines to remove dirt, sweat and stains.</p>
             </div>
 
-            <div class="copy">
-                <p>© 2025 All Rights Reserved — <b>Vega Vastra</b></p>
+            <div class="service-card">
+                <img src="{{ url_for('static', filename='icons/iron.png') }}" class="service-icon">
+                <h3>Ironing & Press</h3>
+                <p>Neat and crisp ironing for all clothes, ensuring a smooth and fresh finish.</p>
             </div>
+
+            <div class="service-card">
+                <img src="{{ url_for('static', filename='icons/dryclean.png') }}" class="service-icon">
+                <h3>Dry Cleaning</h3>
+                <p>Professional dry-cleaning for delicate fabrics, suits, sarees, and special garments.</p>
+            </div>
+
+            <div class="service-card">
+                <img src="{{ url_for('static', filename='icons/folding.png') }}" class="service-icon">
+                <h3>Folding & Packaging</h3>
+                <p>Clothes are folded neatly and hygienically packed, ready for your wardrobe.</p>
+            </div>
+
+            <div class="service-card">
+                <img src="{{ url_for('static', filename='icons/pickup.jpeg') }}" class="service-icon">
+                <h3>Pickup & Delivery</h3>
+                <p>Convenient doorstep collection and delivery with real-time tracking.</p>
+            </div>
+
+            <div class="service-card">
+                <img src="{{ url_for('static', filename='icons/stain.png') }}" class="service-icon">
+                <h3>Stain Removal</h3>
+                <p>Advanced stain-treatment techniques for tough spots without damaging fabric.</p>
+            </div>
+
+        </div>
+    </section>
+
+    <section class="about-section">
+
+        <div class="about-header">
+            <h1>About Vega Vastra</h1>
+            <p>Smart laundry solutions designed for modern lifestyles</p>
+        </div>
+
+        <div class="about-grid">
+
+            <div class="about-card">
+                <h3>🚀 Our Mission</h3>
+                <p>
+                    To simplify laundry with fast, reliable, and hygienic solutions
+                    that save your time and effort.
+                </p>
+            </div>
+
+            <div class="about-card">
+                <h3>🧺 What We Do</h3>
+                <p>
+                    We combine expert fabric care with smart technology to deliver
+                    high-quality cleaning and doorstep service.
+                </p>
+            </div>
+
+            <div class="about-card">
+                <h3>💡 Why We’re Different</h3>
+                <p>
+                    From delicate fabrics to daily wear, every item gets specialized
+                    attention and care.
+                </p>
+            </div>
+
+            <div class="about-card">
+                <h3>⚡ Our Promise</h3>
+                <p>
+                    Clean, fresh, and perfectly handled clothes — delivered on time,
+                    every time.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="trust-section">
+        <div class="trust-header">
+            <h2>Why People Trust Us</h2>
+            <p>We focus on quality, reliability, and convenience</p>
+        </div>
+
+        <div class="trust-strip">
+
+            <div class="trust-item">
+                <div class="icon">🧼</div>
+                <p>Hygienic Cleaning</p>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="trust-item">
+                <div class="icon">⚡</div>
+                <p>Fast Service</p>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="trust-item">
+                <div class="icon">🚚</div>
+                <p>Doorstep Pickup</p>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="trust-item">
+                <div class="icon">💎</div>
+                <p>Premium Care</p>
+            </div>
+        </div>
+    </section>
+    <section class="cta-section">
+
+        <div class="cta-content">
+            <h2>Ready for Fresh, Clean Clothes?</h2>
+            <p>Book your laundry service today and experience hassle-free cleaning.</p>
+
+            <div class="cta-buttons">
+                <a href="/book" class="btn-primary">Book Now</a>
+                <a href="#services" class="btn-secondary">View Services</a>
+            </div>
+        </div>
+
+    </section>
+
+    <footer class="footer">
+
+        <div class="footer-overlay"></div>
+
+        <div class="footer-container">
+
+            <div class="footer-brand">
+                <img src="{{ url_for('static', filename='Logo.png') }}" class="logo">
+                <p class="tagline">
+                    Designed and built with love by the <b>Vega Vastra Team</b>.
+                </p>
+            </div>
+
+            <div class="footer-links">
+                <h3>Quick Links</h3>
+                <a href="{{ url_for('add_orders') }}">Add Orders</a>
+                <a href="{{ url_for('track_orders') }}">Track Orders</a>
+                <a href="{{ url_for('payments') }}">Payment</a>
+                <a href="{{ url_for('profile') }}">Profile</a>
+            </div>
+
+            <div class="footer-contact">
+                <h3>Contact</h3>
+                <p>📞 7894561230</p>
+                <p>✉️ VegaVastra@123gmail.com</p>
+            </div>
+
+        </div>
+
+        <div class="footer-bottom">
+            <p>© 2025 Vega Vastra — All Rights Reserved</p>
         </div>
     </footer>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
+
 </html>

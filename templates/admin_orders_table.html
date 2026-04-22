@@ -11,56 +11,58 @@
     <nav>
             {% include 'nav.html' %}
     </nav>
-    <h2 class="t1">Orders Details</h2>
-    <div class="table">
-        <table class="order-table">
-            <thead>
-                <tr>
-                    <th>SR. NO.</th>
-                    <th>Date</th>
-                    <th>Service</th>
-                    <th>Number of Items</th>
-                    <th>Suggestions</th>
-                    <th>Order Status</th>
-                    <th>Payment Method</th>
-                    <th>Payment Status</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                {% for order in orders %}
+    <div class="main-content">
+        <h2 class="t1">Orders Details</h2>
+        <div class="table">
+            <table class="order-table">
+                <thead>
                     <tr>
-                        <td>{{ loop.index }}</td>
-                        <td>{{ order.order_date }}</td>
-                        <td>{{ order.service }}</td>
-                        <td>{{ order.num_of_items }}</td>
-                        <td>{{ order.suggesstions }}</td>
-                        <td>
-                            <form method="POST" action="{{ url_for('track_orders') }}">
-                                <input type="hidden" name="order_id" value="{{ order.id }}">
-                                
-                                <select name="order_status">
-                                    <option value="Order Placed" {% if order.order_status == 'Order Placed' %}selected{% endif %}>
-                                        Order Placed
-                                    </option>
-
-                                    <option value="Order Pending" {% if order.order_status == 'Order Pending' %}selected{% endif %}>
-                                        Order Pending
-                                    </option>
-
-                                    <option value="Out for Delivery" {% if order.order_status == 'Out for Delivery' %}selected{% endif %}>
-                                        Out for Delivery
-                                    </option>
-                                </select>
-                                <button type="submit">Update</button>
-                            </form>
-                        </td>
-                        <td>{{ order.patment_method}}</td>
-                        <td>{{ order.payment_status}}</td>
+                        <th>SR. NO.</th>
+                        <th>Date</th>
+                        <th>Service</th>
+                        <th>Number of Items</th>
+                        <th>Suggestions</th>
+                        <th>Order Status</th>
+                        <th>Payment Method</th>
+                        <th>Payment Status</th>
                     </tr>
-                {% endfor %}    
-            </tbody>
-        </table>
+                </thead>
+
+                <tbody>
+                    {% for order in orders %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ order.order_date }}</td>
+                            <td>{{ order.service }}</td>
+                            <td>{{ order.num_of_items }}</td>
+                            <td>{{ order.suggesstions }}</td>
+                            <td>
+                                <form method="POST" action="{{ url_for('track_orders') }}">
+                                    <input type="hidden" name="order_id" value="{{ order.id }}">
+                                    
+                                    <select name="order_status">
+                                        <option value="Order Placed" {% if order.order_status == 'Order Placed' %}selected{% endif %}>
+                                            Order Placed
+                                        </option>
+
+                                        <option value="Order Pending" {% if order.order_status == 'Order Pending' %}selected{% endif %}>
+                                            Order Pending
+                                        </option>
+
+                                        <option value="Out for Delivery" {% if order.order_status == 'Out for Delivery' %}selected{% endif %}>
+                                            Out for Delivery
+                                        </option>
+                                    </select>
+                                    <button type="submit">Update</button>
+                                </form>
+                            </td>
+                            <td>{{ order.patment_method}}</td>
+                            <td>{{ order.payment_status}}</td>
+                        </tr>
+                    {% endfor %}    
+                </tbody>
+            </table>
+        </div>
     </div>
 </body>
 </html>

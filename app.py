@@ -1,6 +1,6 @@
 from flask import Flask, render_template,request, redirect, url_for, flash, session
 from datetime import date, timedelta
-from database import load_orders_from_db, add_user_to_db, add_order_to_db, login_user_from_db, user_from_addresses_db, load_orders_for_admin_from_db, update_order_status_in_db, load_users_for_admin_from_db, update_payment_status_in_db, get_todays_orders_count
+from database import load_orders_from_db, add_user_to_db, login_user_from_db, user_from_addresses_db, load_orders_for_admin_from_db, update_order_status_in_db, load_users_for_admin_from_db, update_payment_status_in_db, get_todays_orders_count,get_addresses_from_db, add_address_to_db,delete_address_from_db,add_order_to_db
 
 app = Flask(__name__)
 app.secret_key = "mysecret123"
@@ -106,7 +106,7 @@ def profile():
     user_id = session.get("user_id")
     if user_id is None:
         flash("Login First","error")
-        return redirect(url_for("login"))
+        return redirect(url_for("show_login_page"))
     
     address =  user_from_addresses_db(user_id)
     return render_template("profile.html", address=address)
@@ -126,11 +126,11 @@ def login():
 
     if not result:
         flash("User Not Found. Please Go to Sign Up", "error")
-        return redirect(url_for("login_page"))
+        return redirect(url_for("show_login_page"))
     
     if str(result.passwords) != str(passwords):
         flash("Incorrect Password. Try Again", "error")
-        return redirect(url_for("login_page"))
+        return redirect(url_for("show_login_page"))
 
     
     session["user_id"] = result.id
@@ -142,50 +142,85 @@ def login():
 
 
 @app.route("/add_orders", methods=["GET", "POST"])
+@app.route("/add_orders", methods=["GET", "POST"])
 def add_orders():
     user_id = session.get("user_id")
 
-    if user_id is None:
-        flash("Login First","error")
-        return redirect(url_for("login"))
-    
-    if user_id == ADMIN_ID:
-        users = load_users_for_admin_from_db()
-        return render_template("admin_users_table.html", users = users)
-    
+    if not user_id:
+        flash("Login First", "error")
+        return redirect(url_for("show_login_page"))
+
     if request.method == "POST":
+
         service = request.form.get("service")
         items = int(request.form.get("num_of_items"))
 
-
-        delivery_date = predict_date(service,items)
+        delivery_date = predict_date(service, items)
 
         order_data = {
-                "user_name": request.form.get("user_name"),
-                "phone_no": request.form.get("phone_no"),
-                "pincode": request.form.get("pincode"),
-                "alternate_phone_no": request.form.get("alternate_phone_no"),
-                "state": request.form.get("state"),
-                "city": request.form.get("city"),
-                "house_no": request.form.get("house_no"),
-                "service": request.form.get("service"),
-                "num_of_items": request.form.get("num_of_items"),
-                "patment_method": request.form.get("patment_method"),
-                "suggesstions": request.form.get("suggesstions"),
-                "delivery_date": delivery_date
-            }
-            
-        result = add_order_to_db(order_data)
-            
-        if result.get("error"):
-                flash(result["error"], "error")
-                return redirect(url_for("add_orders"))
+            "service": service,
+            "num_of_items": items,
+            "patment_method": request.form.get("patment_method"),
+            "suggesstions": request.form.get("suggesstions"),
+            "delivery_date": delivery_date
+        }
 
-        flash("Order added successfully!", "success")
+        result = add_order_to_db(order_data)
+
+        if result.get("error"):
+            flash(result["error"], "error")
+        else:
+            flash("Order added successfully!", "success")
+
         return redirect(url_for("add_orders"))
 
-
     return render_template("add_orders.html")
+
+# def add_orders():
+#     user_id = session.get("user_id")
+
+#     if user_id is None:
+#         flash("Login First","error")
+#         return redirect(url_for("show_login_page"))
+    
+#     if user_id == ADMIN_ID:
+#         users = load_users_for_admin_from_db()
+#         return render_template("admin_users_table.html", users = users)
+    
+#     if request.method == "POST":
+#         service = request.form.get("service")
+#         items = int(request.form.get("num_of_items"))
+
+
+#         delivery_date = predict_date(service,items)
+
+#         order_data = {
+#                 "user_name": request.form.get("user_name"),
+#                 "phone_no": request.form.get("phone_no"),
+#                 "pincode": request.form.get("pincode"),
+#                 "alternate_phone_no": request.form.get("alternate_phone_no"),
+#                 "state": request.form.get("state"),
+#                 "city": request.form.get("city"),
+#                 "house_no": request.form.get("house_no"),
+#                 "service": request.form.get("service"),
+#                 "num_of_items": request.form.get("num_of_items"),
+#                 "patment_method": request.form.get("patment_method"),
+#                 "suggesstions": request.form.get("suggesstions"),
+#                 "delivery_date": delivery_date
+#             }
+            
+        # result = add_order_to_db(order_data)
+            
+        # if result.get("error"):
+        #         flash(result["error"], "error")
+        #         return redirect(url_for("add_orders"))
+
+        # flash("Order added successfully!", "success")
+        # return redirect(url_for("add_orders"))
+
+
+    # return render_template("add_orders.html")
+
 
 
 @app.route('/signup', methods=["GET", "POST"])
@@ -228,3 +263,38 @@ def admin_orders_table():
 @app.route("/admin_payments")
 def admin_payments():
     return render_template("admin_payments")
+
+@app.route("/manage_addresses", methods=["GET", "POST"])
+def manage_addresses():
+    user_id = session.get("user_id")
+
+    if user_id is None:
+        flash("Login First", "error")
+        return redirect(url_for("show_login_page"))
+
+    if request.method == "POST":
+        result = add_address_to_db(request.form)
+
+        if result.get("error"):
+            flash(result["error"], "error")
+        else:
+            flash("Address added successfully!", "success")
+
+        return redirect(url_for("manage_addresses"))
+
+    addresses = get_addresses_from_db(user_id)
+
+    return render_template("manage_addresses.html", addresses=addresses)
+
+@app.route("/delete_address/<int:address_id>")
+def delete_address(address_id):
+    user_id = session.get("user_id")
+
+    if not user_id:
+        flash("Login required", "error")
+        return redirect(url_for("show_login_page"))
+
+    delete_address_from_db(address_id, user_id)
+
+    flash("Address deleted successfully", "success")
+    return redirect(url_for("manage_addresses"))

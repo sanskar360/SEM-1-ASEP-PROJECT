@@ -11,28 +11,30 @@
     <nav>
             {% include 'nav.html' %}
     </nav>
-    <h2 class="t1">Users Details</h2>
-    <div class="table">
-        <table class="order-table">
-            <thead>
-                <tr>
-                    <th>SR. NO.</th>
-                    <th>Email</th>
-                    <th>Username</th>
-                    <th>Password</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for user in users %}
+    <div class="main-content">
+        <h2 class="t1">Users Details</h2>
+        <div class="table">
+            <table class="order-table">
+                <thead>
                     <tr>
-                        <td>{{ loop.index }}</td>
-                        <td>{{ user.email }}</td>
-                        <td>{{ user.username }}</td>
-                        <td>{{ user.passwords }}</td>
+                        <th>SR. NO.</th>
+                        <th>Email</th>
+                        <th>Username</th>
+                        <th>Password</th>
                     </tr>
-                {% endfor %}    
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>{{ user.username }}</td>
+                            <td>{{ user.passwords }}</td>
+                        </tr>
+                    {% endfor %}    
+                </tbody>
+            </table>
+        </div>
     </div>
 </body>
 </html>
