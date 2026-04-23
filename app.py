@@ -142,13 +142,16 @@ def login():
 
 
 @app.route("/add_orders", methods=["GET", "POST"])
-@app.route("/add_orders", methods=["GET", "POST"])
 def add_orders():
     user_id = session.get("user_id")
 
     if not user_id:
         flash("Login First", "error")
         return redirect(url_for("show_login_page"))
+    
+    if user_id == ADMIN_ID:
+        users = load_users_for_admin_from_db()
+        return render_template("admin_users_table.html", users = users)
 
     if request.method == "POST":
 
