@@ -176,53 +176,6 @@ def add_orders():
 
     return render_template("add_orders.html")
 
-# def add_orders():
-#     user_id = session.get("user_id")
-
-#     if user_id is None:
-#         flash("Login First","error")
-#         return redirect(url_for("show_login_page"))
-    
-#     if user_id == ADMIN_ID:
-#         users = load_users_for_admin_from_db()
-#         return render_template("admin_users_table.html", users = users)
-    
-#     if request.method == "POST":
-#         service = request.form.get("service")
-#         items = int(request.form.get("num_of_items"))
-
-
-#         delivery_date = predict_date(service,items)
-
-#         order_data = {
-#                 "user_name": request.form.get("user_name"),
-#                 "phone_no": request.form.get("phone_no"),
-#                 "pincode": request.form.get("pincode"),
-#                 "alternate_phone_no": request.form.get("alternate_phone_no"),
-#                 "state": request.form.get("state"),
-#                 "city": request.form.get("city"),
-#                 "house_no": request.form.get("house_no"),
-#                 "service": request.form.get("service"),
-#                 "num_of_items": request.form.get("num_of_items"),
-#                 "patment_method": request.form.get("patment_method"),
-#                 "suggesstions": request.form.get("suggesstions"),
-#                 "delivery_date": delivery_date
-#             }
-            
-        # result = add_order_to_db(order_data)
-            
-        # if result.get("error"):
-        #         flash(result["error"], "error")
-        #         return redirect(url_for("add_orders"))
-
-        # flash("Order added successfully!", "success")
-        # return redirect(url_for("add_orders"))
-
-
-    # return render_template("add_orders.html")
-
-
-
 @app.route('/signup', methods=["GET", "POST"])
 def signup():
     if request.method == "POST":

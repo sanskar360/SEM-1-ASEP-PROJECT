@@ -28,7 +28,6 @@
         </nav>
     </header>
 
-    <!-- <img id="banner" src="{{ url_for('static', filename='baner.png') }}"> -->
     <section class="hero">
         <div class="hero-content">
 
@@ -196,7 +195,7 @@
             <p>Book your laundry service today and experience hassle-free cleaning.</p>
 
             <div class="cta-buttons">
-                <a href="/book" class="btn-primary">Book Now</a>
+                <a href="{{ url_for('add_orders') }}" class="btn-primary">Book Now</a>
                 <a href="#services" class="btn-secondary">View Services</a>
             </div>
         </div>
