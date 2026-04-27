@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile — Vega Vastra Delivery</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='delivery_style.css') }}">
+</head>
+<body>
+
+<div class="db-layout">
+
+    <!-- ═══════════════════════════════════════════════════════
+         SIDEBAR NAV
+    ════════════════════════════════════════════════════════ -->
+    <aside class="db-sidebar">
+        <div class="sidebar-brand">
+            <a href="delivery_home.html" class="brand-name"><img src="Logo.png" alt="Vega Vastra" class="sidebar-logo-img"></a>
+            <span class="brand-role">🛵 Delivery Portal</span>
+        </div>
+
+        <div class="sidebar-identity">
+            <div class="si-avatar">RK</div>
+            <div class="si-info">
+                <div class="si-name">Ravi Kumar</div>
+                <div class="si-id">ID: DB-001</div>
+                <div class="si-status">
+                    <span class="si-dot"></span>
+                    <span class="si-status-text">Online</span>
+                </div>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <span class="nav-label">My Work</span>
+           
+            <a href="delivery_assigned.html" class="nav-link">
+                <span class="nl-icon">📦</span>
+                <span class="nl-text">Assigned Orders</span>
+                <span class="nl-badge">3</span>
+            </a>
+            <a href="delivery_history.html" class="nav-link">
+                <span class="nl-icon">📋</span>
+                <span class="nl-text">Order History</span>
+            </a>
+            <span class="nav-label">Account</span>
+            <a href="delivery_profile.html" class="nav-link active">
+                <span class="nl-icon">👤</span>
+                <span class="nl-text">My Profile</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="delivery_login.html" class="logout-link">
+                <span class="nl-icon">🚪</span>
+                <span>Logout</span>
+            </a>
+        </div>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+    <!-- ═══════════════════════════════════════════════════════
+         MAIN
+    ════════════════════════════════════════════════════════ -->
+    <div class="db-main">
+
+        <header class="db-topbar">
+            <button class="hamburger" onclick="openSidebar()" aria-label="Open menu">
+                <span></span><span></span><span></span>
+            </button>
+            <div>
+                <div class="topbar-greeting">My <span>Profile</span></div>
+                <div class="topbar-date" id="js-date"></div>
+            </div>
+            <div class="topbar-right">
+                <div class="topbar-notif">🔔</div>
+                <div class="topbar-avatar">RK</div>
+            </div>
+        </header>
+
+        <main class="db-content">
+
+            <div class="page-header">
+                <h1>My Profile</h1>
+                <p>Your personal details and delivery history</p>
+            </div>
+
+            <div class="profile-layout">
+
+                <!-- ── Left: profile card ── -->
+                <div class="profile-card">
+                    <div class="profile-card-banner"></div>
+                    <div class="profile-card-body">
+
+                        <div class="profile-avatar-wrap">
+                            <div class="profile-avatar">RK</div>
+                            <span class="profile-status-pill">● Active</span>
+                        </div>
+
+                        <div class="profile-name">Ravi Kumar</div>
+                        <div class="profile-sub">Delivery Partner &nbsp;·&nbsp; ID: DB-001</div>
+
+                        <!-- Stars -->
+                        <div class="profile-stars">
+                            ★★★★★
+                            <span>4.8 / 5.0</span>
+                        </div>
+
+                        <!-- Details -->
+                        <div class="profile-field">
+                            <span class="pf-label">Phone</span>
+                            <span class="pf-val">9876540001</span>
+                        </div>
+                        <div class="profile-field">
+                            <span class="pf-label">Email</span>
+                            <span class="pf-val" style="font-size:12.5px;">ravi@vegavastra.in</span>
+                        </div>
+                        <div class="profile-field">
+                            <span class="pf-label">City</span>
+                            <span class="pf-val">Pune, Maharashtra</span>
+                        </div>
+                        <div class="profile-field">
+                            <span class="pf-label">Vehicle No.</span>
+                            <span class="pf-val">MH-12 AB 1234</span>
+                        </div>
+                        <div class="profile-field">
+                            <span class="pf-label">Joined</span>
+                            <span class="pf-val">January 2024</span>
+                        </div>
+                        <div class="profile-field">
+                            <span class="pf-label">Account Status</span>
+                            <span class="pf-val" style="color:#166534;">Active</span>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- ── Right: recent deliveries ── -->
+                <div class="stats-panel">
+                    <h3>Recent Deliveries</h3>
+                    <div class="table-wrap">
+                        <table class="db-table">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Date</th>
+                                    <th>Customer</th>
+                                    <th>Service</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td data-label="Order ID" class="td-bold">#001</td>
+                                    <td data-label="Date" class="td-muted">03 Apr 2025</td>
+                                    <td data-label="Customer">Rahul Sharma</td>
+                                    <td data-label="Service">Wash &amp; Fold</td>
+                                    <td data-label="Status"><span class="badge badge-green">Delivered ✓</span></td>
+                                </tr>
+                                <tr>
+                                    <td data-label="Order ID" class="td-bold">#002</td>
+                                    <td data-label="Date" class="td-muted">02 Apr 2025</td>
+                                    <td data-label="Customer">Priya Patel</td>
+                                    <td data-label="Service">Dry Cleaning</td>
+                                    <td data-label="Status"><span class="badge badge-green">Delivered ✓</span></td>
+                                </tr>
+                                <tr>
+                                    <td data-label="Order ID" class="td-bold">#005</td>
+                                    <td data-label="Date" class="td-muted">01 Apr 2025</td>
+                                    <td data-label="Customer">Karan Mehta</td>
+                                    <td data-label="Service">Wash &amp; Iron</td>
+                                    <td data-label="Status"><span class="badge badge-green">Delivered ✓</span></td>
+                                </tr>
+                                <tr>
+                                    <td data-label="Order ID" class="td-bold">#006</td>
+                                    <td data-label="Date" class="td-muted">31 Mar 2025</td>
+                                    <td data-label="Customer">Pooja Kulkarni</td>
+                                    <td data-label="Service">Dry Cleaning</td>
+                                    <td data-label="Status"><span class="badge badge-green">Delivered ✓</span></td>
+                                </tr>
+                                <tr>
+                                    <td data-label="Order ID" class="td-bold">#008</td>
+                                    <td data-label="Date" class="td-muted">30 Mar 2025</td>
+                                    <td data-label="Customer">Vikram Nair</td>
+                                    <td data-label="Service">Iron &amp; Press</td>
+                                    <td data-label="Status"><span class="badge badge-green">Delivered ✓</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <p style="text-align:right; margin-top:10px; font-size:13px; color:var(--text-muted);">
+                        <a href="delivery_history.html" style="color:var(--sky); font-weight:700;">View full history &rarr;</a>
+                    </p>
+                </div>
+
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<script>
+    document.getElementById('js-date').textContent =
+        new Date().toLocaleDateString('en-IN', {
+            weekday:'long', year:'numeric', month:'long', day:'numeric'
+        });
+</script>
+
+<script>
+function openSidebar() {
+    document.querySelector(".db-sidebar").classList.add("open");
+    document.getElementById("sidebarOverlay").classList.add("open");
+}
+function closeSidebar() {
+    document.querySelector(".db-sidebar").classList.remove("open");
+    document.getElementById("sidebarOverlay").classList.remove("open");
+}
+</script>
+
+<!-- Bottom Nav -->
+<nav class="bottom-nav">
+    <a href="delivery_assigned.html" class="bn-item">
+      <span class="bn-badge">3</span><span class="bn-icon">📦</span>
+      <span>Orders</span>
+    </a>
+    <a href="delivery_history.html" class="bn-item">
+      <span class="bn-icon">📋</span>
+      <span>History</span>
+    </a>
+    <a href="delivery_profile.html" class="bn-item active">
+      <span class="bn-icon">👤</span>
+      <span>Profile</span>
+    </a>
+</nav>
+</body>
+</html>
