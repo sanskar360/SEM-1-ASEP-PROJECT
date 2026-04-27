@@ -16,7 +16,7 @@
     ════════════════════════════════════════════════════════ -->
     <aside class="db-sidebar">
         <div class="sidebar-brand">
-            <a href="delivery_home.html" class="brand-name"><img src="Logo.png" alt="Vega Vastra" class="sidebar-logo-img"></a>
+            <a href="{{ url_for('delivery_home') }}" class="brand-name"><img src="{{ url_for('static', filename='Logo.png') }}" alt="Vega Vastra" class="sidebar-logo-img"></a>
             <span class="brand-role">🛵 Delivery Portal</span>
         </div>
 
@@ -35,24 +35,24 @@
         <nav class="sidebar-nav">
             <span class="nav-label">My Work</span>
             
-            <a href="delivery_assigned.html" class="nav-link">
+            <a href="{{ url_for('delivery_assigned') }}" class="nav-link">
                 <span class="nl-icon">📦</span>
                 <span class="nl-text">Assigned Orders</span>
                 <span class="nl-badge">3</span>
             </a>
-            <a href="delivery_history.html" class="nav-link active">
+            <a href="{{ url_for('delivery_history') }}" class="nav-link active">
                 <span class="nl-icon">📋</span>
                 <span class="nl-text">Order History</span>
             </a>
             <span class="nav-label">Account</span>
-            <a href="delivery_profile.html" class="nav-link">
+            <a href="{{ url_for('delivery_profile') }}" class="nav-link">
                 <span class="nl-icon">👤</span>
                 <span class="nl-text">My Profile</span>
             </a>
         </nav>
 
         <div class="sidebar-footer">
-            <a href="delivery_login.html" class="logout-link">
+            <a href="{{ url_for('delivery_login') }}" class="logout-link">
                 <span class="nl-icon">🚪</span>
                 <span>Logout</span>
             </a>
@@ -206,15 +206,15 @@ function closeSidebar() {
 
 <!-- Bottom Nav -->
 <nav class="bottom-nav">
-    <a href="delivery_assigned.html" class="bn-item">
+    <a href="{{ url_for('delivery_assigned') }}" class="bn-item">
       <span class="bn-badge">3</span><span class="bn-icon">📦</span>
       <span>Orders</span>
     </a>
-    <a href="delivery_history.html" class="bn-item active">
+    <a href="{{ url_for('delivery_history') }}" class="bn-item active">
       <span class="bn-icon">📋</span>
       <span>History</span>
     </a>
-    <a href="delivery_profile.html" class="bn-item">
+    <a href="{{ url_for('delivery_profile') }}" class="bn-item">
       <span class="bn-icon">👤</span>
       <span>Profile</span>
     </a>

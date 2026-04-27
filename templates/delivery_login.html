@@ -14,7 +14,7 @@
 
         <!-- Card top banner -->
         <div class="login-card-top">
-            <div class="lc-logo"><img src="Logo_dark.png" alt="Vega Vastra" class="login-logo-img"></div>
+            <div class="lc-logo"><img src="{{ url_for('static', filename='Logo_dark.png') }}" alt="Vega Vastra" class="login-logo-img"></div>
             <span class="lc-role">🛵 Delivery Portal</span>
         </div>
 
@@ -54,7 +54,7 @@
 
             <p style="text-align:center; margin-top:18px; font-size:13px; color:var(--text-muted);">
                 Not a delivery partner?
-                <a href="login.html" style="color:var(--sky); font-weight:700;">Customer Login</a>
+                <a href="{{ url_for('login') }}" style="color:var(--sky); font-weight:700;">Customer Login</a>
             </p>
         </div>
 

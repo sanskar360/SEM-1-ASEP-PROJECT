@@ -80,7 +80,7 @@
     <!-- Sidebar -->
     <aside class="admin-sidebar" id="adminSidebar">
         <div class="sidebar-brand">
-            <a href="#" class="brand-name"><img src="{{ url_for('static', filename='Logo.png') }}" alt="Vega Vastra" class="sidebar-logo-img"></a>
+            <a href="{{ url_for('admin_home') }}" class="brand-name"><img src="{{ url_for('static', filename='Logo.png') }}" alt="Vega Vastra" class="sidebar-logo-img"></a>
             <span class="brand-role">⚙️ Admin Portal</span>
         </div>
         <nav class="sidebar-nav">
@@ -102,7 +102,11 @@
             </a>
            
         </nav>
-        
+        <div class="sidebar-footer">
+            <a href="#" class="logout-link">
+                <span class="nl-icon">🚪</span><span>Logout</span>
+            </a>
+        </div>
     </aside>
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 

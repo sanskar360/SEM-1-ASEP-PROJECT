@@ -13,39 +13,35 @@
 
     <aside class="admin-sidebar" id="adminSidebar">
     <div class="sidebar-brand">
-        <a href="#" class="brand-name"><img src="Logo.png" alt="Vega Vastra" class="sidebar-logo-img"></a>
+        <a href="{{ url_for('admin_home') }}" class="brand-name"><img src="{{ url_for('static', filename='Logo.png') }}" alt="Vega Vastra" class="sidebar-logo-img"></a>
         <span class="brand-role">⚙️ Admin Portal</span>
     </div>
     <nav class="sidebar-nav">
         <span class="nav-section-label">Management</span>
-        <a href="admin_users_table.html" class="nav-link">
+        <a href="{{ url_for('admin_users_table') }}" class="nav-link">
             <span class="nl-icon">👥</span>
             <span>User Information</span>
         </a>
-        <a href="admin_orders_table.html" class="nav-link active">
+        <a href="{{ url_for('admin_orders_table') }}" class="nav-link active">
             <span class="nl-icon">📦</span>
             <span>Orders</span>
         </a>
-        <a href="admin_payments.html" class="nav-link">
+        <a href="{{ url_for('admin_payments') }}" class="nav-link">
             <span class="nl-icon">💳</span>
             <span>Payments</span>
         </a>
-        <a href="admin_vendors.html" class="nav-link">
+        <a href="{{ url_for('admin_vendors') }}" class="nav-link">
             <span class="nl-icon">🏪</span>
             <span>Vendors</span>
         </a>
-        <a href="admin_delivery_boys.html" class="nav-link">
+        <a href="{{ url_for('admin_delivery_boys') }}" class="nav-link">
             <span class="nl-icon">🛵</span>
             <span>Delivery Boys</span>
         </a>
-        <span class="nav-section-label">Account</span>
-        <a href="#" class="nav-link">
-            <span class="nl-icon">👤</span>
-            <span>Profile</span>
-        </a>
+       
     </nav>
     <div class="sidebar-footer">
-        <a href="#" class="logout-link">
+        <a href="{{ url_for('admin_logout') }}" class="logout-link">
             <span class="nl-icon">🚪</span>
             <span>Logout</span>
         </a>
