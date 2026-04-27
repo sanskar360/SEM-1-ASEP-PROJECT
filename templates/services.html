@@ -1,0 +1,47 @@
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='booking.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+<nav>
+    {% include 'nav.html' %}
+</nav>
+
+<div class="services-container">
+
+  {% for s in services %}
+  <div class="service-card" onclick="selectService('{{ s.id }}')">
+
+    <!-- ICON -->
+    <div class="icon">
+      {% if s.name == "Wash & Fold" %} 🧺
+      {% elif s.name == "Dry Clean" %} 👔
+      {% elif s.name == "Wash" %} 🧼
+      {% elif s.name == "Iron & Press" %} 🔥
+      {% elif s.name == "Iron" %} 🔥
+      {% else %} 🧼
+      {% endif %}
+    </div>
+
+    <!-- TITLE -->
+    <h3>{{ s.name }}</h3>
+
+    <!-- DESCRIPTION -->
+    <p>
+      {% if s.name == "Wash & Fold" %}
+        Regular washing and folding
+      {% elif s.name == "Dry Cleaning" %}
+        Premium fabric dry cleaning
+      {% elif s.name == "Ironing" %}
+        Professional ironing service
+      {% else %}
+        High quality {{ s.name }} service
+      {% endif %}
+    </p>
+
+  </div>
+  {% endfor %}
+
+</div>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
