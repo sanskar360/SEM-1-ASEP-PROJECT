@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assigned Orders — Vega Vastra Delivery</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='delivery_style.css') }}">
+</head>
+<body>
+
+<div class="db-layout">
+
+    <!-- ═══════════════════════════════════════════════════════
+         SIDEBAR NAV
+    ════════════════════════════════════════════════════════ -->
+    <aside class="db-sidebar">
+        <div class="sidebar-brand">
+            <a href="delivery_home.html" class="brand-name"><img src="Logo.png" alt="Vega Vastra" class="sidebar-logo-img"></a>
+            <span class="brand-role">🛵 Delivery Portal</span>
+        </div>
+
+        <div class="sidebar-identity">
+            <div class="si-avatar">RK</div>
+            <div class="si-info">
+                <div class="si-name">Ravi Kumar</div>
+                <div class="si-id">ID: DB-001</div>
+                <div class="si-status">
+                    <span class="si-dot"></span>
+                    <span class="si-status-text">Online</span>
+                </div>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <span class="nav-label">My Work</span>
+           
+            <a href="delivery_assigned.html" class="nav-link active">
+                <span class="nl-icon">📦</span>
+                <span class="nl-text">Assigned Orders</span>
+                <span class="nl-badge">3</span>
+            </a>
+            <a href="delivery_history.html" class="nav-link">
+                <span class="nl-icon">📋</span>
+                <span class="nl-text">Order History</span>
+            </a>
+            <span class="nav-label">Account</span>
+            <a href="delivery_profile.html" class="nav-link">
+                <span class="nl-icon">👤</span>
+                <span class="nl-text">My Profile</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="delivery_login.html" class="logout-link">
+                <span class="nl-icon">🚪</span>
+                <span>Logout</span>
+            </a>
+        </div>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+    <!-- ═══════════════════════════════════════════════════════
+         MAIN
+    ════════════════════════════════════════════════════════ -->
+    <div class="db-main">
+
+        <header class="db-topbar">
+            <button class="hamburger" onclick="openSidebar()" aria-label="Open menu">
+                <span></span><span></span><span></span>
+            </button>
+            <div>
+                <div class="topbar-greeting">Assigned <span>Orders</span></div>
+                <div class="topbar-date" id="js-date"></div>
+            </div>
+            <div class="topbar-right">
+                <div class="topbar-notif">🔔<span class="notif-pip"></span></div>
+                <div class="topbar-avatar">RK</div>
+            </div>
+        </header>
+
+        <main class="db-content">
+
+            <div class="page-header">
+                <h1>Assigned Orders</h1>
+                <p>You have <strong style="color:var(--navy);">3</strong> pending orders. Update the status once you pick up or deliver each order.</p>
+            </div>
+
+            <!-- Search bar -->
+            <div style="margin-bottom:18px;">
+                <input type="text" id="assignedSearch" class="search-bar" style="width:100%; max-width:340px;"
+                    placeholder="🔍  Search by customer name..."
+                    oninput="filterAssigned(this.value)">
+            </div>
+
+            <div class="table-wrap">
+                <table class="db-table" id="assignedTable">
+                    <thead>
+                        <tr>
+                            <th>Order</th>
+                            <th>Date</th>
+                            <th>Customer</th>
+                            <th>Phone</th>
+                            <th>Service</th>
+                            <th>Items</th>
+                            <th>Address</th>
+                            <th>Payment</th>
+                            <th>Status</th>
+                            <th>Update</th>
+                            <th>Map</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        <!-- Row 1 -->
+                        <tr>
+                            <td data-label="Order" class="td-bold">#003</td>
+                            <td data-label="Date" class="td-muted">02 Apr 2025</td>
+                            <td data-label="Customer" class="td-bold">Amit Joshi</td>
+                            <td data-label="Phone"><a href="tel:9765432109" style="color:var(--sky); font-weight:600;">9765432109</a></td>
+                            <td data-label="Service">Iron &amp; Press</td>
+                            <td data-label="Items">12</td>
+                            <td data-label="Address" style="font-size:12.5px; color:var(--text-muted); line-height:1.5;">
+                                Shivaji Nagar,<br>Nagpur — 440010
+                            </td>
+                            <td data-label="Payment">
+                                <div style="font-size:12.5px;">Cash on Delivery</div>
+                                <span class="badge badge-red" style="margin-top:3px;">Collect</span>
+                            </td>
+                            <td data-label="Status"><span class="badge badge-orange">Pickup Pending</span></td>
+                            <td data-label="Update">
+                                <form action="" method="POST" style="display:flex; gap:6px; align-items:center;">
+                                    <input type="hidden" name="order_id" value="3">
+                                    <select name="order_status" class="inline-select">
+                                        <option value="Order Placed" selected>Pickup Pending</option>
+                                        <option value="Out for Delivery">Out for Delivery</option>
+                                        <option value="Delivered">Delivered</option>
+                                    </select>
+                                    <button type="submit" class="btn btn-navy btn-sm">Save</button>
+                                </form>
+                            </td>
+                            <td data-label="Map">
+                                <a href="https://www.google.com/maps/search/?api=1&query=Shivaji+Nagar+Nagpur"
+                                   target="_blank" class="btn btn-ghost btn-sm">🗺</a>
+                            </td>
+                        </tr>
+
+                        <!-- Row 2 -->
+                        <tr>
+                            <td data-label="Order" class="td-bold">#004</td>
+                            <td data-label="Date" class="td-muted">01 Apr 2025</td>
+                            <td data-label="Customer" class="td-bold">Sneha Desai</td>
+                            <td data-label="Phone"><a href="tel:9834561230" style="color:var(--sky); font-weight:600;">9834561230</a></td>
+                            <td data-label="Service">Steam Iron</td>
+                            <td data-label="Items">5</td>
+                            <td data-label="Address" style="font-size:12.5px; color:var(--text-muted); line-height:1.5;">
+                                Emerald Residency,<br>Pune — 411001
+                            </td>
+                            <td data-label="Payment">
+                                <div style="font-size:12.5px;">UPI — ₹200</div>
+                                <span class="badge badge-green" style="margin-top:3px;">Paid ✓</span>
+                            </td>
+                            <td data-label="Status"><span class="badge badge-blue">Out for Delivery</span></td>
+                            <td data-label="Update">
+                                <form action="" method="POST" style="display:flex; gap:6px; align-items:center;">
+                                    <input type="hidden" name="order_id" value="4">
+                                    <select name="order_status" class="inline-select">
+                                        <option value="Order Placed">Pickup Pending</option>
+                                        <option value="Out for Delivery" selected>Out for Delivery</option>
+                                        <option value="Delivered">Delivered</option>
+                                    </select>
+                                    <button type="submit" class="btn btn-navy btn-sm">Save</button>
+                                </form>
+                            </td>
+                            <td data-label="Map">
+                                <a href="https://www.google.com/maps/search/?api=1&query=Koregaon+Park+Pune"
+                                   target="_blank" class="btn btn-ghost btn-sm">🗺</a>
+                            </td>
+                        </tr>
+
+                        <!-- Row 3 -->
+                        <tr>
+                            <td data-label="Order" class="td-bold">#007</td>
+                            <td data-label="Date" class="td-muted">03 Apr 2025</td>
+                            <td data-label="Customer" class="td-bold">Nikhil Rao</td>
+                            <td data-label="Phone"><a href="tel:9845123670" style="color:var(--sky); font-weight:600;">9845123670</a></td>
+                            <td data-label="Service">Wash &amp; Fold</td>
+                            <td data-label="Items">9</td>
+                            <td data-label="Address" style="font-size:12.5px; color:var(--text-muted); line-height:1.5;">
+                                Baner Road,<br>Pune — 411045
+                            </td>
+                            <td data-label="Payment">
+                                <div style="font-size:12.5px;">UPI — ₹360</div>
+                                <span class="badge badge-green" style="margin-top:3px;">Paid ✓</span>
+                            </td>
+                            <td data-label="Status"><span class="badge badge-orange">Pickup Pending</span></td>
+                            <td data-label="Update">
+                                <form action="" method="POST" style="display:flex; gap:6px; align-items:center;">
+                                    <input type="hidden" name="order_id" value="7">
+                                    <select name="order_status" class="inline-select">
+                                        <option value="Order Placed" selected>Pickup Pending</option>
+                                        <option value="Out for Delivery">Out for Delivery</option>
+                                        <option value="Delivered">Delivered</option>
+                                    </select>
+                                    <button type="submit" class="btn btn-navy btn-sm">Save</button>
+                                </form>
+                            </td>
+                            <td data-label="Map">
+                                <a href="https://www.google.com/maps/search/?api=1&query=Baner+Road+Pune"
+                                   target="_blank" class="btn btn-ghost btn-sm">🗺</a>
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<script>
+    document.getElementById('js-date').textContent =
+        new Date().toLocaleDateString('en-IN', {
+            weekday:'long', year:'numeric', month:'long', day:'numeric'
+        });
+</script>
+
+<script>
+function openSidebar() {
+    document.querySelector(".db-sidebar").classList.add("open");
+    document.getElementById("sidebarOverlay").classList.add("open");
+}
+function closeSidebar() {
+    document.querySelector(".db-sidebar").classList.remove("open");
+    document.getElementById("sidebarOverlay").classList.remove("open");
+}
+function filterAssigned(query) {
+    const q = query.toLowerCase();
+    const rows = document.querySelectorAll('#assignedTable tbody tr');
+    rows.forEach(row => {
+        const customer = row.querySelector('[data-label="Customer"]');
+        const text = customer ? customer.textContent.toLowerCase() : row.textContent.toLowerCase();
+        row.style.display = text.includes(q) ? '' : 'none';
+    });
+}
+</script>
+
+<!-- Bottom Nav -->
+<nav class="bottom-nav">
+    <a href="delivery_assigned.html" class="bn-item active">
+      <span class="bn-badge">3</span><span class="bn-icon">📦</span>
+      <span>Orders</span>
+    </a>
+    <a href="delivery_history.html" class="bn-item">
+      <span class="bn-icon">📋</span>
+      <span>History</span>
+    </a>
+    <a href="delivery_profile.html" class="bn-item">
+      <span class="bn-icon">👤</span>
+      <span>Profile</span>
+    </a>
+</nav>
+</body>
+</html>

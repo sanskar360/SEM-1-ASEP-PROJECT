@@ -3,66 +3,268 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Track Orders</title>
+    <title>Orders — Vega Vastra Admin</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin_style.css') }}">
 </head>
 <body>
-    <nav>
-            {% include 'nav.html' %}
-    </nav>
-    <div class="main-content">
-        <h2 class="t1">Orders Details</h2>
-        <div class="table">
-            <table class="order-table">
-                <thead>
-                    <tr>
-                        <th>SR. NO.</th>
-                        <th>Date</th>
-                        <th>Service</th>
-                        <th>Number of Items</th>
-                        <th>Suggestions</th>
-                        <th>Order Status</th>
-                        <th>Payment Method</th>
-                        <th>Payment Status</th>
-                    </tr>
-                </thead>
 
-                <tbody>
-                    {% for order in orders %}
-                        <tr>
-                            <td>{{ loop.index }}</td>
-                            <td>{{ order.order_date }}</td>
-                            <td>{{ order.service }}</td>
-                            <td>{{ order.num_of_items }}</td>
-                            <td>{{ order.suggesstions }}</td>
-                            <td>
-                                <form method="POST" action="{{ url_for('track_orders') }}">
-                                    <input type="hidden" name="order_id" value="{{ order.id }}">
-                                    
-                                    <select name="order_status">
-                                        <option value="Order Placed" {% if order.order_status == 'Order Placed' %}selected{% endif %}>
-                                            Order Placed
-                                        </option>
+<div class="admin-layout">
 
-                                        <option value="Order Pending" {% if order.order_status == 'Order Pending' %}selected{% endif %}>
-                                            Order Pending
-                                        </option>
-
-                                        <option value="Out for Delivery" {% if order.order_status == 'Out for Delivery' %}selected{% endif %}>
-                                            Out for Delivery
-                                        </option>
-                                    </select>
-                                    <button type="submit">Update</button>
-                                </form>
-                            </td>
-                            <td>{{ order.patment_method}}</td>
-                            <td>{{ order.payment_status}}</td>
-                        </tr>
-                    {% endfor %}    
-                </tbody>
-            </table>
-        </div>
+    <aside class="admin-sidebar" id="adminSidebar">
+    <div class="sidebar-brand">
+        <a href="#" class="brand-name"><img src="Logo.png" alt="Vega Vastra" class="sidebar-logo-img"></a>
+        <span class="brand-role">⚙️ Admin Portal</span>
     </div>
+    <nav class="sidebar-nav">
+        <span class="nav-section-label">Management</span>
+        <a href="admin_users_table.html" class="nav-link">
+            <span class="nl-icon">👥</span>
+            <span>User Information</span>
+        </a>
+        <a href="admin_orders_table.html" class="nav-link active">
+            <span class="nl-icon">📦</span>
+            <span>Orders</span>
+        </a>
+        <a href="admin_payments.html" class="nav-link">
+            <span class="nl-icon">💳</span>
+            <span>Payments</span>
+        </a>
+        <a href="admin_vendors.html" class="nav-link">
+            <span class="nl-icon">🏪</span>
+            <span>Vendors</span>
+        </a>
+        <a href="admin_delivery_boys.html" class="nav-link">
+            <span class="nl-icon">🛵</span>
+            <span>Delivery Boys</span>
+        </a>
+        <span class="nav-section-label">Account</span>
+        <a href="#" class="nav-link">
+            <span class="nl-icon">👤</span>
+            <span>Profile</span>
+        </a>
+    </nav>
+    <div class="sidebar-footer">
+        <a href="#" class="logout-link">
+            <span class="nl-icon">🚪</span>
+            <span>Logout</span>
+        </a>
+    </div>
+</aside>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+    <div class="admin-main">
+
+        <header class="admin-topbar">
+            <div style="display:flex; align-items:center; gap:14px;">
+                <button class="hamburger" onclick="openSidebar()" aria-label="Open menu">
+                    <span></span><span></span><span></span>
+                </button>
+                <span class="topbar-title">Orders</span>
+            </div>
+            <div class="topbar-right">
+                <div class="topbar-avatar">AD</div>
+            </div>
+        </header>
+
+        <main class="admin-content">
+
+            <div class="page-header">
+                <h1>Order Details</h1>
+                <p>Manage and update all customer orders</p>
+            </div>
+
+            <!-- Assign Orders Section -->
+            <div class="assign-section">
+                <h2>Assign Orders</h2>
+                <div class="assign-search-row">
+                    <input
+                        type="text"
+                        class="search-bar"
+                        id="assignCustomerSearch"
+                        placeholder="🔍  Search by customer name..."
+                        oninput="filterAssignTable(this)"
+                    >
+                    <select class="inline-select" id="assignDeliveryFilter" onchange="filterAssignTable(document.getElementById('assignCustomerSearch'))">
+                        <option value="">All Delivery Partners</option>
+                        <option>Ravi Kumar</option>
+                        <option>Suresh Patil</option>
+                        <option>Deepak Nair</option>
+                    </select>
+                </div>
+                <div class="table-wrap">
+                    <table class="db-table" id="assignTable">
+                        <thead>
+                            <tr>
+                                <th>SR.</th>
+                                <th>Order ID</th>
+                                <th>Customer Name</th>
+                                <th>Service</th>
+                                <th>Items</th>
+                                <th>Payment Method</th>
+                                <th>Assign To</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td data-label="SR.">1</td>
+                                <td data-label="Order ID" class="td-bold">#010</td>
+                                <td data-label="Customer Name">Amit Joshi</td>
+                                <td data-label="Service">Wash &amp; Fold</td>
+                                <td data-label="Items">8 pieces</td>
+                                <td data-label="Payment Method">UPI</td>
+                                <td data-label="Assign To">
+                                    <select class="inline-select">
+                                        <option value="">-- Select --</option>
+                                        <option>Ravi Kumar</option>
+                                        <option>Suresh Patil</option>
+                                        <option>Deepak Nair</option>
+                                    </select>
+                                </td>
+                                <td data-label="Action">
+                                    <button class="btn btn-sky btn-sm">Assign</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td data-label="SR.">2</td>
+                                <td data-label="Order ID" class="td-bold">#011</td>
+                                <td data-label="Customer Name">Sneha Desai</td>
+                                <td data-label="Service">Dry Cleaning</td>
+                                <td data-label="Items">5 pieces</td>
+                                <td data-label="Payment Method">Cash on Delivery</td>
+                                <td data-label="Assign To">
+                                    <select class="inline-select">
+                                        <option value="">-- Select --</option>
+                                        <option>Ravi Kumar</option>
+                                        <option>Suresh Patil</option>
+                                        <option>Deepak Nair</option>
+                                    </select>
+                                </td>
+                                <td data-label="Action">
+                                    <button class="btn btn-sky btn-sm">Assign</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td data-label="SR.">3</td>
+                                <td data-label="Order ID" class="td-bold">#012</td>
+                                <td data-label="Customer Name">Nikhil Rao</td>
+                                <td data-label="Service">Iron &amp; Press</td>
+                                <td data-label="Items">12 pieces</td>
+                                <td data-label="Payment Method">UPI</td>
+                                <td data-label="Assign To">
+                                    <select class="inline-select">
+                                        <option value="">-- Select --</option>
+                                        <option>Ravi Kumar</option>
+                                        <option>Suresh Patil</option>
+                                        <option>Deepak Nair</option>
+                                    </select>
+                                </td>
+                                <td data-label="Action">
+                                    <button class="btn btn-sky btn-sm">Assign</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- /Assign Orders Section -->
+
+            <!-- All Orders Table -->
+            <div class="table-card">
+                <div class="table-card-header">
+                    <h2>All Orders</h2>
+                    <input type="text" class="search-bar" placeholder="🔍  Search orders..." oninput="filterTable(this, 'ordersTable')">
+                </div>
+
+                <div class="table-wrap">
+                    <table class="db-table" id="ordersTable">
+                        <thead>
+                            <tr>
+                                <th>SR.</th>
+                                <th>Date</th>
+                                <th>Customer</th>
+                                <th>Service</th>
+                                <th>Items</th>
+                                <th>Suggestions</th>
+                                <th>Payment Method</th>
+                                <th>Payment Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Demo rows — replace with backend data -->
+                            <tr>
+                                <td data-label="SR.">1</td>
+                                <td data-label="Date" class="td-muted">03 Apr 2025</td>
+                                <td data-label="Customer" class="td-bold">Rahul Sharma</td>
+                                <td data-label="Service">Wash &amp; Fold</td>
+                                <td data-label="Items">6 pieces</td>
+                                <td data-label="Suggestions" style="font-size:12.5px; color:var(--text-muted);">Handle gently</td>
+                                <td data-label="Payment Method">UPI</td>
+                                <td data-label="Payment Status">
+                                    <span class="badge badge-green">Paid ✓</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td data-label="SR.">2</td>
+                                <td data-label="Date" class="td-muted">02 Apr 2025</td>
+                                <td data-label="Customer" class="td-bold">Priya Patel</td>
+                                <td data-label="Service">Dry Cleaning</td>
+                                <td data-label="Items">3 pieces</td>
+                                <td data-label="Suggestions" style="font-size:12.5px; color:var(--text-muted);">—</td>
+                                <td data-label="Payment Method">Cash on Delivery</td>
+                                <td data-label="Payment Status">
+                                    <span class="badge badge-orange">Pending</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td data-label="SR.">3</td>
+                                <td data-label="Date" class="td-muted">01 Apr 2025</td>
+                                <td data-label="Customer" class="td-bold">Karan Mehta</td>
+                                <td data-label="Service">Wash &amp; Iron</td>
+                                <td data-label="Items">10 pieces</td>
+                                <td data-label="Suggestions" style="font-size:12.5px; color:var(--text-muted);">No bleach</td>
+                                <td data-label="Payment Method">UPI</td>
+                                <td data-label="Payment Status">
+                                    <span class="badge badge-green">Paid ✓</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<script>
+function openSidebar() {
+    document.getElementById('adminSidebar').classList.add('open');
+    document.getElementById('sidebarOverlay').classList.add('open');
+}
+function closeSidebar() {
+    document.getElementById('adminSidebar').classList.remove('open');
+    document.getElementById('sidebarOverlay').classList.remove('open');
+}
+function filterTable(input, tableId) {
+    const filter = input.value.toLowerCase();
+    const rows = document.getElementById(tableId).querySelectorAll('tbody tr');
+    rows.forEach(row => {
+        row.style.display = row.textContent.toLowerCase().includes(filter) ? '' : 'none';
+    });
+}
+function filterAssignTable(input) {
+    const nameFilter = input.value.toLowerCase();
+    const deliveryFilter = document.getElementById('assignDeliveryFilter').value.toLowerCase();
+    const rows = document.getElementById('assignTable').querySelectorAll('tbody tr');
+    rows.forEach(row => {
+        const customerCell = row.cells[2] ? row.cells[2].textContent.toLowerCase() : '';
+        const nameMatch = customerCell.includes(nameFilter);
+        const deliveryMatch = !deliveryFilter || row.textContent.toLowerCase().includes(deliveryFilter);
+        row.style.display = (nameMatch && deliveryMatch) ? '' : 'none';
+    });
+}
+</script>
 </body>
 </html>

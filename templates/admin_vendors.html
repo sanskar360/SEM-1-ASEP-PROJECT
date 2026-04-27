@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendors — Vega Vastra Admin</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin_style.css') }}">
+</head>
+<body>
+
+<div class="admin-layout">
+
+    <aside class="admin-sidebar" id="adminSidebar">
+    <div class="sidebar-brand">
+        <a href="#" class="brand-name"><img src="Logo.png" alt="Vega Vastra" class="sidebar-logo-img"></a>
+        <span class="brand-role">⚙️ Admin Portal</span>
+    </div>
+    <nav class="sidebar-nav">
+        <span class="nav-section-label">Management</span>
+        <a href="admin_users_table.html" class="nav-link">
+            <span class="nl-icon">👥</span>
+            <span>User Information</span>
+        </a>
+        <a href="admin_orders_table.html" class="nav-link">
+            <span class="nl-icon">📦</span>
+            <span>Orders</span>
+        </a>
+        <a href="admin_payments.html" class="nav-link">
+            <span class="nl-icon">💳</span>
+            <span>Payments</span>
+        </a>
+        <a href="admin_vendors.html" class="nav-link active">
+            <span class="nl-icon">🏪</span>
+            <span>Vendors</span>
+        </a>
+        <a href="admin_delivery_boys.html" class="nav-link">
+            <span class="nl-icon">🛵</span>
+            <span>Delivery Boys</span>
+        </a>
+        <span class="nav-section-label">Account</span>
+        <a href="#" class="nav-link">
+            <span class="nl-icon">👤</span>
+            <span>Profile</span>
+        </a>
+    </nav>
+    <div class="sidebar-footer">
+        <a href="#" class="logout-link">
+            <span class="nl-icon">🚪</span>
+            <span>Logout</span>
+        </a>
+    </div>
+</aside>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+    <div class="admin-main">
+
+        <header class="admin-topbar">
+            <div style="display:flex; align-items:center; gap:14px;">
+                <button class="hamburger" onclick="openSidebar()" aria-label="Open menu">
+                    <span></span><span></span><span></span>
+                </button>
+                <span class="topbar-title">Vendors</span>
+            </div>
+           
+        </header>
+
+        <main class="admin-content">
+
+            <div class="page-header" style="display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:14px;">
+                <div>
+                    <h1>Service Vendors</h1>
+                    <p>Connect with certified local laundry partners and manage professional hygiene standards for your facility.</p>
+                </div>
+                <div style="display:flex; gap:10px; flex-shrink:0;">
+                    
+                    <button class="btn btn-navy btn-sm" onclick="document.getElementById('addVendorModal').classList.add('show')">+ New Vendor</button>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats-row" style="margin-bottom:24px;">
+                <div class="stat-card accent">
+                    <div class="stat-label">Total Vendors</div>
+                    <div class="stat-value">6</div>
+                    <div class="stat-sub">Registered</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Verified</div>
+                    <div class="stat-value">4</div>
+                    <div class="stat-sub">Certified partners</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Active Region</div>
+                    <div class="stat-value">24</div>
+                    <div class="stat-sub">Coverage area</div>
+                </div>
+            </div>
+
+            <!-- Search & Filter bar -->
+            <div style="display:flex; gap:12px; margin-bottom:22px; flex-wrap:wrap; align-items:center;">
+                <input type="text" class="search-bar" style="flex:1; min-width:200px;" id="vendorSearch" placeholder="🔍  Search vendors..." oninput="filterVendors()">
+                <select class="inline-select" id="typeFilter" onchange="filterVendors()">
+                    <option value="">All Types</option>
+                    <option>Laundry</option>
+                    <option>Dry Clean</option>
+                    <option>Iron &amp; Press</option>
+                    <option>Eco-Friendly</option>
+                </select>
+            </div>
+
+            <!-- Vendor Cards Grid -->
+            <div class="vendor-cards" id="vendorCards">
+
+                <!-- Card 1 -->
+                <div class="vendor-card" data-name="aquafresh pro" data-type="laundry">
+                    <div class="vendor-card-top">
+                        <div class="vendor-verified-badge">✔ VERIFIED</div>
+                        <div class="vendor-icon-wrap">🧺</div>
+                        <div>
+                            <div class="vendor-name">AquaFresh Pro</div>
+                            <div class="vendor-type">Full Service Laundry</div>
+                        </div>
+                    </div>
+                    <div class="vendor-card-body">
+                        <div class="vendor-rating-row">
+                            <div class="vendor-rating"><span class="star">★</span> 4.8</div>
+                        </div>
+                        <div class="vendor-meta">
+                            <span>📍 1.2 km</span>
+                            <span>🕐 20-30 min</span>
+                        </div>
+                        <div class="vendor-tags">
+                            <span class="vendor-tag">Laundry</span>
+                            <span class="vendor-tag">Dry Clean</span>
+                            <span class="vendor-tag">Steam Iron</span>
+                        </div>
+                        <div class="vendor-actions">
+                            <button class="btn-book">Book Now</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="vendor-card" data-name="crystal care" data-type="dry clean">
+                    <div class="vendor-card-top">
+                        <div class="vendor-verified-badge">✔ VERIFIED</div>
+                        <div class="vendor-icon-wrap">👔</div>
+                        <div>
+                            <div class="vendor-name">Crystal Care</div>
+                            <div class="vendor-type">Dry Cleaning Specialist</div>
+                        </div>
+                    </div>
+                    <div class="vendor-card-body">
+                        <div class="vendor-rating-row">
+                            <div class="vendor-rating"><span class="star">★</span> 4.5</div>
+                        </div>
+                        <div class="vendor-meta">
+                            <span>📍 2.5 km</span>
+                            <span>🕐 45-60 min</span>
+                        </div>
+                        <div class="vendor-tags">
+                            <span class="vendor-tag">Dry Clean</span>
+                            <span class="vendor-tag">Fabric Care</span>
+                        </div>
+                        <div class="vendor-actions">
+                            <button class="btn-book">Book Now</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="vendor-card" data-name="elite press" data-type="iron & press">
+                    <div class="vendor-card-top">
+                        <div class="vendor-icon-wrap">🔥</div>
+                        <div>
+                            <div class="vendor-name">Elite Press</div>
+                            <div class="vendor-type">Iron &amp; Press</div>
+                        </div>
+                    </div>
+                    <div class="vendor-card-body">
+                        <div class="vendor-rating-row">
+                            <div class="vendor-rating"><span class="star">★</span> 4.2</div>
+                        </div>
+                        <div class="vendor-meta">
+                            <span>📍 3.8 km</span>
+                            <span>🕐 30-45 min</span>
+                        </div>
+                        <div class="vendor-tags">
+                            <span class="vendor-tag">Iron</span>
+                            <span class="vendor-tag">Express</span>
+                        </div>
+                        <div class="vendor-actions">
+                            <button class="btn-book">Book Now</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="vendor-card" data-name="greenwash labs" data-type="eco-friendly">
+                    <div class="vendor-card-top">
+                        <div class="vendor-verified-badge">✔ VERIFIED</div>
+                        <div class="vendor-icon-wrap">🌿</div>
+                        <div>
+                            <div class="vendor-name">GreenWash Labs</div>
+                            <div class="vendor-type">Eco-Friendly Laundry</div>
+                        </div>
+                    </div>
+                    <div class="vendor-card-body">
+                        <div class="vendor-rating-row">
+                            <div class="vendor-rating"><span class="star">★</span> 4.9</div>
+                        </div>
+                        <div class="vendor-meta">
+                            <span>📍 5.1 km</span>
+                            <span>🕐 60+ min</span>
+                        </div>
+                        <div class="vendor-tags">
+                            <span class="vendor-tag">Eco-Friendly</span>
+                            <span class="vendor-tag">Laundry</span>
+                        </div>
+                        <div class="vendor-actions">
+                            <button class="btn-book">Book Now</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 5 -->
+                <div class="vendor-card" data-name="flash laundry" data-type="laundry">
+                    <div class="vendor-card-top">
+                        <div class="vendor-icon-wrap">⚡</div>
+                        <div>
+                            <div class="vendor-name">Flash Laundry</div>
+                            <div class="vendor-type">Quick Service</div>
+                        </div>
+                    </div>
+                    <div class="vendor-card-body">
+                        <div class="vendor-rating-row">
+                            <div class="vendor-rating"><span class="star">★</span> 4.1</div>
+                        </div>
+                        <div class="vendor-meta">
+                            <span>📍 0.8 km</span>
+                            <span>🕐 15-20 min</span>
+                        </div>
+                        <div class="vendor-tags">
+                            <span class="vendor-tag">Quick Service</span>
+                            <span class="vendor-tag">Bulk</span>
+                        </div>
+                        <div class="vendor-actions">
+                            <button class="btn-book">Book Now</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 6 -->
+                <div class="vendor-card" data-name="lux fabric care" data-type="dry clean">
+                    <div class="vendor-card-top">
+                        <div class="vendor-verified-badge">✔ VERIFIED</div>
+                        <div class="vendor-icon-wrap">🏅</div>
+                        <div>
+                            <div class="vendor-name">Lux Fabric Care</div>
+                            <div class="vendor-type">Premium Fabric Care</div>
+                        </div>
+                    </div>
+                    <div class="vendor-card-body">
+                        <div class="vendor-rating-row">
+                            <div class="vendor-rating"><span class="star">★</span> 4.9</div>
+                        </div>
+                        <div class="vendor-meta">
+                            <span>📍 6.4 km</span>
+                            <span>🕐 2-3 Days</span>
+                        </div>
+                        <div class="vendor-tags">
+                            <span class="vendor-tag">Premium</span>
+                            <span class="vendor-tag">Silk Care</span>
+                        </div>
+                        <div class="vendor-actions">
+                            <button class="btn-book">Book Now</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <!-- /vendor-cards -->
+
+            <div style="display:flex; justify-content:space-between; align-items:center; padding-top:8px;">
+                <span style="font-size:13px; color:var(--text-muted);">Showing 6 of 24 certified vendors in your region.</span>
+                <div style="display:flex; gap:8px;">
+                    <button class="btn btn-ghost btn-sm">‹</button>
+                    <button class="btn btn-navy btn-sm">1</button>
+                    <button class="btn btn-ghost btn-sm">2</button>
+                    <button class="btn btn-ghost btn-sm">3</button>
+                    <button class="btn btn-ghost btn-sm">›</button>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<!-- Add Vendor Modal -->
+<div class="modal-backdrop" id="addVendorModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h3>🏪 Add New Vendor</h3>
+            <button class="modal-close" onclick="document.getElementById('addVendorModal').classList.remove('show')">✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-field">
+                <label>Vendor / Shop Name</label>
+                <input type="text" name="name" placeholder="e.g. Clean Express" required>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+                <div class="form-field">
+                    <label>Type / Service</label>
+                    <select name="type">
+                        <option>Wash &amp; Fold</option>
+                        <option>Dry Cleaning</option>
+                        <option>Iron &amp; Press</option>
+                        <option>Steam Iron</option>
+                        <option>Full Service</option>
+                    </select>
+                </div>
+                <div class="form-field">
+                    <label>Commission %</label>
+                    <input type="number" name="commission" placeholder="15" min="0" max="50">
+                </div>
+            </div>
+            <div class="form-field">
+                <label>Phone Number</label>
+                <input type="tel" name="phone" placeholder="9876543210" required>
+            </div>
+            <div class="form-field">
+                <label>Area / Location</label>
+                <input type="text" name="area" placeholder="e.g. Koregaon Park, Pune" required>
+            </div>
+            <div class="modal-footer" style="padding:0; margin-top:8px; border:none;">
+                <button type="button" class="btn btn-ghost" onclick="document.getElementById('addVendorModal').classList.remove('show')">Cancel</button>
+                <button type="button" class="btn btn-navy">Add Vendor</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function openSidebar() {
+    document.getElementById('adminSidebar').classList.add('open');
+    document.getElementById('sidebarOverlay').classList.add('open');
+}
+function closeSidebar() {
+    document.getElementById('adminSidebar').classList.remove('open');
+    document.getElementById('sidebarOverlay').classList.remove('open');
+}
+function filterVendors() {
+    const search = document.getElementById('vendorSearch').value.toLowerCase();
+    const type = document.getElementById('typeFilter').value.toLowerCase();
+    document.querySelectorAll('#vendorCards .vendor-card').forEach(card => {
+        const nameMatch = card.dataset.name.includes(search);
+        const typeMatch = !type || card.dataset.type.includes(type);
+        card.style.display = (nameMatch && typeMatch) ? '' : 'none';
+    });
+}
+document.getElementById('addVendorModal').addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('show');
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delivery Boys — Vega Vastra Admin</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin_style.css') }}">
+    <style>
+        /* ── Delivery Boy Cards ─────────────────── */
+        .delivery-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 18px;
+            margin-bottom: 28px;
+        }
+        .delivery-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            border: 1.5px solid var(--border);
+            padding: 20px;
+            transition: transform .2s, box-shadow .2s;
+            position: relative;
+        }
+        .delivery-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+        .delivery-card.status-active  { border-top: 3px solid #16a34a; }
+        .delivery-card.status-break   { border-top: 3px solid #f59e0b; }
+        .delivery-card.status-inactive{ border-top: 3px solid #dc2626; }
+
+        .dc-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+        .dc-name { font-size: 17px; font-weight: 800; color: var(--navy); }
+        .dc-id   { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+        .badge-active   { background: #dcfce7; color: #16a34a; }
+        .badge-break    { background: #fef3c7; color: #b45309; }
+        .badge-inactive { background: #fee2e2; color: #dc2626; }
+
+        .dc-stats { list-style: none; padding: 0; margin: 0 0 16px; display: flex; flex-direction: column; gap: 8px; }
+        .dc-stats li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            color: var(--text-muted);
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+        .dc-stats li:last-child { border-bottom: none; padding-bottom: 0; }
+        .dc-stats li .stat-label-text { display: flex; align-items: center; gap: 6px; }
+        .dc-stats li .stat-val { font-weight: 700; color: var(--navy); }
+
+        .dc-actions { display: flex; gap: 10px; margin-top: 4px; }
+        .dc-actions .btn { flex: 1; font-size: 13px; }
+
+        /* ── Add New Modal ─────────────────────── */
+        .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 500; align-items: center; justify-content: center; }
+        .modal-backdrop.show { display: flex; }
+
+        /* Page header row with button */
+        .page-header-row {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="admin-layout">
+
+    <!-- Sidebar -->
+    <aside class="admin-sidebar" id="adminSidebar">
+        <div class="sidebar-brand">
+            <a href="#" class="brand-name"><img src="Logo.png" alt="Vega Vastra" class="sidebar-logo-img"></a>
+            <span class="brand-role">⚙️ Admin Portal</span>
+        </div>
+        <nav class="sidebar-nav">
+            <span class="nav-section-label">Management</span>
+            <a href="admin_users_table.html" class="nav-link">
+                <span class="nl-icon">👥</span><span>User Information</span>
+            </a>
+            <a href="admin_orders_table.html" class="nav-link">
+                <span class="nl-icon">📦</span><span>Orders</span>
+            </a>
+            <a href="admin_payments.html" class="nav-link">
+                <span class="nl-icon">💳</span><span>Payments</span>
+            </a>
+            <a href="admin_vendors.html" class="nav-link">
+                <span class="nl-icon">🏪</span><span>Vendors</span>
+            </a>
+            <a href="admin_delivery_boys.html" class="nav-link active">
+                <span class="nl-icon">🛵</span><span>Delivery Boys</span>
+            </a>
+            <span class="nav-section-label">Account</span>
+            <a href="#" class="nav-link">
+                <span class="nl-icon">👤</span><span>Profile</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <a href="#" class="logout-link">
+                <span class="nl-icon">🚪</span><span>Logout</span>
+            </a>
+        </div>
+    </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+    <div class="admin-main">
+
+        <!-- Topbar -->
+        <header class="admin-topbar">
+            <div style="display:flex; align-items:center; gap:14px;">
+                <button class="hamburger" onclick="openSidebar()" aria-label="Open menu">
+                    <span></span><span></span><span></span>
+                </button>
+                <span class="topbar-title">Delivery Boys</span>
+            </div>
+            <div class="topbar-right">
+                <div class="topbar-avatar">AD</div>
+            </div>
+        </header>
+
+        <main class="admin-content">
+
+            <div class="page-header-row">
+                <div class="page-header" style="margin-bottom:0;">
+                    <h1>Delivery Boys</h1>
+                    <p>Manage and monitor all delivery partners</p>
+                </div>
+                <button class="btn btn-navy" onclick="openAddModal()">+ Add New</button>
+            </div>
+
+            <!-- Delivery Boy Cards -->
+            <div class="delivery-cards" id="deliveryCards">
+
+                <!-- Card 1 -->
+                <div class="delivery-card status-active" data-id="DB-001">
+                    <div class="dc-header">
+                        <div>
+                            <div class="dc-name">Ravi Kumar</div>
+                            <div class="dc-id">ID: DB-001</div>
+                        </div>
+                        <span class="badge badge-active">Active</span>
+                    </div>
+                    <ul class="dc-stats">
+                        <li>
+                            <span class="stat-label-text">📱 Phone</span>
+                            <span class="stat-val">9876540001</span>
+                        </li>
+                        <li>
+                            <span class="stat-label-text">📦 Assigned Orders</span>
+                            <span class="stat-val">3</span>
+                        </li>
+                        <li>
+                            <span class="stat-label-text">✅ Completed Today</span>
+                            <span class="stat-val">5</span>
+                        </li>
+                        <li>
+                            <span class="stat-label-text">⭐ Rating</span>
+                            <span class="stat-val">4.8</span>
+                        </li>
+                    </ul>
+                    <div class="dc-actions">
+                        <button class="btn btn-navy btn-sm" onclick="viewOrders('Ravi Kumar')">View Orders</button>
+                        <button class="btn btn-sm" style="background:#fee2e2; color:#dc2626; border:none; font-weight:700;" onclick="deactivate(this, 'DB-001')">Deactivate</button>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="delivery-card status-active" data-id="DB-002">
+                    <div class="dc-header">
+                        <div>
+                            <div class="dc-name">Suresh Mahajan</div>
+                            <div class="dc-id">ID: DB-002</div>
+                        </div>
+                        <span class="badge badge-active">Active</span>
+                    </div>
+                    <ul class="dc-stats">
+                        <li>
+                            <span class="stat-label-text">📱 Phone</span>
+                            <span class="stat-val">9876540002</span>
+                        </li>
+                        <li>
+                            <span class="stat-label-text">📦 Assigned Orders</span>
+                            <span class="stat-val">2</span>
+                        </li>
+                        <li>
+                            <span class="stat-label-text">✅ Completed Today</span>
+                            <span class="stat-val">3</span>
+                        </li>
+                        <li>
+                            <span class="stat-label-text">⭐ Rating</span>
+                            <span class="stat-val">4.5</span>
+                        </li>
+                    </ul>
+                    <div class="dc-actions">
+                        <button class="btn btn-navy btn-sm" onclick="viewOrders('Suresh Mahajan')">View Orders</button>
+                        <button class="btn btn-sm" style="background:#fee2e2; color:#dc2626; border:none; font-weight:700;" onclick="deactivate(this, 'DB-002')">Deactivate</button>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="delivery-card status-break" data-id="DB-003">
+                    <div class="dc-header">
+                        <div>
+                            <div class="dc-name">Ajay Patil</div>
+                            <div class="dc-id">ID: DB-003</div>
+                        </div>
+                        <span class="badge badge-break">On Break</span>
+                    </div>
+                    <ul class="dc-stats">
+                        <li>
+                            <span class="stat-label-text">📱 Phone</span>
+                            <span class="stat-val">9876540003</span>
+                        </li>
+                        <li>
+                            <span class="stat-label-text">📦 Assigned Orders</span>
+                            <span class="stat-val">1</span>
+                        </li>
+                        <li>
+                            <span class="stat-label-text">✅ Completed Today</span>
+                            <span class="stat-val">4</span>
+                        </li>
+                        <li>
+                            <span class="stat-label-text">⭐ Rating</span>
+                            <span class="stat-val">4.6</span>
+                        </li>
+                    </ul>
+                    <div class="dc-actions">
+                        <button class="btn btn-navy btn-sm" onclick="viewOrders('Ajay Patil')">View Orders</button>
+                        <button class="btn btn-sm" style="background:#fee2e2; color:#dc2626; border:none; font-weight:700;" onclick="deactivate(this, 'DB-003')">Deactivate</button>
+                    </div>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="delivery-card status-inactive" data-id="DB-004">
+                    <div class="dc-header">
+                        <div>
+                            <div class="dc-name">Manoj Shinde</div>
+                            <div class="dc-id">ID: DB-004</div>
+                        </div>
+                        <span class="badge badge-inactive">Inactive</span>
+                    </div>
+                    <ul class="dc-stats">
+                        <li>
+                            <span class="stat-label-text">📱 Phone</span>
+                            <span class="stat-val">9876540004</span>
+                        </li>
+                        <li>
+                            <span class="stat-label-text">📦 Assigned Orders</span>
+                            <span class="stat-val">0</span>
+                        </li>
+                        <li>
+                            <span class="stat-label-text">✅ Completed Today</span>
+                            <span class="stat-val">0</span>
+                        </li>
+                        <li>
+                            <span class="stat-label-text">⭐ Rating</span>
+                            <span class="stat-val">4.2</span>
+                        </li>
+                    </ul>
+                    <div class="dc-actions">
+                        <button class="btn btn-navy btn-sm" onclick="viewOrders('Manoj Shinde')">View Orders</button>
+                        <button class="btn btn-sm" style="background:#fee2e2; color:#dc2626; border:none; font-weight:700;" onclick="removeCard(this)">Remove</button>
+                    </div>
+                </div>
+
+            </div>
+            <!-- /Delivery Boy Cards -->
+
+        </main>
+    </div>
+</div>
+
+<!-- Add New Delivery Boy Modal -->
+<div class="modal-backdrop" id="addModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h3>Add New Delivery Boy</h3>
+            <button class="modal-close" onclick="closeAddModal()">✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-field">
+                <label>Full Name</label>
+                <input type="text" id="newName" placeholder="e.g. Deepak Nair">
+            </div>
+            <div class="form-field">
+                <label>Phone Number</label>
+                <input type="tel" id="newPhone" placeholder="e.g. 9876540005">
+            </div>
+            <div class="form-field">
+                <label>Status</label>
+                <select id="newStatus">
+                    <option value="active">Active</option>
+                    <option value="break">On Break</option>
+                    <option value="inactive">Inactive</option>
+                </select>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-sm" style="background:var(--bg); color:var(--text-muted); border:1px solid var(--border); font-weight:600;" onclick="closeAddModal()">Cancel</button>
+            <button class="btn btn-navy btn-sm" onclick="addDeliveryBoy()">Add</button>
+        </div>
+    </div>
+</div>
+
+<!-- View Orders Modal -->
+<div class="modal-backdrop" id="viewModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h3 id="viewModalTitle">Orders — Ravi Kumar</h3>
+            <button class="modal-close" onclick="closeViewModal()">✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="table-wrap">
+                <table class="db-table" id="viewOrdersTable">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Service</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="viewOrdersBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-navy btn-sm" onclick="closeViewModal()">Close</button>
+        </div>
+    </div>
+</div>
+
+<script>
+/* ── Sidebar ── */
+function openSidebar() {
+    document.getElementById('adminSidebar').classList.add('open');
+    document.getElementById('sidebarOverlay').classList.add('open');
+}
+function closeSidebar() {
+    document.getElementById('adminSidebar').classList.remove('open');
+    document.getElementById('sidebarOverlay').classList.remove('open');
+}
+
+/* ── Add Modal ── */
+function openAddModal() { document.getElementById('addModal').classList.add('show'); }
+function closeAddModal() { document.getElementById('addModal').classList.remove('show'); }
+
+let dbCounter = 5;
+function addDeliveryBoy() {
+    const name   = document.getElementById('newName').value.trim();
+    const phone  = document.getElementById('newPhone').value.trim();
+    const status = document.getElementById('newStatus').value;
+    if (!name || !phone) { alert('Please fill in all fields.'); return; }
+
+    const id = 'DB-' + String(dbCounter).padStart(3, '0');
+    dbCounter++;
+
+    const statusLabel = { active: 'Active', break: 'On Break', inactive: 'Inactive' }[status];
+    const badgeClass  = { active: 'badge-active', break: 'badge-break', inactive: 'badge-inactive' }[status];
+    const cardClass   = 'status-' + status;
+    const btnLabel    = status === 'inactive' ? 'Remove' : 'Deactivate';
+    const btnAction   = status === 'inactive' ? `removeCard(this)` : `deactivate(this,'${id}')`;
+
+    const card = document.createElement('div');
+    card.className = `delivery-card ${cardClass}`;
+    card.dataset.id = id;
+    card.innerHTML = `
+        <div class="dc-header">
+            <div>
+                <div class="dc-name">${name}</div>
+                <div class="dc-id">ID: ${id}</div>
+            </div>
+            <span class="badge ${badgeClass}">${statusLabel}</span>
+        </div>
+        <ul class="dc-stats">
+            <li><span class="stat-label-text">📱 Phone</span><span class="stat-val">${phone}</span></li>
+            <li><span class="stat-label-text">📦 Assigned Orders</span><span class="stat-val">0</span></li>
+            <li><span class="stat-label-text">✅ Completed Today</span><span class="stat-val">0</span></li>
+            <li><span class="stat-label-text">⭐ Rating</span><span class="stat-val">—</span></li>
+        </ul>
+        <div class="dc-actions">
+            <button class="btn btn-navy btn-sm" onclick="viewOrders('${name}')">View Orders</button>
+            <button class="btn btn-sm" style="background:#fee2e2;color:#dc2626;border:none;font-weight:700;" onclick="${btnAction}">${btnLabel}</button>
+        </div>`;
+
+    document.getElementById('deliveryCards').appendChild(card);
+    document.getElementById('newName').value = '';
+    document.getElementById('newPhone').value = '';
+    closeAddModal();
+}
+
+/* ── Deactivate ── */
+function deactivate(btn, id) {
+    const card = document.querySelector(`.delivery-card[data-id="${id}"]`);
+    if (!card) return;
+    card.className = 'delivery-card status-inactive';
+    card.querySelector('.badge').className = 'badge badge-inactive';
+    card.querySelector('.badge').textContent = 'Inactive';
+    btn.textContent = 'Remove';
+    btn.onclick = function() { removeCard(this); };
+}
+
+/* ── Remove Card ── */
+function removeCard(btn) {
+    if (confirm('Remove this delivery boy?')) {
+        btn.closest('.delivery-card').remove();
+    }
+}
+
+/* ── View Orders ── */
+const demoOrders = {
+    'Ravi Kumar':    [['#001','Wash & Fold','Completed'],['#008','Iron & Press','In Transit']],
+    'Suresh Mahajan':[['#003','Dry Cleaning','Completed'],['#009','Wash & Iron','Assigned']],
+    'Ajay Patil':    [['#005','Wash & Fold','Completed']],
+    'Manoj Shinde':  [],
+};
+function viewOrders(name) {
+    document.getElementById('viewModalTitle').textContent = `Orders — ${name}`;
+    const tbody = document.getElementById('viewOrdersBody');
+    const orders = demoOrders[name] || [];
+    if (orders.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:var(--text-muted);padding:24px;">No orders assigned</td></tr>';
+    } else {
+        tbody.innerHTML = orders.map(([id, svc, status]) => {
+            const cls = status === 'Completed' ? 'badge-green' : status === 'In Transit' ? 'badge-orange' : 'badge-blue';
+            return `<tr>
+                <td data-label="Order ID" class="td-bold">${id}</td>
+                <td data-label="Service">${svc}</td>
+                <td data-label="Status"><span class="badge ${cls}">${status}</span></td>
+            </tr>`;
+        }).join('');
+    }
+    document.getElementById('viewModal').classList.add('show');
+}
+function closeViewModal() { document.getElementById('viewModal').classList.remove('show'); }
+</script>
+</body>
+</html>
