@@ -88,40 +88,36 @@
                                 <th>Payment Method</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <!-- Demo rows — replace with backend data -->
+                       <tbody>
+
+                            {% for payment in payments %}
                             <tr>
-                                <td data-label="SR.">1</td>
-                                <td data-label="Date" class="td-muted">03 Apr 2025</td>
-                                <td data-label="Customer" class="td-bold">Rahul Sharma</td>
-                                <td data-label="Order ID">#001</td>
-                                <td data-label="Amount">₹450</td>
-                                <td data-label="Payment Method">UPI</td>
+
+                                <td data-label="SR.">{{ loop.index }}</td>
+
+                                <td data-label="Date" class="td-muted">
+                                    {{ payment.created_at.strftime('%d %b %Y') if payment.created_at else '-' }}
+                                </td>
+
+                                <td data-label="Customer" class="td-bold">
+                                    {{ payment.customer_name }}
+                                </td>
+
+                                <td data-label="Order ID">
+                                    #{{ payment.id }}
+                                </td>
+
+                                <td data-label="Amount">
+                                    ₹{{ payment.total_amount }}
+                                </td>
+
+                                <td data-label="Payment Method">
+                                    {{ payment.payment_method }}
+                                </td>
+
                             </tr>
-                            <tr>
-                                <td data-label="SR.">2</td>
-                                <td data-label="Date" class="td-muted">02 Apr 2025</td>
-                                <td data-label="Customer" class="td-bold">Priya Patel</td>
-                                <td data-label="Order ID">#002</td>
-                                <td data-label="Amount">₹320</td>
-                                <td data-label="Payment Method">Cash on Delivery</td>
-                            </tr>
-                            <tr>
-                                <td data-label="SR.">3</td>
-                                <td data-label="Date" class="td-muted">01 Apr 2025</td>
-                                <td data-label="Customer" class="td-bold">Karan Mehta</td>
-                                <td data-label="Order ID">#005</td>
-                                <td data-label="Amount">₹600</td>
-                                <td data-label="Payment Method">UPI</td>
-                            </tr>
-                            <tr>
-                                <td data-label="SR.">4</td>
-                                <td data-label="Date" class="td-muted">31 Mar 2025</td>
-                                <td data-label="Customer" class="td-bold">Pooja Kulkarni</td>
-                                <td data-label="Order ID">#006</td>
-                                <td data-label="Amount">₹280</td>
-                                <td data-label="Payment Method">Cash on Delivery</td>
-                            </tr>
+                            {% endfor %}
+
                         </tbody>
                     </table>
                 </div>

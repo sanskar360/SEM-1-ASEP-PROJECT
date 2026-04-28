@@ -1,6 +1,6 @@
 from flask import Flask, render_template,request, redirect, url_for, flash, session
 from datetime import date, timedelta
-from database import load_orders_from_db, add_user_to_db, login_user_from_db, user_from_addresses_db, get_todays_orders_count,get_addresses_from_db, add_address_to_db,delete_address_from_db,get_all_services,get_vendors,get_address_by_id,get_items_for_vendor,get_address_by_id, insert_order, insert_order_items
+from database import load_orders_from_db, add_user_to_db, login_user_from_db, user_from_addresses_db, get_todays_orders_count,get_addresses_from_db, add_address_to_db,delete_address_from_db,get_all_services,get_vendors,get_address_by_id,get_items_for_vendor,get_address_by_id, insert_order, insert_order_items,get_delivery_boys,assign_delivery_boy,get_admin_orders,insert_delivery_boy, toggle_delivery_boy_status,get_payments,  update_user_db, delete_user_db,get_users
 
 app = Flask(__name__)
 app.secret_key = "mysecret123"
@@ -45,26 +45,40 @@ def predict_date(service, items):
 
 @app.route("/admin_delivery_boys")
 def delivery_boys():
-    return render_template("admin_delivery_boys.html")
+    delivery_boys = get_delivery_boys()
+    return render_template("admin_delivery_boys.html",delivery_boys=delivery_boys)
 
 @app.route("/admin_users_table")
 def users_table():
-    return render_template("admin_users_table.html")
+    users = get_users()
 
+    return render_template(
+        "admin_users_table.html",
+        users=users
+    )
 @app.route("/admin_vendors")
 def admin_vendors():
     return render_template("admin_vendors.html")
 
 @app.route("/admin_payments")
 def admin_payment():
-    return render_template("admin_payments.html")
+    payments = get_payments()
+
+    return render_template(
+        "admin_payments.html",
+        payments=payments
+    )
 
 @app.route("/admin_orders_table")
 def admin_orders():
-    return render_template("admin_orders_table.html")
+    orders = get_admin_orders()
+    delivery_boys = get_delivery_boys()
 
-
-
+    return render_template(
+        "admin_orders_table.html",
+        orders=orders,
+        delivery_boys=delivery_boys
+    )
 
 @app.context_processor
 def inject_admin_id():
@@ -298,13 +312,22 @@ def vendors():
 @app.route("/place_order", methods=["POST"])
 def place_order():
 
+    user_id = session.get("user_id")
     service_id = request.form.get("service_id")
     vendor_id = request.form.get("vendor_id")
     address_id = request.form.get("address_id")
+    payment_method = request.form.get("payment_method")
+    suggestion = request.form.get("suggestion")
+    
 
     item_ids = request.form.getlist("item_ids[]")
     qtys = request.form.getlist("qtys[]")
     prices = request.form.getlist("prices[]")
+
+    if payment_method == "COD":
+        payment_status = "pending"
+    else:
+        payment_status = "paid"
 
     # calculate total
     total = 0
@@ -314,13 +337,63 @@ def place_order():
         total += qty * price
 
     # insert order
-    order_id = insert_order(vendor_id, service_id, address_id, total)
+    order_id = insert_order(vendor_id, service_id, address_id, total, payment_method, payment_status, user_id, suggestion)
 
     # insert items
     insert_order_items(order_id, item_ids, qtys, prices)
 
     return redirect(url_for("track_orders"))
 
-# Routes For Admin Panel data
+# admin function routes
 
-@app.route("")
+@app.route("/assign_delivery", methods=["POST"])
+def assign_delivery():
+
+    data = request.get_json()
+
+    order_id = data.get("order_id")
+    delivery_boy_id = data.get("delivery_boy_id")
+
+    assign_delivery_boy(order_id, delivery_boy_id)
+
+    return {"status": "success"}
+
+
+@app.route("/add_delivery_boy", methods=["POST"])
+def add_delivery_boy():
+
+    data = request.get_json()
+
+    name = data.get("name")
+    phone = data.get("phone")
+    status = data.get("status")
+
+    insert_delivery_boy(name, phone, status)
+
+    return {"status": "success"}
+
+@app.route("/toggle_delivery_status", methods=["POST"])
+def toggle_delivery_status():
+
+    data = request.get_json()
+    code = data.get("code")
+
+    new_status = toggle_delivery_boy_status(code)
+
+    return {"status": "success", "new_status": new_status}
+
+@app.route("/update_user", methods=["POST"])
+def update_user():
+    data = request.get_json()
+
+    update_user_db(data["id"], data["role"], data["status"])
+
+    return {"status": "success"}
+
+@app.route("/delete_user", methods=["POST"])
+def delete_user():
+    data = request.get_json()
+
+    delete_user_db(data["id"])
+
+    return {"status": "success"}
