@@ -43,6 +43,43 @@
         </div>
     </aside>
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+    <div class="sidebar-brand">
+        <a class="brand-name"><img src="{{ url_for('static', filename='Logo.png') }}" alt="Vega Vastra" class="sidebar-logo-img"></a>
+        <span class="brand-role">⚙️ Admin Portal</span>
+    </div>
+    <nav class="sidebar-nav">
+        <span class="nav-section-label">Management</span>
+        <a href="{{ url_for('users_table') }}" class="nav-link active">
+            <span class="nl-icon">👥</span>
+            <span>User Information</span>
+        </a>
+        <a href="{{ url_for('admin_orders') }}" class="nav-link">
+            <span class="nl-icon">📦</span>
+            <span>Orders</span>
+        </a>
+        <a href="{{ url_for('admin_payment') }}" class="nav-link">
+            <span class="nl-icon">💳</span>
+            <span>Payments</span>
+        </a>
+        <a href="{{ url_for('admin_vendors') }}" class="nav-link">
+            <span class="nl-icon">🏪</span>
+            <span>Vendors</span>
+        </a>
+        <a href="{{ url_for('delivery_boys') }}" class="nav-link">
+            <span class="nl-icon">🛵</span>
+            <span>Delivery Boys</span>
+        </a>
+        
+    </nav>
+    <div class="sidebar-footer">
+        <a href="{{ url_for('logout') }}" class="logout-link">
+            <span class="nl-icon">🚪</span>
+            <span>Logout</span>
+        </a>
+    </div>
+</aside>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
     <div class="admin-main">
 
         <header class="admin-topbar">

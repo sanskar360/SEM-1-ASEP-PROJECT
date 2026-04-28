@@ -13,20 +13,20 @@
 
     <aside class="admin-sidebar" id="adminSidebar">
     <div class="sidebar-brand">
-        <a href="{{ url_for('admin_home') }}" class="brand-name"><img src="{{ url_for('static', filename='Logo.png') }}" alt="Vega Vastra" class="sidebar-logo-img"></a>
+        <a href="{{ url_for('users_table') }}" class="brand-name"><img src="{{ url_for('static', filename='Logo.png') }}" alt="Vega Vastra" class="sidebar-logo-img"></a>
         <span class="brand-role">⚙️ Admin Portal</span>
     </div>
     <nav class="sidebar-nav">
         <span class="nav-section-label">Management</span>
-        <a href="{{ url_for('admin_users_table') }}" class="nav-link">
+        <a href="{{ url_for('users_table') }}" class="nav-link">
             <span class="nl-icon">👥</span>
             <span>User Information</span>
         </a>
-        <a href="{{ url_for('admin_orders_table') }}" class="nav-link">
+        <a href="{{ url_for('admin_orders') }}" class="nav-link">
             <span class="nl-icon">📦</span>
             <span>Orders</span>
         </a>
-        <a href="{{ url_for('admin_payments') }}" class="nav-link active">
+        <a href="{{ url_for('admin_payment') }}" class="nav-link active">
             <span class="nl-icon">💳</span>
             <span>Payments</span>
         </a>
@@ -34,14 +34,14 @@
             <span class="nl-icon">🏪</span>
             <span>Vendors</span>
         </a>
-        <a href="{{ url_for('admin_delivery_boys') }}" class="nav-link">
+        <a href="{{ url_for('delivery_boys') }}" class="nav-link">
             <span class="nl-icon">🛵</span>
             <span>Delivery Boys</span>
         </a>
         
     </nav>
     <div class="sidebar-footer">
-        <a href="{{ url_for('admin_logout') }}" class="logout-link">
+        <a href="{{ url_for('logout') }}" class="logout-link">
             <span class="nl-icon">🚪</span>
             <span>Logout</span>
         </a>

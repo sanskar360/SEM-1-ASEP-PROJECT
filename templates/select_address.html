@@ -1,0 +1,63 @@
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='booking.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+{% with messages = get_flashed_messages(with_categories = true) %}
+{% if messages %}
+{% for category, message in messages %}
+{% if category == "success" %}
+<div class="popup {{ category }}"> {{ message }} </div>
+{% endif %}
+{% if category == "error" %}
+<div class="popup {{ category }}"> {{ message }} </div>
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endwith %}
+
+<div class="address-page">
+
+  <!-- HEADER -->
+  <div class="address-header">
+    <button onclick="goBack()" class="back-btn">←</button>
+    <h2>Select Address</h2>
+  </div>
+
+  <a href="{{ url_for('manage_addresses') }}" class="address-card add-new">
+    <div class="add-icon">＋</div>
+    <p>Add New Address</p>
+  </a>
+
+  <!-- ADDRESS LIST -->
+  <div class="address-list">
+
+    {% for a in addresses %}
+    <div class="address-card" onclick="selectAddress(this, '{{ a.id }}')">
+
+      <div class="address-top">
+        <h3>{{ a.user_name }}</h3>
+        <span class="badge">Saved</span>
+      </div>
+
+      <p class="address-line">
+        {{ a.house_no }}, {{ a.city }}, {{ a.state }}
+      </p>
+
+      <p class="address-extra">
+        📍 {{ a.pincode }} • 📞 {{ a.phone_no }}
+      </p>
+
+    </div>
+    {% endfor %}
+
+  </div>
+
+  <!-- FOOTER -->
+  <div class="address-footer">
+    <button id="nextBtn" onclick="loadVendors()">Continue</button>
+  </div>
+
+</div>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>

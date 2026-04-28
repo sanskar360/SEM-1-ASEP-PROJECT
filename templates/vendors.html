@@ -1,0 +1,68 @@
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='booking.css') }}">
+
+<div class="vendors-hero">
+
+  <div class="hero-top">
+    <button onclick="goBack()" class="back-btn">←</button>
+  </div>
+
+  <h1>Find Your Perfect Vendor</h1>
+
+  <p>
+    Browse trusted vendors for laundry &  dry cleaning services
+  </p>
+
+  <div class="search-box">
+    <input id="searchInput" type="text" placeholder="Search Vendor by name..." />
+    <button id="searchBtn">Search</button>
+  </div>
+
+</div>
+<div class="vendors-page">
+
+  <div class="vendors-header">
+    <h2>Available Vendors</h2>
+  </div>
+
+  <div class="vendors-container">
+    <p id="noResult">No vendors found</p>
+
+
+    {% for v in vendors %}
+    <div class="vendor-card" data-name="{{ v.name }}" onclick="selectVendor('{{ v.id }}')">
+      <!-- TOP -->
+      <div class="vendor-top">
+        <div class="icon">🏪</div>
+        <span class="badge">Verified</span>
+      </div>
+
+      <!-- BODY -->
+      <div class="vendor-body">
+
+        <div class="vendor-header">
+          <h3>{{ v.name }}</h3>
+          <span class="rating">⭐ {{ v.rating or "4.5" }}</span>
+        </div>
+
+        <div class="vendor-meta">
+          <span>📍 {{ v.city }}</span>
+          <span>⏱ 30–45 min</span>
+        </div>
+
+        <div class="vendor-tags">
+          <span>Laundry</span>
+          <span>Iron</span>
+        </div>
+
+      </div>
+
+    </div>
+    {% endfor %}
+
+  </div>
+
+</div>
+<script src="{{ url_for('static', filename='script.js') }}"></script>

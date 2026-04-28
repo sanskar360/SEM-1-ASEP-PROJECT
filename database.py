@@ -193,6 +193,18 @@ def get_addresses_from_db(user_id):
         result = conn.execute(query, {"user_id": user_id})
         return result.fetchall()
     
+def get_address_by_id(address_id):
+
+    with engine.connect() as conn:
+        query = text("""
+            SELECT * FROM address
+            WHERE id = :id
+        """)
+
+        result = conn.execute(query, {"id": address_id})
+
+        return result.fetchone()
+    
 def delete_address_from_db(address_id, user_id):
     with engine.connect() as conn:
         query = text("""
@@ -204,47 +216,101 @@ def delete_address_from_db(address_id, user_id):
 
     return {"success": True}
 
-from sqlalchemy import text
-from flask import session
+def get_all_services():
+    with engine.connect() as conn:
+        result = conn.execute(text("SELECT * FROM services"))
+        return result.fetchall()
+    
 
-def add_order_to_db(order_data):
+def get_vendors(service_id, city, pincode):
+    with engine.connect() as conn:
+        query = text("""
+            SELECT DISTINCT v.*
+            FROM vendors v
+            JOIN vendor_services vs ON v.id = vs.vendor_id
+            WHERE vs.service_id = :service_id
+            AND v.city = :city
+            ORDER BY 
+                CASE 
+                    WHEN v.pincode = :pincode THEN 1
+                    ELSE 2
+                END
+        """)
 
-    user_id = session.get("user_id")
+        result = conn.execute(query, {
+            "service_id": service_id,
+            "city": city,
+            "pincode": pincode
+        })
 
-    if not user_id:
-        return {"error": "User not logged in"}
+        return result.fetchall()
+    
+def get_items_for_vendor(vendor_id, service_id):
 
-    # 🔹 VALIDATION
-    if not order_data.get("service"):
-        return {"error": "Service is required"}
+    with engine.connect() as conn:
+        query = text("""
+            SELECT it.id, it.name, vs.price
+            FROM vendor_services vs
+            JOIN item_types it ON vs.item_type_id = it.id
+            WHERE vs.vendor_id = :vendor_id
+            AND vs.service_id = :service_id
+        """)
 
-    if not order_data.get("num_of_items"):
-        return {"error": "Number of items is required"}
+        result = conn.execute(query, {
+            "vendor_id": vendor_id,
+            "service_id": service_id
+        })
 
-    # 🔹 INSERT INTO ORDERS
-    try:
-        with engine.connect() as conn:
+        return result.fetchall()
+    
+def get_address_by_id(address_id):
+    with engine.connect() as conn:
+        query = text("SELECT * FROM address WHERE id = :id")
+        result = conn.execute(query, {"id": address_id})
+        return result.fetchone()
 
-            query = text("""
-                INSERT INTO orders 
-                (service, num_of_items, patment_method, suggesstions, user_id, delivery_date)
-                VALUES 
-                (:service, :num_of_items, :patment_method, :suggesstions, :user_id, :delivery_date)
-            """)
 
-            data = {
-                "service": order_data.get("service"),
-                "num_of_items": order_data.get("num_of_items"),
-                "patment_method": order_data.get("patment_method"),
-                "suggesstions": order_data.get("suggesstions"),
-                "delivery_date": order_data.get("delivery_date"),
-                "user_id": user_id
-            }
+#  INSERT ORDER
+def insert_order(vendor_id, service_id, address_id, total):
 
-            conn.execute(query, data)
-            conn.commit()
+    with engine.connect() as conn:
 
-        return {"success": True}
+        query = text("""
+            INSERT INTO addd_orders (vendor_id, service_id, address_id, total_amount)
+            VALUES (:vendor_id, :service_id, :address_id, :total)
+        """)
 
-    except Exception as e:
-        return {"error": str(e)}
+        result = conn.execute(query, {
+            "vendor_id": vendor_id,
+            "service_id": service_id,
+            "address_id": address_id,
+            "total": total
+        })
+
+        conn.commit()
+
+        return result.lastrowid   # return order_id
+
+
+# INSERT ORDER ITEMS
+def insert_order_items(order_id, item_ids, qtys, prices):
+
+    with engine.connect() as conn:
+
+        for i in range(len(item_ids)):
+            qty = int(qtys[i])
+
+            if qty > 0:
+                query = text("""
+                    INSERT INTO order_items (order_id, item_type_id, quantity, price)
+                    VALUES (:order_id, :item_id, :qty, :price)
+                """)
+
+                conn.execute(query, {
+                    "order_id": order_id,
+                    "item_id": item_ids[i],
+                    "qty": qty,
+                    "price": prices[i]
+                })
+
+        conn.commit()
