@@ -6,6 +6,7 @@
     <title>Vendors — Vega Vastra Admin</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="{{ url_for('static', filename='admin_style.css') }}">
+    <link rel="stylesheet" href="admin_style.css">
 </head>
 <body>
 
@@ -308,18 +309,31 @@
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
                 <div class="form-field">
                     <label>Type / Service</label>
-                    <select name="type">
-                        <option>Wash &amp; Fold</option>
-                        <option>Dry Cleaning</option>
-                        <option>Iron &amp; Press</option>
-                        <option>Steam Iron</option>
-                        <option>Full Service</option>
-                    </select>
+                    <div class="multi-select-wrapper" id="serviceDropdown">
+                        <div class="multi-select-trigger" onclick="toggleServiceDropdown(event)">
+                            <span id="serviceSelectedText">Select services...</span>
+                            <span class="multi-select-arrow">▾</span>
+                        </div>
+                        <div class="multi-select-options" id="serviceOptions">
+                            <label class="multi-select-option">
+                                <input type="checkbox" name="type" value="Wash & Fold"> Wash &amp; Fold
+                            </label>
+                            <label class="multi-select-option">
+                                <input type="checkbox" name="type" value="Dry Cleaning"> Dry Cleaning
+                            </label>
+                            <label class="multi-select-option">
+                                <input type="checkbox" name="type" value="Iron & Press"> Iron &amp; Press
+                            </label>
+                            <label class="multi-select-option">
+                                <input type="checkbox" name="type" value="Steam Iron"> Steam Iron
+                            </label>
+                            <label class="multi-select-option">
+                                <input type="checkbox" name="type" value="Full Service"> Full Service
+                            </label>
+                        </div>
+                    </div>
                 </div>
-                <div class="form-field">
-                    <label>Commission %</label>
-                    <input type="number" name="commission" placeholder="15" min="0" max="50">
-                </div>
+                
             </div>
             <div class="form-field">
                 <label>Phone Number</label>
@@ -336,6 +350,116 @@
         </div>
     </div>
 </div>
+
+<style>
+.multi-select-wrapper {
+    position: relative;
+    width: 100%;
+}
+.multi-select-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 12px;
+    border: 1.5px solid var(--border, #dde1e9);
+    border-radius: 8px;
+    background: var(--input-bg, #fff);
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--text-main, #222);
+    user-select: none;
+    transition: border-color 0.2s;
+}
+.multi-select-trigger:hover {
+    border-color: var(--navy, #1e3a5f);
+}
+.multi-select-trigger.open {
+    border-color: var(--navy, #1e3a5f);
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+.multi-select-arrow {
+    font-size: 12px;
+    color: var(--text-muted, #888);
+    transition: transform 0.2s;
+}
+.multi-select-trigger.open .multi-select-arrow {
+    transform: rotate(180deg);
+}
+.multi-select-options {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0; right: 0;
+    background: var(--input-bg, #fff);
+    border: 1.5px solid var(--navy, #1e3a5f);
+    border-top: none;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    z-index: 200;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.10);
+    overflow: hidden;
+}
+.multi-select-options.open {
+    display: block;
+}
+.multi-select-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 14px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.15s;
+    margin: 0;
+    font-weight: normal;
+    color: var(--text-main, #222);
+}
+.multi-select-option:hover {
+    background: var(--hover-bg, #f0f4fa);
+}
+.multi-select-option input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--navy, #1e3a5f);
+    cursor: pointer;
+    flex-shrink: 0;
+}
+</style>
+
+<script>
+function toggleServiceDropdown(e) {
+    e.stopPropagation();
+    const trigger = document.querySelector('.multi-select-trigger');
+    const options = document.getElementById('serviceOptions');
+    const isOpen = options.classList.contains('open');
+    trigger.classList.toggle('open', !isOpen);
+    options.classList.toggle('open', !isOpen);
+}
+
+document.addEventListener('click', function(e) {
+    const wrapper = document.getElementById('serviceDropdown');
+    if (wrapper && !wrapper.contains(e.target)) {
+        document.querySelector('.multi-select-trigger')?.classList.remove('open');
+        document.getElementById('serviceOptions')?.classList.remove('open');
+    }
+});
+
+document.querySelectorAll('#serviceOptions input[type="checkbox"]').forEach(cb => {
+    cb.addEventListener('change', function() {
+        const checked = Array.from(document.querySelectorAll('#serviceOptions input[type="checkbox"]:checked'))
+            .map(c => c.value);
+        const textEl = document.getElementById('serviceSelectedText');
+        if (checked.length === 0) {
+            textEl.textContent = 'Select services...';
+            textEl.style.color = '';
+        } else {
+            textEl.textContent = checked.join(', ');
+            textEl.style.color = 'var(--text-main, #222)';
+        }
+    });
+});
+</script>
 
 <script>
 function openSidebar() {
