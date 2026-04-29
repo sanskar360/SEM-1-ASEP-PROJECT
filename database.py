@@ -504,3 +504,78 @@ def delete_user_db(user_id):
     with engine.connect() as conn:
         conn.execute(text("DELETE FROM users_table WHERE id = :id"), {"id": user_id})
         conn.commit()
+
+#Function for delivery boys page
+
+def get_delivery_boy_orders(boy_id):
+
+    with engine.connect() as conn:
+
+        query = text("""
+            SELECT 
+                o.id,
+                o.created_at,
+                o.status,
+                o.payment_method,
+
+                a.user_name,
+                a.phone_no,
+                a.city,
+                a.state,
+                a.pincode,
+
+                s.name AS service_name,
+
+                -- total items
+                (
+                    SELECT SUM(quantity) 
+                    FROM order_items 
+                    WHERE order_id = o.id
+                ) AS total_items
+
+            FROM addd_orders o
+
+            JOIN address a ON o.address_id = a.id
+            JOIN services s ON o.service_id = s.id
+
+            WHERE o.delivery_boy_id = :boy_id
+
+            ORDER BY o.id DESC
+        """)
+
+        return conn.execute(query, {"boy_id": boy_id}).fetchall()
+    
+def get_delivery_records(boy_id):
+
+    with engine.connect() as conn:
+
+        query = text("""
+            SELECT 
+                o.id,
+                o.created_at,
+                o.status,
+                o.payment_method,
+                o.payment_status,
+                o.total_amount,
+
+                a.user_name,
+                a.phone_no,
+
+                s.name AS service_name,
+
+                (
+                    SELECT SUM(quantity)
+                    FROM order_items
+                    WHERE order_id = o.id
+                ) AS total_items
+
+            FROM addd_orders o
+            JOIN address a ON o.address_id = a.id
+            JOIN services s ON o.service_id = s.id
+
+            WHERE o.delivery_boy_id = :boy_id
+
+            ORDER BY o.id DESC
+        """)
+
+        return conn.execute(query, {"boy_id": boy_id}).fetchall()

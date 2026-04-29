@@ -1,6 +1,6 @@
 from flask import Flask, render_template,request, redirect, url_for, flash, session
 from datetime import date, timedelta
-from database import load_orders_from_db, add_user_to_db, login_user_from_db, user_from_addresses_db, get_todays_orders_count,get_addresses_from_db, add_address_to_db,delete_address_from_db,get_all_services,get_vendors,get_address_by_id,get_items_for_vendor,get_address_by_id, insert_order, insert_order_items,get_delivery_boys,assign_delivery_boy,get_admin_orders,insert_delivery_boy, toggle_delivery_boy_status,get_payments,  update_user_db, delete_user_db,get_users
+from database import load_orders_from_db, add_user_to_db, login_user_from_db, user_from_addresses_db, get_todays_orders_count,get_addresses_from_db, add_address_to_db,delete_address_from_db,get_all_services,get_vendors,get_address_by_id,get_items_for_vendor,get_address_by_id, insert_order, insert_order_items,get_delivery_boys,assign_delivery_boy,get_admin_orders,insert_delivery_boy, toggle_delivery_boy_status,get_payments,  update_user_db, delete_user_db,get_users,get_delivery_boy_orders,get_delivery_records
 
 app = Flask(__name__)
 app.secret_key = "mysecret123"
@@ -80,6 +80,45 @@ def admin_orders():
         delivery_boys=delivery_boys
     )
 
+# How it works section
+
+@app.route("/how_it_works")
+def how_it_works():
+    return render_template("how_it_works.html")
+
+# Delivery boy routes
+
+@app.route("/delivery_assigned")
+def delivery_assigned():
+        user_id = session.get("user_id")
+        if user_id == 1 or user_id ==  2:
+            boy_id = user_id  
+            orders = get_delivery_boy_orders(boy_id)
+            return render_template(
+                "delivery_assigned.html",
+                orders=orders
+            )
+
+@app.route("/delivery_history")
+def delivery_history():
+    user_id = session.get("user_id")
+    if user_id == 1 or user_id ==  2:
+            boy_id = user_id  
+            deliveries = get_delivery_records(boy_id)
+            return render_template(
+                "delivery_history.html",
+                deliveries=deliveries
+            )
+
+@app.route("/delivery_login.html")
+def delivery_login():
+    return render_template("delivery_login.html")
+
+@app.route("/delivery_profile")
+def delivery_profile():
+    return render_template("delivery_profile.html")
+
+
 @app.context_processor
 def inject_admin_id():
     return dict(ADMIN_ID=ADMIN_ID)
@@ -158,8 +197,31 @@ def login():
     print(user_id)
 
     if user_id == ADMIN_ID:
-        print("running")
         return redirect(url_for("users_table"))
+    
+    if user_id == 1 or user_id ==  2:
+            boy_id = user_id  
+            orders = get_delivery_boy_orders(boy_id)
+            deliveries = get_delivery_records(boy_id)
+            print("DELIVERIES:", deliveries)
+            return render_template(
+                "delivery_assigned.html",
+                orders=orders,
+                deliveries=deliveries
+            )
+    
+    # if user_id == 1 or user_id ==  2:
+    #         print("running2")
+    #         boy_id = user_id  
+    #         deliveries = get_delivery_records(boy_id)
+    #         return render_template(
+    #                 "delivery_history.html",
+    #                 deliveries=deliveries
+    #             )
+    
+    if user_id == 54:
+        return redirect(url_for("delivery_assigned"))
+
 
     flash("Login Successful!", "success")
     return redirect(url_for("home")) 

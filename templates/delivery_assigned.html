@@ -16,7 +16,7 @@
     ════════════════════════════════════════════════════════ -->
     <aside class="db-sidebar">
         <div class="sidebar-brand">
-            <a href="{{ url_for('delivery_home') }}" class="brand-name"><img src="{{ url_for('static', filename='Logo.png') }}" alt="Vega Vastra" class="sidebar-logo-img"></a>
+            <a href="{{ url_for('delivery_assigned') }}" class="brand-name"><img src="{{ url_for('static', filename='Logo.png') }}" alt="Vega Vastra" class="sidebar-logo-img"></a>
             <span class="brand-role">🛵 Delivery Portal</span>
         </div>
 
@@ -95,123 +95,117 @@
 
             <div class="table-wrap">
                 <table class="db-table" id="assignedTable">
-                    <thead>
-                        <tr>
-                            <th>Order</th>
-                            <th>Date</th>
-                            <th>Customer</th>
-                            <th>Phone</th>
-                            <th>Service</th>
-                            <th>Items</th>
-                            <th>Address</th>
-                            <th>Payment</th>
-                            <th>Status</th>
-                            <th>Update</th>
-                            <th>Map</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+                        <thead>
+                            <tr>
+                                <th>Order</th>
+                                <th>Date</th>
+                                <th>Customer</th>
+                                <th>Phone</th>
+                                <th>Service</th>
+                                <th>Items</th>
+                                <th>Address</th>
+                                <th>Payment</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
 
-                        <!-- Row 1 -->
+                        <tbody>
+
+                        {% for order in orders %}
                         <tr>
-                            <td data-label="Order" class="td-bold">#003</td>
-                            <td data-label="Date" class="td-muted">02 Apr 2025</td>
-                            <td data-label="Customer" class="td-bold">Amit Joshi</td>
-                            <td data-label="Phone"><a href="tel:9765432109" style="color:var(--sky); font-weight:600;">9765432109</a></td>
-                            <td data-label="Service">Iron &amp; Press</td>
-                            <td data-label="Items">12</td>
-                            <td data-label="Address" style="font-size:12.5px; color:var(--text-muted); line-height:1.5;">
-                                Shivaji Nagar,<br>Nagpur — 440010
+
+                            <!-- ORDER -->
+                            <td class="td-bold">#{{ order.id }}</td>
+
+                            <!-- DATE -->
+                            <td class="td-muted">
+                                {{ order.created_at.strftime('%d %b %Y') }}
                             </td>
-                            <td data-label="Payment">
-                                <div style="font-size:12.5px;">Cash on Delivery</div>
-                                <span class="badge badge-red" style="margin-top:3px;">Collect</span>
+
+                            <!-- CUSTOMER -->
+                            <td class="td-bold">{{ order.user_name }}</td>
+
+                            <!-- PHONE -->
+                            <td>
+                                <a href="tel:{{ order.phone_no }}" style="color:var(--sky); font-weight:600;">
+                                    {{ order.phone_no }}
+                                </a>
                             </td>
-                            <td data-label="Status"><span class="badge badge-orange">Pickup Pending</span></td>
-                            <td data-label="Update">
-                                <form action="" method="POST" style="display:flex; gap:6px; align-items:center;">
-                                    <input type="hidden" name="order_id" value="3">
-                                    <select name="order_status" class="inline-select">
-                                        <option value="Order Placed" selected>Pickup Pending</option>
-                                        <option value="Out for Delivery">Out for Delivery</option>
-                                        <option value="Delivered">Delivered</option>
-                                    </select>
-                                    <button type="submit" class="btn btn-navy btn-sm">Save</button>
+
+                            <!-- SERVICE -->
+                            <td>{{ order.service_name }}</td>
+
+                            <!-- ITEMS -->
+                            <td>{{ order.total_items }}</td>
+
+                            <!-- ADDRESS -->
+                            <td style="font-size:12.5px; color:var(--text-muted); line-height:1.5;">
+                                {{ order.city }},<br>
+                                {{ order.state }} — {{ order.pincode }}
+                            </td>
+
+                            <!-- PAYMENT -->
+                            <td>
+                                <div style="font-size:12.5px;">
+                                    {{ order.payment_method }}
+                                </div>
+
+                                {% if order.payment_method == "Cash on Delivery" %}
+                                    <span class="badge badge-red">Collect</span>
+                                {% else %}
+                                    <span class="badge badge-green">Paid</span>
+                                {% endif %}
+                            </td>
+
+                            <!-- STATUS -->
+                            <td>
+                                <span class="badge badge-orange">
+                                    {{ order.status.replace('_',' ').title() }}
+                                </span>
+                            </td>
+
+                            <!-- ACTION -->
+                            <td>
+
+                                <form action="/delivery_update_status" method="POST" style="display:flex; gap:6px; align-items:center;">
+                                    
+                                    <input type="hidden" name="order_id" value="{{ order.id }}">
+
+                                    <!-- STATUS CONTROL -->
+                                    {% if order.status == "assigned" %}
+                                        <button type="submit" name="order_status" value="picked_up" class="btn btn-navy btn-sm">
+                                            Pick Up
+                                        </button>
+
+                                    {% elif order.status == "picked_up" %}
+                                        <button type="submit" name="order_status" value="out_for_delivery" class="btn btn-navy btn-sm">
+                                            Start Delivery
+                                        </button>
+
+                                    {% elif order.status == "out_for_delivery" %}
+                                        <button type="submit" name="order_status" value="delivered" class="btn btn-navy btn-sm">
+                                            Mark Delivered
+                                        </button>
+
+                                    {% elif order.status == "delivered" %}
+                                        <span style="color:green; font-weight:600;">Completed</span>
+
+                                    {% else %}
+                                        <span style="color:#999;">Waiting</span>
+                                    {% endif %}
+
                                 </form>
-                            </td>
-                            <td data-label="Map">
-                                <a href="https://www.google.com/maps/search/?api=1&query=Shivaji+Nagar+Nagpur"
-                                   target="_blank" class="btn btn-ghost btn-sm">🗺</a>
-                            </td>
-                        </tr>
 
-                        <!-- Row 2 -->
-                        <tr>
-                            <td data-label="Order" class="td-bold">#004</td>
-                            <td data-label="Date" class="td-muted">01 Apr 2025</td>
-                            <td data-label="Customer" class="td-bold">Sneha Desai</td>
-                            <td data-label="Phone"><a href="tel:9834561230" style="color:var(--sky); font-weight:600;">9834561230</a></td>
-                            <td data-label="Service">Steam Iron</td>
-                            <td data-label="Items">5</td>
-                            <td data-label="Address" style="font-size:12.5px; color:var(--text-muted); line-height:1.5;">
-                                Emerald Residency,<br>Pune — 411001
                             </td>
-                            <td data-label="Payment">
-                                <div style="font-size:12.5px;">UPI — ₹200</div>
-                                <span class="badge badge-green" style="margin-top:3px;">Paid ✓</span>
-                            </td>
-                            <td data-label="Status"><span class="badge badge-blue">Out for Delivery</span></td>
-                            <td data-label="Update">
-                                <form action="" method="POST" style="display:flex; gap:6px; align-items:center;">
-                                    <input type="hidden" name="order_id" value="4">
-                                    <select name="order_status" class="inline-select">
-                                        <option value="Order Placed">Pickup Pending</option>
-                                        <option value="Out for Delivery" selected>Out for Delivery</option>
-                                        <option value="Delivered">Delivered</option>
-                                    </select>
-                                    <button type="submit" class="btn btn-navy btn-sm">Save</button>
-                                </form>
-                            </td>
-                            <td data-label="Map">
-                                <a href="https://www.google.com/maps/search/?api=1&query=Koregaon+Park+Pune"
-                                   target="_blank" class="btn btn-ghost btn-sm">🗺</a>
-                            </td>
-                        </tr>
 
-                        <!-- Row 3 -->
-                        <tr>
-                            <td data-label="Order" class="td-bold">#007</td>
-                            <td data-label="Date" class="td-muted">03 Apr 2025</td>
-                            <td data-label="Customer" class="td-bold">Nikhil Rao</td>
-                            <td data-label="Phone"><a href="tel:9845123670" style="color:var(--sky); font-weight:600;">9845123670</a></td>
-                            <td data-label="Service">Wash &amp; Fold</td>
-                            <td data-label="Items">9</td>
-                            <td data-label="Address" style="font-size:12.5px; color:var(--text-muted); line-height:1.5;">
-                                Baner Road,<br>Pune — 411045
-                            </td>
-                            <td data-label="Payment">
-                                <div style="font-size:12.5px;">UPI — ₹360</div>
-                                <span class="badge badge-green" style="margin-top:3px;">Paid ✓</span>
-                            </td>
-                            <td data-label="Status"><span class="badge badge-orange">Pickup Pending</span></td>
-                            <td data-label="Update">
-                                <form action="" method="POST" style="display:flex; gap:6px; align-items:center;">
-                                    <input type="hidden" name="order_id" value="7">
-                                    <select name="order_status" class="inline-select">
-                                        <option value="Order Placed" selected>Pickup Pending</option>
-                                        <option value="Out for Delivery">Out for Delivery</option>
-                                        <option value="Delivered">Delivered</option>
-                                    </select>
-                                    <button type="submit" class="btn btn-navy btn-sm">Save</button>
-                                </form>
-                            </td>
-                            <td data-label="Map">
-                                <a href="https://www.google.com/maps/search/?api=1&query=Baner+Road+Pune"
-                                   target="_blank" class="btn btn-ghost btn-sm">🗺</a>
-                            </td>
                         </tr>
+                        {% endfor %}
 
-                    </tbody>
+                        </tbody>
+
+  
+
                 </table>
             </div>
 

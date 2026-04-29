@@ -16,7 +16,7 @@
     ════════════════════════════════════════════════════════ -->
     <aside class="db-sidebar">
         <div class="sidebar-brand">
-            <a href="{{ url_for('delivery_home') }}" class="brand-name"><img src="{{ url_for('static', filename='Logo.png') }}" alt="Vega Vastra" class="sidebar-logo-img"></a>
+            <a href="{{ url_for('delivery_assigned') }}" class="brand-name"><img src="{{ url_for('static', filename='Logo.png') }}" alt="Vega Vastra" class="sidebar-logo-img"></a>
             <span class="brand-role">🛵 Delivery Portal</span>
         </div>
 
@@ -107,70 +107,74 @@
                             <th>Items</th>
                             <th>Payment Method</th>
                             <th>Payment Status</th>
-                            <th>Delivery Status</th>
+                            <!-- <th>Delivery Status</th> -->
                         </tr>
                     </thead>
                     <tbody>
+                   
+
+                        {% for delivery in deliveries %}
                         <tr>
-                            <td data-label="SR." class="td-muted">1</td>
-                            <td data-label="Order ID" class="td-bold">#001</td>
-                            <td data-label="Date" class="td-muted">03 Apr 2025</td>
-                            <td data-label="Customer" class="td-bold">Rahul Sharma</td>
-                            <td data-label="Phone">9876543210</td>
-                            <td data-label="Service">Wash &amp; Fold</td>
-                            <td data-label="Items">8</td>
-                            <td data-label="Payment">UPI — ₹320</td>
-                            <td data-label="Payment Status"><span class="badge badge-green">Paid ✓</span></td>
-                            <td data-label="Delivery Status"><span class="badge badge-green">Delivered ✓</span></td>
+
+                            <!-- SR -->
+                            <td class="td-muted">{{ loop.index }}</td>
+
+                            <!-- ORDER ID -->
+                            <td class="td-bold">#{{ delivery.id }}</td>
+
+                            <!-- DATE -->
+                            <td class="td-muted">
+                                {{ delivery.created_at.strftime('%d %b %Y') if delivery.created_at else '-' }}
+                            </td>
+
+                            <!-- CUSTOMER -->
+                            <td class="td-bold">{{ delivery.user_name }}</td>
+
+                            <!-- PHONE -->
+                            <td>{{ delivery.phone_no }}</td>
+
+                            <!-- SERVICE -->
+                            <td>{{ delivery.service_name }}</td>
+
+                            <!-- ITEMS -->
+                            <td>{{ delivery.total_items or 0 }}</td>
+
+                            <!-- PAYMENT METHOD -->
+                            <td>
+                                {{ delivery.payment_method }} — ₹{{ delivery.total_amount }}
+                            </td>
+
+                            <!-- PAYMENT STATUS -->
+                            <td>
+                                {% if delivery.payment_status == "paid" %}
+                                    <span class="badge badge-green">Paid ✓</span>
+                                {% else %}
+                                    <span class="badge badge-red">Pending</span>
+                                {% endif %}
+                            </td>
+
+                            <!-- DELIVERY STATUS -->
+                            <!-- <td>
+                                {% if delivery.status == "delivered" %}
+                                    <span class="badge badge-green">Delivered ✓</span>
+
+                                {% elif delivery.status == "out_for_delivery" %}
+                                    <span class="badge badge-orange">Out for Delivery</span>
+
+                                {% elif delivery.status == "picked_up" %}
+                                    <span class="badge badge-blue">Picked Up</span>
+
+                                {% else %}
+                                    <span class="badge badge-gray">
+                                        {{ delivery.status.replace('_',' ').title() }}
+                                    </span>
+                                {% endif %}
+                            </td> -->
+
                         </tr>
-                        <tr>
-                            <td data-label="SR." class="td-muted">2</td>
-                            <td data-label="Order ID" class="td-bold">#002</td>
-                            <td data-label="Date" class="td-muted">02 Apr 2025</td>
-                            <td data-label="Customer" class="td-bold">Priya Patel</td>
-                            <td data-label="Phone">9812345670</td>
-                            <td data-label="Service">Dry Cleaning</td>
-                            <td data-label="Items">3</td>
-                            <td data-label="Payment">Cash — ₹650</td>
-                            <td data-label="Payment Status"><span class="badge badge-green">Paid ✓</span></td>
-                            <td data-label="Delivery Status"><span class="badge badge-green">Delivered ✓</span></td>
-                        </tr>
-                        <tr>
-                            <td data-label="SR." class="td-muted">3</td>
-                            <td data-label="Order ID" class="td-bold">#005</td>
-                            <td data-label="Date" class="td-muted">01 Apr 2025</td>
-                            <td data-label="Customer" class="td-bold">Karan Mehta</td>
-                            <td data-label="Phone">9765890123</td>
-                            <td data-label="Service">Wash &amp; Iron</td>
-                            <td data-label="Items">7</td>
-                            <td data-label="Payment">UPI — ₹280</td>
-                            <td data-label="Payment Status"><span class="badge badge-green">Paid ✓</span></td>
-                            <td data-label="Delivery Status"><span class="badge badge-green">Delivered ✓</span></td>
-                        </tr>
-                        <tr>
-                            <td data-label="SR." class="td-muted">4</td>
-                            <td data-label="Order ID" class="td-bold">#006</td>
-                            <td data-label="Date" class="td-muted">31 Mar 2025</td>
-                            <td data-label="Customer" class="td-bold">Pooja Kulkarni</td>
-                            <td data-label="Phone">9823456701</td>
-                            <td data-label="Service">Dry Cleaning</td>
-                            <td data-label="Items">4</td>
-                            <td data-label="Payment">Cash — ₹800</td>
-                            <td data-label="Payment Status"><span class="badge badge-green">Paid ✓</span></td>
-                            <td data-label="Delivery Status"><span class="badge badge-green">Delivered ✓</span></td>
-                        </tr>
-                        <tr>
-                            <td data-label="SR." class="td-muted">5</td>
-                            <td data-label="Order ID" class="td-bold">#008</td>
-                            <td data-label="Date" class="td-muted">30 Mar 2025</td>
-                            <td data-label="Customer" class="td-bold">Vikram Nair</td>
-                            <td data-label="Phone">9834012345</td>
-                            <td data-label="Service">Iron &amp; Press</td>
-                            <td data-label="Items">10</td>
-                            <td data-label="Payment">UPI — ₹400</td>
-                            <td data-label="Payment Status"><span class="badge badge-green">Paid ✓</span></td>
-                            <td data-label="Delivery Status"><span class="badge badge-green">Delivered ✓</span></td>
-                        </tr>
+                        {% endfor %}
+
+
                     </tbody>
                 </table>
             </div>
