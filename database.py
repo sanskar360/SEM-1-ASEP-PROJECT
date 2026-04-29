@@ -271,20 +271,24 @@ def get_address_by_id(address_id):
 
 
 #  INSERT ORDER
-def insert_order(vendor_id, service_id, address_id, total):
+def insert_order(vendor_id, service_id, address_id, total, payment_method, payment_status, user_id, suggestion):
 
     with engine.connect() as conn:
 
         query = text("""
-            INSERT INTO addd_orders (vendor_id, service_id, address_id, total_amount)
-            VALUES (:vendor_id, :service_id, :address_id, :total)
+            INSERT INTO addd_orders (vendor_id, service_id, address_id, total_amount, payment_method, payment_status, user_id, suggestion)
+            VALUES (:vendor_id, :service_id, :address_id, :total, :payment_method, :payment_status, :user_id, :suggestion)
         """)
 
         result = conn.execute(query, {
             "vendor_id": vendor_id,
             "service_id": service_id,
             "address_id": address_id,
-            "total": total
+            "total": total,
+            "payment_method":payment_method,
+            "payment_status":payment_status,
+            "user_id":user_id,
+            "suggestion":suggestion
         })
 
         conn.commit()
@@ -313,4 +317,190 @@ def insert_order_items(order_id, item_ids, qtys, prices):
                     "price": prices[i]
                 })
 
+        conn.commit()
+
+# functions for admin data
+
+def get_delivery_boys():
+
+    with engine.connect() as conn:
+
+        query = text("""
+            SELECT 
+                db.id,
+                db.code,
+                db.name,
+                db.phone,
+                db.status,
+                db.rating,
+
+                -- assigned orders
+                (
+                    SELECT COUNT(*) 
+                    FROM addd_orders o
+                    WHERE o.delivery_boy_id = db.id
+                    AND o.status != 'delivered'
+                ) AS assigned_orders,
+
+                -- completed today
+                (
+                    SELECT COUNT(*)
+                    FROM addd_orders o
+                    WHERE o.delivery_boy_id = db.id
+                    AND o.status = 'delivered'
+                    AND DATE(o.updated_at) = CURDATE()
+                ) AS completed_today
+
+            FROM delivery_boys db
+            ORDER BY db.id DESC
+        """)
+
+        return conn.execute(query).fetchall()
+    
+def assign_delivery_boy(order_id, delivery_boy_id):
+
+    with engine.connect() as conn:
+        query = text("""
+            UPDATE addd_orders
+            SET delivery_boy_id = :delivery_boy_id
+            WHERE id = :order_id
+        """)
+
+        conn.execute(query, {
+            "delivery_boy_id": delivery_boy_id,
+            "order_id": order_id
+        })
+
+        conn.commit()
+
+
+def get_admin_orders():
+
+    with engine.connect() as conn:
+
+        query = text("""
+           SELECT 
+            o.id,
+            a.user_name AS customer_name,
+            s.name AS service,
+            o.created_at,
+            o.payment_method,
+            o.total_amount,
+            o.suggestion,
+            o.payment_status,
+
+            SUM(oi.quantity) AS total_items
+
+        FROM addd_orders o
+        JOIN address a ON o.address_id = a.id
+        JOIN services s ON o.service_id = s.id
+        LEFT JOIN order_items oi ON oi.order_id = o.id
+
+        GROUP BY o.id
+        ORDER BY o.id DESC;
+        """)
+
+        return conn.execute(query).fetchall()
+    
+def insert_delivery_boy(name, phone, status):
+
+    with engine.connect() as conn:
+
+        # 🔥 generate code like DB-006
+        result = conn.execute(text("SELECT COUNT(*) FROM delivery_boys"))
+        count = result.scalar() + 1
+
+        code = f"DB-{str(count).zfill(3)}"
+
+        query = text("""
+            INSERT INTO delivery_boys (code, name, phone, status)
+            VALUES (:code, :name, :phone, :status)
+        """)
+
+        conn.execute(query, {
+            "code": code,
+            "name": name,
+            "phone": phone,
+            "status": status
+        })
+
+        conn.commit()
+
+def toggle_delivery_boy_status(code):
+
+    with engine.connect() as conn:
+
+        # get current status
+        result = conn.execute(
+            text("SELECT status FROM delivery_boys WHERE code = :code"),
+            {"code": code}
+        ).fetchone()
+
+        current_status = result.status
+        new_status = "inactive" if current_status == "active" else "active"
+
+        conn.execute(
+            text("UPDATE delivery_boys SET status = :status WHERE code = :code"),
+            {"status": new_status, "code": code}
+        )
+
+        conn.commit()
+
+        return new_status
+    
+def get_payments():
+
+    with engine.connect() as conn:
+
+        query = text("""
+            SELECT 
+                o.id,
+                o.total_amount,
+                o.payment_method,
+                o.created_at,
+                a.user_name AS customer_name
+            FROM addd_orders o
+            JOIN address a ON o.address_id = a.id
+            ORDER BY o.id DESC
+        """)
+
+        return conn.execute(query).fetchall()
+    
+
+def get_users():
+
+    with engine.connect() as conn:
+
+        query = text("""
+            SELECT 
+                id,
+                name,
+                role,
+                status,
+                created_at
+            FROM users_table
+            ORDER BY id DESC
+        """)
+
+        return conn.execute(query).fetchall()
+    
+def update_user_db(user_id, role, status):
+
+    with engine.connect() as conn:
+        conn.execute(text("""
+            UPDATE users_table
+            SET role = :role, status = :status
+            WHERE id = :id
+        """), {
+            "role": role,
+            "status": status,
+            "id": user_id
+        })
+
+        conn.commit()
+
+def delete_user_db(user_id):
+
+    with engine.connect() as conn:
+        conn.execute(text("DELETE FROM users_table WHERE id = :id"), {"id": user_id})
         conn.commit()

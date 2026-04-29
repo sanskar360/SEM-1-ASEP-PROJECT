@@ -676,6 +676,22 @@
   border-radius: 6px;
 }
 
+select {
+  margin-top: 10px;
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  resize: none;
+}
+
 /* TOTAL */
 .total-bar {
   display: flex;

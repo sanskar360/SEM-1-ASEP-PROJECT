@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -23,79 +24,93 @@
     {% endfor %}
     {% endif %}
     {% endwith %}
-   <button onclick="goBack()" class="simple-back">←</button>
+    <button onclick="goBack()" class="simple-back">←</button>
 
-<div class="order-page">
+    <div class="order-page">
 
-    <h2>Place Order</h2>
+        <h2>Place Order</h2>
 
-    <!-- ADDRESS SECTION -->
-    <div class="form-section">
-        <h3>Delivery Address</h3>
+        <!-- ADDRESS SECTION -->
+        <div class="form-section">
+            <h3>Delivery Address</h3>
 
-        <div class="form-grid">
-            <input type="text" value="{{ address.user_name }}" readonly>
-            <input type="text" value="{{ address.phone_no }}" readonly>
+            <div class="form-grid">
+                <input type="text" value="{{ address.user_name }}" readonly>
+                <input type="text" value="{{ address.phone_no }}" readonly>
 
-            <input type="text" value="{{ address.house_no }}" readonly>
-            <input type="text" value="{{ address.city }}" readonly>
+                <input type="text" value="{{ address.house_no }}" readonly>
+                <input type="text" value="{{ address.city }}" readonly>
 
-            <input type="text" value="{{ address.state }}" readonly>
-            <input type="text" value="{{ address.pincode }}" readonly>
+                <input type="text" value="{{ address.state }}" readonly>
+                <input type="text" value="{{ address.pincode }}" readonly>
+            </div>
         </div>
+
+
+        <!-- FORM START -->
+        <form method="POST" action="{{ url_for('place_order') }}">
+
+            <!-- HIDDEN FIELDS -->
+            <input type="hidden" name="service_id" value="{{ service_id }}">
+            <input type="hidden" name="vendor_id" value="{{ vendor_id }}">
+            <input type="hidden" name="address_id" value="{{ address.id }}">
+
+            <!-- ITEMS SECTION -->
+            <div class="form-section">
+                <h3>Select Items</h3>
+
+                {% for item in items %}
+                <div class="item-row" data-price="{{ item.price }}">
+
+                    <span>{{ item.name }}</span>
+                    <span>₹{{ item.price }}</span>
+
+                    <div class="quantity-control">
+                        <!-- IMPORTANT: type="button" -->
+                        <button type="button" onclick="changeQty(this, -1)">-</button>
+
+                        <!-- HIDDEN DATA -->
+                        <input type="hidden" name="item_ids[]" value="{{ item.id }}">
+                        <input type="hidden" name="prices[]" value="{{ item.price }}">
+                        <input type="hidden" name="qtys[]" value="0" class="qty-input">
+
+                        <span class="qty">0</span>
+
+                        <button type="button" onclick="changeQty(this, 1)">+</button>
+                    </div>
+
+                </div>
+                {% endfor %}
+            </div>
+            <div class="form-section">
+                <h3>Payment Method</h3>
+                <select name="payment_method" required>
+                    <option value="COD">Cash on Delivery</option>
+                    <option value="UPI">UPI</option>
+                    <option value="Card">Card</option>
+                </select>
+            </div>
+            <div class="form-section">
+                <h3>Additional Instructions</h3>
+
+                <textarea name="suggestion" rows="3" placeholder="Any special instructions (optional)..."></textarea>
+            </div>
+
+
+            <!-- TOTAL -->
+            <div class="total-bar">
+                <h3>Total: ₹<span id="total">0</span></h3>
+
+                <!-- SUBMIT BUTTON MUST BE INSIDE FORM -->
+                <button type="submit">Place Order</button>
+            </div>
+
+        </form>
+        <!-- FORM END -->
+
     </div>
 
-
-    <!-- FORM START -->
-    <form method="POST" action="{{ url_for('place_order') }}">
-
-        <!-- HIDDEN FIELDS -->
-        <input type="hidden" name="service_id" value="{{ service_id }}">
-        <input type="hidden" name="vendor_id" value="{{ vendor_id }}">
-        <input type="hidden" name="address_id" value="{{ address.id }}">
-
-        <!-- ITEMS SECTION -->
-        <div class="form-section">
-            <h3>Select Items</h3>
-
-            {% for item in items %}
-            <div class="item-row" data-price="{{ item.price }}">
-
-                <span>{{ item.name }}</span>
-                <span>₹{{ item.price }}</span>
-
-                <div class="quantity-control">
-                    <!-- IMPORTANT: type="button" -->
-                    <button type="button" onclick="changeQty(this, -1)">-</button>
-
-                    <!-- HIDDEN DATA -->
-                    <input type="hidden" name="item_ids[]" value="{{ item.id }}">
-                    <input type="hidden" name="prices[]" value="{{ item.price }}">
-                    <input type="hidden" name="qtys[]" value="0" class="qty-input">
-
-                    <span class="qty">0</span>
-
-                    <button type="button" onclick="changeQty(this, 1)">+</button>
-                </div>
-
-            </div>
-            {% endfor %}
-        </div>
-
-
-        <!-- TOTAL -->
-        <div class="total-bar">
-            <h3>Total: ₹<span id="total">0</span></h3>
-
-            <!-- SUBMIT BUTTON MUST BE INSIDE FORM -->
-            <button type="submit">Place Order</button>
-        </div>
-
-    </form>
-    <!-- FORM END -->
-
-</div>
-
-<script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
+
 </html>
