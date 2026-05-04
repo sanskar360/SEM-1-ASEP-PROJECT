@@ -1,0 +1,378 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vendor Portal - Services & Pricing</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="vendor_dashboard.css">
+<link rel="stylesheet" href="{{ url_for('static', filename='vendor_dashboard.css') }}"/>
+</head>
+<body>
+<div class="admin-layout">
+<aside class="admin-sidebar" id="adminSidebar">
+  <div class="sidebar-brand">
+    <a href="{{ url_for('vendors_incoming') }}" class="brand-name">Vega<span>Vastra</span></a>
+    <span class="brand-role">🏪 Vendor Portal</span>
+  </div>
+  <nav class="sidebar-nav">
+    <span class="nav-section-label">Orders</span>
+    <a class="nav-link" href="{{ url_for('vendors_incoming') }}">
+      <span class="nl-icon">📥</span><span>Incoming Orders</span>
+      <span class="nav-badge" id="incomingBadge">3</span>
+    </a>
+    <a class="nav-link" href="{{ url_for('vendors_processing') }}">
+      <span class="nl-icon">⚙️</span><span>Order Processing</span>
+    </a>
+    <a class="nav-link" href="{{ url_for('vendors_history') }}">
+      <span class="nl-icon">🕐</span><span>Order History</span>
+    </a>
+    <span class="nav-section-label">Store</span>
+    <a class="nav-link active" href="{{ url_for('vendors_services') }}">
+      <span class="nl-icon">🧺</span><span>Services &amp; Pricing</span>
+    </a>
+  </nav>
+  <div class="sidebar-footer">
+    <a href="{{ url_for('home') }}" class="logout-link"><span class="nl-icon">🚪</span><span>Logout</span></a>
+  </div>
+</aside>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+<div class="admin-main">
+  <header class="admin-topbar">
+    <div style="display:flex;align-items:center;gap:14px">
+      <button class="hamburger" onclick="openSidebar()"><span></span><span></span><span></span></button>
+      <span class="topbar-title" id="topbarTitle">Services & Pricing</span>
+    </div>
+    <div class="topbar-right">
+      <span class="topbar-store">Fresh &amp; Clean Laundry</span>
+      <div class="topbar-avatar">FC</div>
+    </div>
+  </header>
+  <main class="admin-content">
+<div class="section active" id="sec-services">
+      <div class="page-header">
+        <h1>Services &amp; Pricing</h1>
+        <p>Manage the services your store offers and set per-item prices</p>
+      </div>
+
+      <!-- Add service form -->
+      <div class="add-service-card">
+        <h3>➕ Add New Service</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Service Name</label>
+            <input class="form-control" type="text" placeholder="e.g. Steam Ironing" id="newServiceName">
+          </div>
+          <div class="form-group">
+            <label>Category</label>
+            <select class="form-control" id="newServiceCat">
+              <option>Washing</option>
+              <option>Ironing</option>
+              <option>Dry Cleaning</option>
+              <option>Folding</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Price per Item (₹)</label>
+            <input class="form-control" type="number" placeholder="e.g. 25" id="newServicePrice">
+          </div>
+          <div class="form-group">
+            <label>Turnaround (hrs)</label>
+            <input class="form-control" type="number" placeholder="e.g. 24" id="newServiceTat">
+          </div>
+        </div>
+        <button class="btn-primary" onclick="addService()">Add Service</button>
+      </div>
+
+      <!-- Services grid -->
+      <div class="services-grid" id="servicesGrid">
+        <div class="service-card c-sky">
+          <div class="service-icon">🫧</div>
+          <div class="service-name">Standard Washing</div>
+          <div class="service-price">₹<strong>20</strong> / item</div>
+          <div class="service-meta">⏱ 24 hrs turnaround · Washing</div>
+          <div class="service-actions">
+            <button class="btn-edit" onclick="editService(this)">✏️ Edit</button>
+            <button class="btn-danger" onclick="removeService(this)">🗑 Remove</button>
+          </div>
+        </div>
+        <div class="service-card c-green">
+          <div class="service-icon">👔</div>
+          <div class="service-name">Shirt Ironing</div>
+          <div class="service-price">₹<strong>15</strong> / item</div>
+          <div class="service-meta">⏱ 12 hrs turnaround · Ironing</div>
+          <div class="service-actions">
+            <button class="btn-edit" onclick="editService(this)">✏️ Edit</button>
+            <button class="btn-danger" onclick="removeService(this)">🗑 Remove</button>
+          </div>
+        </div>
+        <div class="service-card c-orange">
+          <div class="service-icon">🧥</div>
+          <div class="service-name">Dry Cleaning</div>
+          <div class="service-price">₹<strong>150</strong> / item</div>
+          <div class="service-meta">⏱ 48 hrs turnaround · Dry Cleaning</div>
+          <div class="service-actions">
+            <button class="btn-edit" onclick="editService(this)">✏️ Edit</button>
+            <button class="btn-danger" onclick="removeService(this)">🗑 Remove</button>
+          </div>
+        </div>
+        <div class="service-card c-purple">
+          <div class="service-icon">🛏</div>
+          <div class="service-name">Bed Sheet Wash</div>
+          <div class="service-price">₹<strong>80</strong> / item</div>
+          <div class="service-meta">⏱ 36 hrs turnaround · Washing</div>
+          <div class="service-actions">
+            <button class="btn-edit" onclick="editService(this)">✏️ Edit</button>
+            <button class="btn-danger" onclick="removeService(this)">🗑 Remove</button>
+          </div>
+        </div>
+        <div class="service-card c-sky">
+          <div class="service-icon">🧺</div>
+          <div class="service-name">Wash + Fold</div>
+          <div class="service-price">₹<strong>35</strong> / item</div>
+          <div class="service-meta">⏱ 24 hrs turnaround · Washing</div>
+          <div class="service-actions">
+            <button class="btn-edit" onclick="editService(this)">✏️ Edit</button>
+            <button class="btn-danger" onclick="removeService(this)">🗑 Remove</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+</div>
+<!-- ══ ORDER DETAIL MODAL ══ -->
+<div class="modal-backdrop" id="orderModal" onclick="handleBackdropClick(event)">
+  <div class="modal-box" id="modalBox">
+    <div class="modal-header">
+      <div>
+        <h3 id="modalTitle">Order #VV-1045</h3>
+        <span id="modalSub">Customer: Rahul Kumar</span>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <!-- Basic Info -->
+      <div class="detail-section">
+        <div class="section-label">📋 Customer & Pickup Info</div>
+        <div class="info-grid">
+          <div><div class="info-label">Customer Name</div><div class="info-value hi" id="mCustName">Rahul Kumar</div></div>
+          <div><div class="info-label">Phone</div><div class="info-value" id="mPhone">+91 98765 43210</div></div>
+          <div style="grid-column:1/-1"><div class="info-label">Pickup Address</div><div class="info-value" id="mAddress">14B, Koregaon Park, Pune — 411001</div></div>
+          <div><div class="info-label">Pickup Slot</div><div class="info-value" id="mPickup">03 May 2026, 10:00 AM</div></div>
+          <div><div class="info-label">Payment</div><div class="info-value" id="mPayment"><span class="badge badge-paid">Paid</span></div></div>
+        </div>
+      </div>
+      <!-- Services -->
+      <div class="detail-section">
+        <div class="section-label">🧺 Selected Services</div>
+        <div id="mServices">
+          <div class="service-item-row"><div><div class="si-name">Standard Washing</div><div class="si-qty">× 3 items</div></div><div class="si-price">₹60</div></div>
+          <div class="service-item-row"><div><div class="si-name">Shirt Ironing</div><div class="si-qty">× 3 items</div></div><div class="si-price">₹45</div></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:10px 0 0;border-top:1px dashed var(--border);margin-top:10px">
+          <span style="font-weight:600;color:var(--text-muted)">Total</span>
+          <span style="font-size:16px;font-weight:800;color:var(--navy)" id="mTotal">₹349</span>
+        </div>
+      </div>
+      <!-- Status -->
+      <div class="detail-section">
+        <div class="section-label">📦 Order Status</div>
+        <div id="mStatusContent" style="font-size:14px;color:var(--text)">Awaiting acceptance from vendor.</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+
+
+<script>
+/* ── Sidebar ── */
+function openSidebar() {
+  document.getElementById('adminSidebar').classList.add('open');
+  document.getElementById('sidebarOverlay').classList.add('open');
+}
+function closeSidebar() {
+  document.getElementById('adminSidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('open');
+}
+
+/* ── Table search ── */
+function filterTable(input, tableId) {
+  const f = input.value.toLowerCase();
+  document.getElementById(tableId).querySelectorAll('tbody tr').forEach(r => {
+    r.style.display = r.textContent.toLowerCase().includes(f) ? '' : 'none';
+  });
+}
+
+/* ── Accept / Reject incoming ── */
+function acceptOrder(btn, id) {
+  const row = btn.closest('tr');
+  row.style.opacity = '.5';
+  row.style.pointerEvents = 'none';
+  setTimeout(() => {
+    row.remove();
+    updateIncomingBadge();
+    showToast(`Order ${id} accepted ✅ — moved to Processing`);
+  }, 400);
+}
+function rejectOrder(btn, id) {
+  const row = btn.closest('tr');
+  row.style.opacity = '.5';
+  row.style.pointerEvents = 'none';
+  setTimeout(() => {
+    row.remove();
+    updateIncomingBadge();
+    showToast(`Order ${id} rejected ❌`);
+  }, 400);
+}
+function updateIncomingBadge() {
+  const count = document.querySelectorAll('#incomingTable tbody tr').length;
+  const badge = document.getElementById('incomingBadge');
+  badge.textContent = count;
+  if (count === 0) badge.style.display = 'none';
+}
+
+/* ── Update processing status ── */
+function updateStatus(btn, orderId, newStatus) {
+  const row = btn.closest('tr');
+  const statusCell = row.querySelector('.badge');
+  if (newStatus === 'processing') {
+    statusCell.className = 'badge badge-processing';
+    statusCell.textContent = 'Processing';
+    row.dataset.status = 'processing';
+    const actCell = btn.parentElement;
+    btn.remove();
+    const readyBtn = document.createElement('button');
+    readyBtn.className = 'btn-ready';
+    readyBtn.innerHTML = '📦 Mark Ready';
+    readyBtn.onclick = function(){ updateStatus(this, orderId, 'ready_for_pickup'); };
+    actCell.appendChild(readyBtn);
+    showToast(`#${orderId} — Processing started`);
+  } else if (newStatus === 'ready_for_pickup') {
+    statusCell.className = 'badge badge-ready';
+    statusCell.textContent = 'Ready for Pickup';
+    row.dataset.status = 'ready_for_pickup';
+    btn.remove();
+    const note = document.createElement('span');
+    note.style.cssText = 'font-size:12px;color:var(--text-muted)';
+    note.textContent = '🔔 Admin notified';
+    btn.parentElement ? btn.parentElement.appendChild(note) : row.lastElementChild.appendChild(note);
+    document.getElementById('readyBanner').classList.add('show');
+    setTimeout(() => document.getElementById('readyBanner').classList.remove('show'), 5000);
+    showToast(`#${orderId} — Marked ready! Admin notified 🔔`);
+  }
+}
+
+/* ── Services ── */
+const colorCycle = ['c-sky','c-green','c-orange','c-purple'];
+const iconMap = { Washing:'🫧', Ironing:'👔', 'Dry Cleaning':'🧥', Folding:'🧺', Other:'✨' };
+let colorIdx = 0;
+function addService() {
+  const name  = document.getElementById('newServiceName').value.trim();
+  const cat   = document.getElementById('newServiceCat').value;
+  const price = document.getElementById('newServicePrice').value;
+  const tat   = document.getElementById('newServiceTat').value;
+  if (!name || !price) { showToast('Please fill in Name and Price ⚠️'); return; }
+  const icon = iconMap[cat] || '✨';
+  const color = colorCycle[colorIdx % colorCycle.length]; colorIdx++;
+  const card = document.createElement('div');
+  card.className = `service-card ${color}`;
+  card.innerHTML = `
+    <div class="service-icon">${icon}</div>
+    <div class="service-name">${name}</div>
+    <div class="service-price">₹<strong>${price}</strong> / item</div>
+    <div class="service-meta">⏱ ${tat || '24'} hrs turnaround · ${cat}</div>
+    <div class="service-actions">
+      <button class="btn-edit" onclick="editService(this)">✏️ Edit</button>
+      <button class="btn-danger" onclick="removeService(this)">🗑 Remove</button>
+    </div>`;
+  document.getElementById('servicesGrid').appendChild(card);
+  ['newServiceName','newServicePrice','newServiceTat'].forEach(id => document.getElementById(id).value = '');
+  showToast(`Service "${name}" added ✅`);
+}
+function removeService(btn) {
+  const card = btn.closest('.service-card');
+  card.style.transform = 'scale(.9)';
+  card.style.opacity = '0';
+  card.style.transition = 'all .25s';
+  setTimeout(() => card.remove(), 250);
+}
+function editService(btn) {
+  const card = btn.closest('.service-card');
+  const name = card.querySelector('.service-name').textContent;
+  const newName = prompt('Edit service name:', name);
+  if (newName) card.querySelector('.service-name').textContent = newName;
+  const priceEl = card.querySelector('.service-price strong');
+  const newPrice = prompt('Edit price per item (₹):', priceEl.textContent);
+  if (newPrice) priceEl.textContent = newPrice;
+}
+
+/* ── Order Modal ── */
+const modalData = {
+  '#VV-1045': { cust:'Rahul Kumar', phone:'+91 98765 43210', address:'14B, Koregaon Park, Pune — 411001', pickup:'03 May 2026, 10:00 AM', payment:'<span class="badge badge-paid">Paid</span>', services:[{n:'Standard Washing',q:'× 3 items',p:'₹60'},{n:'Shirt Ironing',q:'× 3 items',p:'₹45'}], total:'₹349', statusText:'Awaiting your acceptance.' },
+  '#VV-1044': { cust:'Priya Sharma',phone:'+91 87654 32109',address:'7, MG Road, Nashik — 422001',pickup:'03 May 2026, 2:00 PM',payment:'<span class="badge badge-cod">COD</span>',services:[{n:'Dry Cleaning',q:'× 2 items',p:'₹300'}],total:'₹599',statusText:'Awaiting your acceptance.' },
+  '#VV-1043': { cust:'Amit Mehta',phone:'+91 76543 21098',address:'22, Baner Rd, Pune — 411045',pickup:'04 May 2026, 9:00 AM',payment:'<span class="badge badge-paid">Paid</span>',services:[{n:'Standard Washing',q:'× 4 items',p:'₹80'},{n:'Wash + Fold',q:'× 2 items',p:'₹70'}],total:'₹279',statusText:'Awaiting your acceptance.' },
+  '#VV-1040': { cust:'Sanjay Kaul',phone:'+91 99887 76655',address:'5, Sadhu Vaswani Rd, Pune',pickup:'01 May 2026, 11:00 AM',payment:'<span class="badge badge-paid">Paid</span>',services:[{n:'Standard Washing',q:'× 5 items',p:'₹100'}],total:'₹100',statusText:'Order accepted. Waiting to start processing.' },
+  '#VV-1038': { cust:'Neha Pawar',phone:'+91 88776 65544',address:'12, FC Road, Pune — 411004',pickup:'30 Apr 2026, 3:00 PM',payment:'<span class="badge badge-paid">Paid</span>',services:[{n:'Dry Cleaning',q:'× 2 items',p:'₹300'},{n:'Shirt Ironing',q:'× 1 item',p:'₹15'}],total:'₹315',statusText:'Currently being processed at your store.' },
+  '#VV-1036': { cust:'Vishal Desai',phone:'+91 77665 54433',address:'34, Tilak Rd, Pune',pickup:'30 Apr 2026, 10:00 AM',payment:'<span class="badge badge-cod">COD</span>',services:[{n:'Standard Washing',q:'× 5 items',p:'₹100'},{n:'Wash + Fold',q:'× 3 items',p:'₹105'}],total:'₹280',statusText:'Currently being processed at your store.' },
+  '#VV-1034': { cust:'Rohan Bhat',phone:'+91 66554 43322',address:'8, Wakad, Pune — 411057',pickup:'29 Apr 2026, 9:00 AM',payment:'<span class="badge badge-paid">Paid</span>',services:[{n:'Shirt Ironing',q:'× 10 items',p:'₹150'}],total:'₹150',statusText:'Order accepted. Waiting to start processing.' },
+  '#VV-1030': { cust:'Tanya Nair',phone:'+91 55443 32211',address:'3, Koregaon Park, Pune',pickup:'28 Apr 2026, 2:00 PM',payment:'<span class="badge badge-paid">Paid</span>',services:[{n:'Dry Cleaning',q:'× 2 items',p:'₹300'}],total:'₹300',statusText:'✅ Marked as Ready for Pickup. Admin has been notified.' },
+  '#VV-1029': { cust:'Meera Kulkarni',phone:'+91 91234 56789',address:'6, Laxmi Rd, Pune',pickup:'28 Apr 2026, 11:00 AM',payment:'<span class="badge badge-paid">Paid</span>',services:[{n:'Standard Washing',q:'× 4 items',p:'₹80'}],total:'₹80',statusText:'✅ Order delivered successfully.' },
+  '#VV-1027': { cust:'Arjun Patil',phone:'+91 90123 45678',address:'11, SB Rd, Pune — 411016',pickup:'26 Apr 2026',payment:'<span class="badge badge-paid">Paid</span>',services:[{n:'Dry Cleaning',q:'× 1 item',p:'₹150'}],total:'₹150',statusText:'✅ Order delivered successfully.' },
+  '#VV-1025': { cust:'Sneha Joshi',phone:'+91 89012 34567',address:'2, Bund Garden, Pune',pickup:'25 Apr 2026',payment:'<span class="badge badge-cod">COD</span>',services:[{n:'Shirt Ironing',q:'× 7 items',p:'₹105'}],total:'—',statusText:'❌ Order was rejected.' },
+  '#VV-1022': { cust:'Kavya Rao',phone:'+91 78901 23456',address:'9, Camp Area, Pune — 411001',pickup:'23 Apr 2026',payment:'<span class="badge badge-paid">Paid</span>',services:[{n:'Wash + Fold',q:'× 5 items',p:'₹175'}],total:'₹525',statusText:'✅ Order delivered successfully.' },
+  '#VV-1020': { cust:'Dev Malhotra',phone:'+91 67890 12345',address:'16, Deccan, Pune',pickup:'21 Apr 2026',payment:'<span class="badge badge-paid">Paid</span>',services:[{n:'Dry Cleaning',q:'× 3 items',p:'₹450'}],total:'₹450',statusText:'✅ Order delivered successfully.' },
+  '#VV-1017': { cust:'Pooja Kadam',phone:'+91 56789 01234',address:'23, Kothrud, Pune — 411038',pickup:'19 Apr 2026',payment:'<span class="badge badge-paid">Paid</span>',services:[{n:'Standard Washing',q:'× 6 items',p:'₹120'}],total:'₹420',statusText:'✅ Order delivered successfully.' },
+};
+
+function openOrderModal(orderId) {
+  const d = modalData[orderId];
+  if (!d) return;
+  document.getElementById('modalTitle').textContent = `Order ${orderId}`;
+  document.getElementById('modalSub').textContent   = `Customer: ${d.cust}`;
+  document.getElementById('mCustName').textContent  = d.cust;
+  document.getElementById('mPhone').textContent     = d.phone;
+  document.getElementById('mAddress').textContent   = d.address;
+  document.getElementById('mPickup').textContent    = d.pickup;
+  document.getElementById('mPayment').innerHTML     = d.payment;
+  document.getElementById('mServices').innerHTML    = d.services.map(s =>
+    `<div class="service-item-row"><div><div class="si-name">${s.n}</div><div class="si-qty">${s.q}</div></div><div class="si-price">${s.p}</div></div>`
+  ).join('');
+  document.getElementById('mTotal').textContent     = d.total;
+  document.getElementById('mStatusContent').textContent = d.statusText;
+  document.getElementById('orderModal').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal() {
+  document.getElementById('orderModal').classList.remove('show');
+  document.body.style.overflow = '';
+}
+function handleBackdropClick(e) {
+  if (e.target === document.getElementById('orderModal')) closeModal();
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+/* ── Toast ── */
+let toastTimer;
+function showToast(msg) {
+  let t = document.getElementById('toastEl');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'toastEl';
+    t.style.cssText = 'position:fixed;bottom:24px;right:24px;background:var(--navy);color:#fff;padding:12px 20px;border-radius:10px;font-size:13.5px;font-weight:600;box-shadow:var(--shadow-lg);z-index:999;transition:opacity .3s;font-family:inherit';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.opacity = '1';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.style.opacity = '0'; }, 3000);
+}
+</script>
+</body>
+</html>
