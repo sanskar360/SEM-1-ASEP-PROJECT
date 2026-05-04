@@ -225,16 +225,23 @@ def get_all_services():
 def get_vendors(service_id, city, pincode):
     with engine.connect() as conn:
         query = text("""
-            SELECT DISTINCT v.*
+            SELECT DISTINCT 
+                v.id,
+                v.name,
+                v.rating,
+                v.active_orders,
+                v.city,
+                v.pincode
+
             FROM vendors v
-            JOIN vendor_services vs ON v.id = vs.vendor_id
-            WHERE vs.service_id = :service_id
-            AND v.city = :city
-            ORDER BY 
-                CASE 
-                    WHEN v.pincode = :pincode THEN 1
-                    ELSE 2
-                END
+
+            JOIN vendor_services vs 
+                ON v.id = vs.vendor_id
+
+            WHERE 
+                vs.service_id = :service_id
+                AND v.city = :city
+                AND v.status = 'Active'
         """)
 
         result = conn.execute(query, {
@@ -579,3 +586,92 @@ def get_delivery_records(boy_id):
         """)
 
         return conn.execute(query, {"boy_id": boy_id}).fetchall()
+
+def get_vendors2():
+
+    with engine.connect() as conn:
+
+        query = text("""
+            SELECT 
+                v.id,
+                v.name,
+                v.city,
+                v.rating,
+
+                GROUP_CONCAT(DISTINCT s.name) AS services
+
+            FROM vendors v
+
+            JOIN vendor_services vs
+                ON v.id = vs.vendor_id
+
+            JOIN item_types it
+                ON vs.item_type_id = it.id
+                     
+            JOIN services s
+                ON vs.service_id = s.id
+
+            WHERE v.status = 'Active'
+
+            GROUP BY v.id
+            ORDER BY v.rating DESC
+        """)
+
+        return conn.execute(query).fetchall()
+    
+from sqlalchemy import text
+
+def get_user_orders(user_id):
+
+    with engine.connect() as conn:
+
+        query = text("""
+            SELECT 
+                o.id,
+                o.status,
+                o.total_amount,
+
+                v.name AS vendor_name,
+                s.name AS service_name
+
+            FROM addd_orders o
+
+            JOIN vendors v 
+                ON o.vendor_id = v.id
+
+            JOIN services s 
+                ON o.service_id = s.id
+
+            WHERE o.user_id = :user_id
+
+            ORDER BY o.id DESC
+        """)
+
+        return conn.execute(query, {"user_id": user_id}).fetchall()
+    
+def get_order_details(order_id):
+
+    with engine.connect() as conn:
+
+        query = text("""
+            SELECT 
+                o.id,
+                o.payment_method,
+                o.payment_status,
+
+                a.user_name,
+                a.phone_no,
+                a.city,
+                a.state
+
+            FROM addd_orders o
+
+            JOIN address a 
+                ON o.address_id = a.id
+
+            WHERE o.id = :order_id
+        """)
+
+        return conn.execute(query, {"order_id": order_id}).fetchone()
+    
+

@@ -1,45 +1,9 @@
 from flask import Flask, render_template,request, redirect, url_for, flash, session
-from datetime import date, timedelta
-from database import load_orders_from_db, add_user_to_db, login_user_from_db, user_from_addresses_db, get_todays_orders_count,get_addresses_from_db, add_address_to_db,delete_address_from_db,get_all_services,get_vendors,get_address_by_id,get_items_for_vendor,get_address_by_id, insert_order, insert_order_items,get_delivery_boys,assign_delivery_boy,get_admin_orders,insert_delivery_boy, toggle_delivery_boy_status,get_payments,  update_user_db, delete_user_db,get_users,get_delivery_boy_orders,get_delivery_records
+from database import load_orders_from_db, add_user_to_db, login_user_from_db, user_from_addresses_db, get_addresses_from_db, add_address_to_db,delete_address_from_db,get_all_services,get_vendors,get_vendors2, get_address_by_id,get_items_for_vendor,get_address_by_id, insert_order, insert_order_items,get_delivery_boys,assign_delivery_boy,get_admin_orders,insert_delivery_boy, toggle_delivery_boy_status,get_payments,  update_user_db, delete_user_db,get_users,get_delivery_boy_orders,get_delivery_records,get_user_orders,get_order_details
 
 app = Flask(__name__)
 app.secret_key = "mysecret123"
 
-
-def predict_date(service, items):
-    
-        if service == "iron" and items >= 10:
-            days = 5
-        elif service == "iron":
-            days = 3
-
-        elif service == "wash_fold" and items >= 10:
-            days = 5
-        elif service == "wash_fold":
-            days = 2
-
-        elif service == "dry_clean" and items >= 10:
-            days = 6
-        elif service == "dry_clean":
-            days = 3
-
-        elif service == "steam_iron" and items >= 10:
-            days = 5
-        elif service == "steam_iron":
-            days = 2
-
-        elif service == "wash_iron" and items >= 10:
-            days = 5
-        elif service == "wash_iron":
-            days = 3
-        else:
-            days = 2
-
-        todays_orders = get_todays_orders_count()
-        if todays_orders > 20:
-            days += 1
-
-        return date.today() + timedelta(days=days)
 
 # Admin routes
 
@@ -58,7 +22,11 @@ def users_table():
     )
 @app.route("/admin_vendors")
 def admin_vendors():
-    return render_template("admin_vendors.html")
+    vendors = get_vendors2()
+    return render_template(
+        "admin_vendors.html",
+        vendors=vendors
+    )
 
 @app.route("/admin_payments")
 def admin_payment():
@@ -118,6 +86,12 @@ def delivery_login():
 def delivery_profile():
     return render_template("delivery_profile.html")
 
+# Vendors panel Routes
+
+@app.route("/vendors_panel")
+def vendors_panel():
+    return render_template("vendors_panel.html")
+
 
 @app.context_processor
 def inject_admin_id():
@@ -132,17 +106,14 @@ ADMIN_ID = 13
 @app.route("/track_orders", methods=["GET", "POST"])  
 def track_orders():
 
-    user_id = session.get("user_id")
+    user_id = session.get("user_id")   # login required
 
-    if user_id is None:
-        flash("Login First","error")
-        return redirect(url_for("login"))
-    
-    user_id = int(user_id)
+    orders = get_user_orders(user_id)
 
-
-    orders = load_orders_from_db(user_id)
-    return render_template("track_orders.html", orders = orders)
+    return render_template(
+        "track_orders.html",
+        orders=orders
+    )
 
 
 @app.route("/payments", methods=["GET", "POST"])
@@ -203,24 +174,14 @@ def login():
             boy_id = user_id  
             orders = get_delivery_boy_orders(boy_id)
             deliveries = get_delivery_records(boy_id)
-            print("DELIVERIES:", deliveries)
             return render_template(
                 "delivery_assigned.html",
                 orders=orders,
                 deliveries=deliveries
             )
     
-    # if user_id == 1 or user_id ==  2:
-    #         print("running2")
-    #         boy_id = user_id  
-    #         deliveries = get_delivery_records(boy_id)
-    #         return render_template(
-    #                 "delivery_history.html",
-    #                 deliveries=deliveries
-    #             )
-    
     if user_id == 54:
-        return redirect(url_for("delivery_assigned"))
+        return redirect(url_for("vendors_panel"))
 
 
     flash("Login Successful!", "success")
@@ -341,20 +302,56 @@ def select_address():
         service_id=service_id
     )
 
+
+# SCORING MECHANISM FOR VENDORS
+
+def score_vendors(vendors, user_pincode):
+    scored = []
+
+    for v in vendors:
+        # --- Convert safely ---
+        rating = float(v.rating or 0)
+        active_orders = int(v.active_orders or 0)
+
+        # Distance score
+        distance_score = 1 if str(v.pincode) == str(user_pincode) else 0.7
+
+        # Availability score
+        availability_score = 1 / (1 + active_orders)
+
+        # Rating score
+        rating_score = rating / 5
+
+        # Final score
+        final_score = (
+            0.5 * availability_score +
+            0.3 * rating_score +
+            0.2 * distance_score
+        )
+
+        scored.append({
+            "vendor": v,
+            "score": final_score
+        })
+
+    scored.sort(key=lambda x: x["score"], reverse=True)
+
+    return [item["vendor"] for item in scored]
+
+
+# 🔥 VENDOR LIST PAGE
 @app.route("/vendors")
 def vendors():
 
     service_id = request.args.get("service_id")
     address_id = request.args.get("address_id")
 
-    print(service_id)
     if not service_id:
         return redirect(url_for("services"))
-    
-    if not address_id:
-        flash("Please Select A Address or Add a New one", "error")
-        return redirect(url_for("select_address", service_id=service_id))
 
+    if not address_id:
+        flash("Please Select An Address", "error")
+        return redirect(url_for("select_address", service_id=service_id))
 
     address = get_address_by_id(address_id)
 
@@ -363,6 +360,9 @@ def vendors():
         address.city,
         address.pincode
     )
+
+    # 🔥 Apply smart ranking
+    vendors = score_vendors(vendors, address.pincode)
 
     return render_template(
         "vendors.html",
@@ -421,18 +421,21 @@ def assign_delivery():
     return {"status": "success"}
 
 
-@app.route("/add_delivery_boy", methods=["POST"])
+@app.route("/add_delivery_boy",  methods=["GET", "POST"])
 def add_delivery_boy():
 
-    data = request.get_json()
+    if request.method == "POST":
+        data = request.get_json()
 
-    name = data.get("name")
-    phone = data.get("phone")
-    status = data.get("status")
+        name = data.get("name")
+        phone = data.get("phone")
+        status = data.get("status")
 
-    insert_delivery_boy(name, phone, status)
+        insert_delivery_boy(name, phone, status)
 
-    return {"status": "success"}
+        return {"status": "success"}
+    
+    return render_template("admin_delivery_boys.html")
 
 @app.route("/toggle_delivery_status", methods=["POST"])
 def toggle_delivery_status():
@@ -459,3 +462,16 @@ def delete_user():
     delete_user_db(data["id"])
 
     return {"status": "success"}
+
+@app.route("/order_details/<int:order_id>")
+def order_details(order_id):
+
+    order = get_order_details(order_id)
+
+    return {
+        "id": order.id,
+        "name": order.user_name,
+        "phone": order.phone_no,
+        "address": f"{order.city}, {order.state}",
+        "payment": f"{order.payment_method} ({order.payment_status})"
+    }

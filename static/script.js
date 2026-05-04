@@ -188,7 +188,6 @@ function closeAddModal() { document.getElementById('addModal').classList.remove(
 
 function assignDelivery(order_id) {
 
-  console.log("working")
   const select = document.getElementById("db_" + order_id);
   const delivery_boy_id = select.value;
 
