@@ -99,7 +99,17 @@
                 </td>
                 <td data-label="Services">Washing × 5 items</td>
                 <td data-label="Accepted">01 May 2026</td>
-                <td data-label="Status"><span class="badge badge-accepted">Accepted</span></td>
+                <td data-label="Status">
+                  <select class="form-select form-select-sm status-dropdown">
+  <option value="accepted">Accepted</option>
+  <option value="processing">Processing</option>
+  <option value="ready">Ready for Pickup</option>
+</select>
+
+<button class="btn btn-sm btn-primary mt-1 save-status-btn">
+  Save
+</button>
+                </td>
               </tr>
               <tr>
                 <td data-label="Order ID"><span class="order-id-text">#VV-1038</span></td>
@@ -108,7 +118,17 @@
                 </td>
                 <td data-label="Services">Dry Cleaning · Ironing × 3</td>
                 <td data-label="Accepted">30 Apr 2026</td>
-                <td data-label="Status"><span class="badge badge-processing">Processing</span></td>
+                <td data-label="Status">
+                <select class="form-select form-select-sm status-dropdown">
+                  <option value="accepted" selected>Accepted</option>
+                  <option value="processing">Processing</option>
+                  <option value="ready">Ready for Pickup</option>
+                </select>
+
+                <button class="btn btn-sm btn-primary mt-1 save-status-btn">
+                  Save
+                </button>
+                </td>
               </tr>
               <tr>
                 <td data-label="Order ID"><span class="order-id-text">#VV-1036</span></td>
@@ -117,7 +137,17 @@
                 </td>
                 <td data-label="Services">Washing · Fold × 8 items</td>
                 <td data-label="Accepted">30 Apr 2026</td>
-                <td data-label="Status"><span class="badge badge-processing">Processing</span></td>
+                <td data-label="Status">
+                  <select class="form-select form-select-sm status-dropdown">
+                  <option value="accepted" selected>Accepted</option>
+                  <option value="processing">Processing</option>
+                  <option value="ready">Ready for Pickup</option>
+                </select>
+
+                <button class="btn btn-sm btn-primary mt-1 save-status-btn">
+                  Save
+                </button>
+                </td>
               </tr>
               <tr>
                 <td data-label="Order ID"><span class="order-id-text">#VV-1034</span></td>
@@ -126,7 +156,17 @@
                 </td>
                 <td data-label="Services">Ironing × 10 items</td>
                 <td data-label="Accepted">29 Apr 2026</td>
-                <td data-label="Status"><span class="badge badge-accepted">Accepted</span></td>
+                <td data-label="Status">
+                  <select class="form-select form-select-sm status-dropdown">
+                  <option value="accepted" selected>Accepted</option>
+                  <option value="processing">Processing</option>
+                  <option value="ready">Ready for Pickup</option>
+                </select>
+
+                <button class="btn btn-sm btn-primary mt-1 save-status-btn">
+                  Save
+                </button>
+                </td>
               </tr>
               <tr>
                 <td data-label="Order ID"><span class="order-id-text">#VV-1030</span></td>
@@ -135,7 +175,17 @@
                 </td>
                 <td data-label="Services">Dry Cleaning × 2 items</td>
                 <td data-label="Accepted">28 Apr 2026</td>
-                <td data-label="Status"><span class="badge badge-ready">Ready for Pickup</span></td>
+                <td data-label="Status">
+                  <select class="form-select form-select-sm status-dropdown">
+                  <option value="accepted" selected>Accepted</option>
+                  <option value="processing">Processing</option>
+                  <option value="ready">Ready for Pickup</option>
+                </select>
+
+                <button class="btn btn-sm btn-primary mt-1 save-status-btn">
+                  Save
+                </button>
+                </td>
               </tr>
             </tbody>
           </table>
@@ -148,5 +198,42 @@
   </main>
 </div>
 </div>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  document.querySelectorAll(".save-status-btn").forEach(button => {
+
+    button.addEventListener("click", function () {
+
+      const td = this.closest("td");
+      const dropdown = td.querySelector(".status-dropdown");
+
+      const value = dropdown.value;
+
+      let text = "";
+      let className = "";
+
+      if (value === "accepted") {
+        text = "Accepted";
+        className = "badge badge-accepted";
+      } 
+      else if (value === "processing") {
+        text = "Processing";
+        className = "badge badge-processing";
+      } 
+      else if (value === "ready") {
+        text = "Ready for Pickup";
+        className = "badge badge-ready";
+      }
+
+      // 🔹 Replace dropdown + button with badge
+      td.innerHTML = `<span class="${className}">${text}</span>`;
+
+    });
+
+  });
+
+});
+</script>
 </body>
 </html>
