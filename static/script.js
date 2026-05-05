@@ -412,3 +412,134 @@ function filterTable(input, tableId) {
                 row.style.display = row.textContent.toLowerCase().includes(filter) ? '' : 'none';
             });
         }
+
+// vendors_panel
+
+function loadDashboardStats() {
+  fetch("/api/dashboard_stats")
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById("newTodayCount").textContent = data.new_today;
+      document.getElementById("acceptedCount").textContent = data.accepted;
+      document.getElementById("rejectedCount").textContent = data.rejected;
+    });
+}
+
+function updateIncomingBadge() {
+  const rows = document.querySelectorAll('#incomingTable tbody tr');
+  const count = rows.length;
+
+  const badge = document.getElementById('incomingBadge');
+
+  if (!badge) return; // safety check
+
+  badge.textContent = count;
+
+  if (count === 0) {
+    badge.style.display = 'none';
+  } else {
+    badge.style.display = 'inline-block';
+  }
+}
+
+function acceptOrder(btn, id) {
+  const row = btn.closest('tr');
+
+  row.style.opacity = '.5';
+  row.style.pointerEvents = 'none';
+
+  fetch("/accept_order", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      order_id: id.replace('#VV-', '')   // clean ID
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      setTimeout(() => {
+        row.remove();
+        updateIncomingBadge();
+        loadDashboardStats();   // 🔥 ADD THIS
+        showToast(`Order ${id} accepted ✅ — moved to Processing`);
+      }, 400);
+    }
+  })
+  .catch(() => {
+    row.style.opacity = '1';
+    row.style.pointerEvents = 'auto';
+    showToast("Something went wrong ❌");
+  });
+}
+
+function rejectOrder(btn, id) {
+  const row = btn.closest('tr');
+
+  row.style.opacity = '.5';
+  row.style.pointerEvents = 'none';
+
+  fetch("/reject_order", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      order_id: id.replace('#VV-', '')
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      setTimeout(() => {
+        row.remove();
+       updateIncomingBadge();
+       loadDashboardStats();   // 🔥 ADD THIS
+        showToast(`Order ${id} rejected ❌`);
+      }, 400);
+    }
+  })
+  .catch(() => {
+    row.style.opacity = '1';
+    row.style.pointerEvents = 'auto';
+    showToast("Something went wrong ❌");
+  });
+}
+
+window.onload = function () {
+  loadPendingOrders();
+  loadDashboardStats();
+};
+
+function loadPendingOrders() {
+  fetch("/api/pending_orders")
+    .then(res => res.json())
+    .then(data => {
+      const tbody = document.querySelector("#incomingTable tbody");
+      tbody.innerHTML = "";
+
+      data.forEach(order => {
+        const row = `
+          <tr>
+            <td><span class="order-id-text">#VV-${order.id}</span></td>
+            <td>${order.user}</td>
+            <td>${order.service}</td>
+            <td>${order.pickup_date}</td>
+            <td>${order.payment}</td>
+            <td>₹${order.amount}</td>
+            <td>
+              <div class="action-btns">
+                <button class="btn-accept" onclick="acceptOrder(this,'#VV-${order.id}')">✅ Accept</button>
+                <button class="btn-reject" onclick="rejectOrder(this,'#VV-${order.id}')">❌ Reject</button>
+              </div>
+            </td>
+          </tr>
+        `;
+        tbody.innerHTML += row;
+      });
+
+      updateIncomingBadge(); // update count
+    });
+}

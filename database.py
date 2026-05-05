@@ -674,4 +674,80 @@ def get_order_details(order_id):
 
         return conn.execute(query, {"order_id": order_id}).fetchone()
     
+# vendors_panel
 
+def assign_vendor(order_id, vendor_id):
+    with engine.connect() as conn:
+        query = text("""
+            UPDATE addd_orders
+            SET vendor_id = :vendor_id
+            WHERE id = :order_id
+        """)
+        conn.execute(query, {
+            "vendor_id": vendor_id,
+            "order_id": order_id
+        })
+        conn.commit()
+
+
+def get_pending_orders(vendor_id):
+    with engine.connect() as conn:
+        query = text("""
+            SELECT 
+                o.id,
+                o.user_id,
+                s.name AS service_name,
+                o.created_at,
+                o.payment_status,
+                o.total_amount
+            FROM addd_orders o
+            JOIN services s ON o.service_id = s.id
+            WHERE o.status = 'pending'
+            AND o.vendor_id = :vendor_id
+            ORDER BY o.created_at DESC
+        """)
+
+        result = conn.execute(query, {"vendor_id": vendor_id})
+        return result.fetchall()
+
+
+def update_order_status(order_id, new_status):
+    with engine.connect() as conn:
+        query = text("""
+            UPDATE addd_orders
+            SET status = :status
+            WHERE id = :order_id
+        """)
+        conn.execute(query, {
+            "status": new_status,
+            "order_id": order_id
+        })
+        conn.commit()
+
+def get_dashboard_stats(vendor_id):
+    with engine.connect() as conn:
+        query = text("""
+            SELECT
+                SUM(CASE 
+                    WHEN status = 'pending' 
+                    AND DATE(created_at) = CURDATE() 
+                    AND vendor_id = :vendor_id 
+                    THEN 1 ELSE 0 END) AS new_today,
+
+                SUM(CASE 
+                    WHEN status = 'accepted' 
+                    AND YEARWEEK(created_at, 1) = YEARWEEK(CURDATE(), 1)
+                    AND vendor_id = :vendor_id 
+                    THEN 1 ELSE 0 END) AS accepted,
+
+                SUM(CASE 
+                    WHEN status = 'rejected' 
+                    AND YEARWEEK(created_at, 1) = YEARWEEK(CURDATE(), 1)
+                    AND vendor_id = :vendor_id 
+                    THEN 1 ELSE 0 END) AS rejected
+
+            FROM addd_orders
+        """)
+
+        result = conn.execute(query, {"vendor_id": vendor_id}).fetchone()
+        return result

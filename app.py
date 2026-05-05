@@ -1,5 +1,5 @@
-from flask import Flask, render_template,request, redirect, url_for, flash, session
-from database import load_orders_from_db, add_user_to_db, login_user_from_db, user_from_addresses_db, get_addresses_from_db, add_address_to_db,delete_address_from_db,get_all_services,get_vendors,get_vendors2, get_address_by_id,get_items_for_vendor,get_address_by_id, insert_order, insert_order_items,get_delivery_boys,assign_delivery_boy,get_admin_orders,insert_delivery_boy, toggle_delivery_boy_status,get_payments,  update_user_db, delete_user_db,get_users,get_delivery_boy_orders,get_delivery_records,get_user_orders,get_order_details
+from flask import Flask, render_template,request, redirect, url_for, flash, session,jsonify
+from database import load_orders_from_db, add_user_to_db, login_user_from_db, user_from_addresses_db, get_addresses_from_db, add_address_to_db,delete_address_from_db,get_all_services,get_vendors,get_vendors2, get_address_by_id,get_items_for_vendor,get_address_by_id, insert_order, insert_order_items,get_delivery_boys,assign_delivery_boy,get_admin_orders,insert_delivery_boy, toggle_delivery_boy_status,get_payments,  update_user_db, delete_user_db,get_users,get_delivery_boy_orders,get_delivery_records,get_user_orders,get_order_details,update_order_status,get_pending_orders, get_dashboard_stats
 
 app = Flask(__name__)
 app.secret_key = "mysecret123"
@@ -487,3 +487,50 @@ def order_details(order_id):
         "address": f"{order.city}, {order.state}",
         "payment": f"{order.payment_method} ({order.payment_status})"
     }
+
+@app.route("/api/pending_orders")
+def pending_orders():
+    vendor_id = 1  # ⚠️ replace with session later
+
+    orders = get_pending_orders(vendor_id)
+
+    data = []
+    for o in orders:
+        data.append({
+            "id": o.id,
+            "user": f"User {o.user_id}",
+            "service": o.service_name,
+            "pickup_date": str(o.created_at),
+            "payment": o.payment_status,
+            "amount": o.total_amount
+        })
+
+    return jsonify(data)
+
+@app.route("/accept_order", methods=["POST"])
+def accept_order():
+    order_id = request.json.get("order_id")
+
+    update_order_status(order_id, "accepted")
+
+    return jsonify({"success": True})
+
+@app.route("/reject_order", methods=["POST"])
+def reject_order():
+    order_id = request.json.get("order_id")
+
+    update_order_status(order_id, "rejected")
+
+    return jsonify({"success": True})
+
+@app.route("/api/dashboard_stats")
+def dashboard_stats():
+    vendor_id = 1  # ⚠️ replace with session later
+
+    stats = get_dashboard_stats(vendor_id)
+
+    return jsonify({
+        "new_today": stats.new_today or 0,
+        "accepted": stats.accepted or 0,
+        "rejected": stats.rejected or 0
+    })
