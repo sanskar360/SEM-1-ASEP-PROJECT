@@ -88,9 +88,21 @@ def delivery_profile():
 
 # Vendors panel Routes
 
-@app.route("/vendors_panel")
-def vendors_panel():
-    return render_template("vendors_panel.html")
+@app.route("/vendors_history")
+def vendors_history():
+    return render_template("vendors_history.html")
+
+@app.route("/vendors_incoming.html")
+def vendors_incoming():
+    return render_template("vendors_incoming.html")
+
+@app.route("/vendors_processing.html")
+def vendors_processing():
+    return render_template("vendors_processing.html")
+
+@app.route("/vendors_services.html")
+def vendors_services():
+    return render_template("vendors_services.html")
 
 
 @app.context_processor
@@ -181,7 +193,7 @@ def login():
             )
     
     if user_id == 54:
-        return redirect(url_for("vendors_panel"))
+        return redirect(url_for("vendors_incoming"))
 
 
     flash("Login Successful!", "success")
