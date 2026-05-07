@@ -517,7 +517,7 @@ function loadPendingOrders() {
   fetch("/api/pending_orders")
     .then(res => res.json())
     .then(data => {
-      const tbody = document.querySelector("#incomingTable tbody");
+      const tbody = document.querySelector("#processingTable tbody");
       tbody.innerHTML = "";
 
       data.forEach(order => {
@@ -543,3 +543,223 @@ function loadPendingOrders() {
       updateIncomingBadge(); // update count
     });
 }
+
+
+// vendor/processing
+
+function saveStatus(btn, orderId) {
+
+  const row = btn.closest("tr");
+
+  const dropdown = row.querySelector(".status-dropdown");
+
+  const status = dropdown.value;
+
+  fetch("/update_order_status", {
+
+    method: "POST",
+
+    headers: {
+      "Content-Type": "application/json"
+    },
+
+    body: JSON.stringify({
+      order_id: orderId,
+      status: status
+    })
+
+  })
+
+  .then(res => res.json())
+
+  .then(data => {
+
+    if (data.success) {
+
+      // remove old badge classes
+      dropdown.classList.remove(
+        "badge-accepted",
+        "badge-processing",
+        "badge-ready"
+      );
+
+      // add new color class
+      if (status === "accepted") {
+        dropdown.classList.add("badge-accepted");
+      }
+
+      else if (status === "processing") {
+        dropdown.classList.add("badge-processing");
+      }
+
+      else if (status === "ready") {
+        dropdown.classList.add("badge-ready");
+      }
+
+      showToast("Status updated ✅");
+
+      loadActiveStats();
+
+    }
+
+  });
+
+}
+
+document.addEventListener("change", function(e) {
+
+  if (e.target.classList.contains("status-dropdown")) {
+
+    e.target.classList.remove(
+      "badge-accepted",
+      "badge-processing",
+      "badge-ready"
+    );
+
+    if (e.target.value === "accepted") {
+      e.target.classList.add("badge-accepted");
+    }
+
+    else if (e.target.value === "processing") {
+      e.target.classList.add("badge-processing");
+    }
+
+    else if (e.target.value === "ready") {
+      e.target.classList.add("badge-ready");
+    }
+
+  }
+
+});
+
+function loadActiveOrders() {
+
+  fetch("/api/active_orders")
+    .then(res => res.json())
+    .then(data => {
+
+      const tbody = document.querySelector("#processingTable tbody");
+
+      tbody.innerHTML = "";
+
+      data.forEach(order => {
+
+        const row = `
+          <tr>
+            <td>
+              <span class="order-id-text">
+                #VV-${order.id}
+              </span>
+            </td>
+
+            <td>${order.user}</td>
+
+            <td>${order.service}</td>
+
+            <td>${order.accepted}</td>
+
+            <td>
+              <select class="form-select form-select-sm status-dropdown">
+
+                <option value="accepted"
+                  ${order.status === 'accepted' ? 'selected' : ''}>
+                  Accepted
+                </option>
+
+                <option value="processing"
+                  ${order.status === 'processing' ? 'selected' : ''}>
+                  Processing
+                </option>
+
+                <option value="ready"
+                  ${order.status === 'ready' ? 'selected' : ''}>
+                  Ready for Pickup
+                </option>
+
+              </select>
+
+              <button 
+                class="btn btn-sm btn-primary mt-1"
+                onclick="saveStatus(this, '${order.id}')">
+
+                Save
+
+              </button>
+            </td>
+          </tr>
+        `;
+
+        tbody.innerHTML += row;
+
+      });
+
+    });
+}
+
+function saveStatus(btn, orderId) {
+
+  const row = btn.closest("tr");
+
+  const status = row.querySelector(".status-dropdown").value;
+
+  fetch("/update_order_status", {
+
+    method: "POST",
+
+    headers: {
+      "Content-Type": "application/json"
+    },
+
+    body: JSON.stringify({
+      order_id: orderId,
+      status: status
+    })
+
+  })
+
+  .then(res => res.json())
+
+  .then(data => {
+
+    if (data.success) {
+
+      showToast("Status updated ✅");
+
+      loadActiveStats();
+
+    }
+
+  });
+
+}
+
+function loadActiveStats() {
+
+  fetch("/api/active_stats")
+    .then(res => res.json())
+    .then(data => {
+
+      document.getElementById("acceptedCount").textContent =
+        data.accepted;
+
+      document.getElementById("processingCount").textContent =
+        data.processing;
+
+      document.getElementById("readyCount").textContent =
+        data.ready;
+
+    });
+
+}
+
+window.onload = function () {
+
+  loadPendingOrders();
+
+  loadDashboardStats();
+
+  loadActiveOrders();
+
+  loadActiveStats();
+
+};

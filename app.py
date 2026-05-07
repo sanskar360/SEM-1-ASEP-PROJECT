@@ -1,5 +1,5 @@
 from flask import Flask, render_template,request, redirect, url_for, flash, session,jsonify
-from database import load_orders_from_db, add_user_to_db, login_user_from_db, user_from_addresses_db, get_addresses_from_db, add_address_to_db,delete_address_from_db,get_all_services,get_vendors,get_vendors2, get_address_by_id,get_items_for_vendor,get_address_by_id, insert_order, insert_order_items,get_delivery_boys,assign_delivery_boy,get_admin_orders,insert_delivery_boy, toggle_delivery_boy_status,get_payments,  update_user_db, delete_user_db,get_users,get_delivery_boy_orders,get_delivery_records,get_user_orders,get_order_details,update_order_status,get_pending_orders, get_dashboard_stats
+from database import load_orders_from_db, add_user_to_db, login_user_from_db, user_from_addresses_db, get_addresses_from_db, add_address_to_db,delete_address_from_db,get_all_services,get_vendors,get_vendors2, get_address_by_id,get_items_for_vendor,get_address_by_id, insert_order, insert_order_items,get_delivery_boys,assign_delivery_boy,get_admin_orders,insert_delivery_boy, toggle_delivery_boy_status,get_payments,  update_user_db, delete_user_db,get_users,get_delivery_boy_orders,get_delivery_records,get_user_orders,get_order_details,update_order_status,get_pending_orders, get_dashboard_stats,get_active_orders,update_active_order_status,get_active_orders_stats
 
 app = Flask(__name__)
 app.secret_key = "mysecret123"
@@ -533,4 +533,54 @@ def dashboard_stats():
         "new_today": stats.new_today or 0,
         "accepted": stats.accepted or 0,
         "rejected": stats.rejected or 0
+    })
+
+# routes for vendors/processing
+
+@app.route("/api/active_orders")
+def active_orders():
+
+    vendor_id = 1   # replace with session later
+
+    orders = get_active_orders(vendor_id)
+
+    data = []
+
+    for o in orders:
+        data.append({
+            "id": o.id,
+            "user": f"User {o.user_id}",
+            "service": o.service_name,
+            "accepted": str(o.created_at),
+            "status": o.status
+        })
+
+    return jsonify(data)
+
+@app.route("/update_order_status", methods=["POST"])
+def update_order_status_route():
+
+    data = request.json
+
+    order_id = data.get("order_id")
+    status = data.get("status")
+
+    update_active_order_status(order_id, status)
+
+    return jsonify({
+        "success": True
+    })
+
+@app.route("/api/active_stats")
+def active_stats():
+
+    vendor_id = 1
+    
+
+    stats = get_active_orders_stats(vendor_id)
+    print(stats)
+    return jsonify({
+        "accepted": stats.accepted or 0,
+        "processing": stats.processing or 0,
+        "ready": stats.ready_count or 0
     })

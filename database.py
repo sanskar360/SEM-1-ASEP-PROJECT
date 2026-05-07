@@ -674,7 +674,7 @@ def get_order_details(order_id):
 
         return conn.execute(query, {"order_id": order_id}).fetchone()
     
-# vendors_panel
+# vendors_panel/incoming
 
 def assign_vendor(order_id, vendor_id):
     with engine.connect() as conn:
@@ -751,3 +751,82 @@ def get_dashboard_stats(vendor_id):
 
         result = conn.execute(query, {"vendor_id": vendor_id}).fetchone()
         return result
+    
+# vendors_panel/processing
+
+def get_active_orders(vendor_id):
+    with engine.connect() as conn:
+        query = text("""
+            SELECT 
+                o.id,
+                o.user_id,
+                s.name AS service_name,
+                o.created_at,
+                o.status
+            FROM addd_orders o
+            JOIN services s 
+                ON o.service_id = s.id
+            WHERE o.vendor_id = :vendor_id
+            AND o.status IN ('accepted', 'processing', 'ready')
+            ORDER BY o.created_at DESC
+        """)
+
+        result = conn.execute(query, {
+            "vendor_id": vendor_id
+        })
+
+        return result.fetchall()
+    
+def get_active_orders_stats(vendor_id):
+
+    with engine.connect() as conn:
+
+        query = text("""
+
+            SELECT
+
+                SUM(CASE
+                    WHEN status = 'accepted'
+                    AND vendor_id = :vendor_id
+                    THEN 1 ELSE 0
+                END) AS accepted,
+
+                SUM(CASE
+                    WHEN status = 'processing'
+                    AND vendor_id = :vendor_id
+                    THEN 1 ELSE 0
+                END) AS processing,
+
+                SUM(CASE
+                    WHEN status = 'ready'
+                    AND vendor_id = :vendor_id
+                    THEN 1 ELSE 0
+                END) AS ready_count
+
+            FROM addd_orders
+
+        """)
+
+        result = conn.execute(
+            query,
+            {"vendor_id": vendor_id}
+        ).fetchone()
+
+        return result
+
+def update_active_order_status(order_id, status):
+    with engine.connect() as conn:
+        query = text("""
+            UPDATE addd_orders
+            SET status = :status
+            WHERE id = :order_id
+        """)
+
+        conn.execute(query, {
+            "status": status,
+            "order_id": order_id
+        })
+
+        conn.commit()
+
+
