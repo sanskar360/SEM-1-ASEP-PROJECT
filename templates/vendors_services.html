@@ -1,279 +1,180 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Vendor Portal - Services &amp; Pricing</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="vendor_dashboard.css"/>
-<link rel="stylesheet" href="{{ url_for('static', filename='vendor_dashboard.css') }}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vendor Portal - Services &amp; Pricing</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='vendor_dashboard.css') }}">
 </head>
+
 <body>
-<div class="admin-layout">
-<aside class="admin-sidebar">
-  <div class="sidebar-brand">
-    <a href="{{ url_for('vendors_incoming') }}" class="brand-name">Vega<span>Vastra</span></a>
-    <span class="brand-role">🏪 Vendor Portal</span>
-  </div>
-  <nav class="sidebar-nav">
-    <span class="nav-section-label">Orders</span>
-    <a class="nav-link" href="{{ url_for('vendors_incoming') }}">
-      <span class="nl-icon">📥</span><span>Incoming Orders</span>
-      <span class="nav-badge">3</span>
-    </a>
-    <a class="nav-link" href="{{ url_for('vendors_processing') }}">
-      <span class="nl-icon">⚙️</span><span>Order Processing</span>
-    </a>
-    <a class="nav-link" href="{{ url_for('vendors_history') }}">
-      <span class="nl-icon">🕐</span><span>Order History</span>
-    </a>
-    <span class="nav-section-label">Store</span>
-    <a class="nav-link active" href="{{ url_for('vendors_services') }}">
-      <span class="nl-icon">🧺</span><span>Services &amp; Pricing</span>
-    </a>
-  </nav>
-  <div class="sidebar-footer">
-    <a href="{{ url_for('home') }}" class="logout-link"><span class="nl-icon">🚪</span><span>Logout</span></a>
-  </div>
-</aside>
-<div class="admin-main">
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <div class="sidebar-brand">
+        <a href="{{ url_for('vendors_incoming') }}" class="brand-name">Vega<span>Vastra</span></a>
+        <span class="brand-role">🏪 Vendor Portal</span>
+      </div>
+      <nav class="sidebar-nav">
+        <span class="nav-section-label">Orders</span>
+        <a class="nav-link" href="{{ url_for('vendors_incoming') }}">
+          <span class="nl-icon">📥</span><span>Incoming Orders</span>
+          <span class="nav-badge" id="incomingBadge">3</span>
+        </a>
+        <a class="nav-link" href="{{ url_for('vendors_processing') }}">
+          <span class="nl-icon">⚙️</span><span>Order Processing</span>
+        </a>
+        <a class="nav-link" href="{{ url_for('vendors_history') }}">
+          <span class="nl-icon">🕐</span><span>Order History</span>
+        </a>
+        <span class="nav-section-label">Store</span>
+        <a class="nav-link active" href="{{ url_for('vendors_services') }}">
+          <span class="nl-icon">🧺</span><span>Services &amp; Pricing</span>
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <a href="{{ url_for('home') }}" class="logout-link"><span class="nl-icon">🚪</span><span>Logout</span></a>
+      </div>
+    </aside>
+    <div class="admin-main">
 
-  <header class="admin-topbar">
-    <div style="display:flex;align-items:center;gap:14px">
-      <button class="hamburger" onclick="openSidebar()"><span></span><span></span><span></span></button>
-      <span class="topbar-title" id="topbarTitle">Services & Pricing</span>
-    </div>
-    <div class="topbar-right">
-      <span class="topbar-store">Fresh &amp; Clean Laundry</span>
-      <div class="topbar-avatar">FC</div>
-    </div>
-  </header>
-  <main class="admin-content">
-<div class="section active" id="sec-services">
-      <div class="page-header">
-        <h1>Services &amp; Pricing</h1>
-        <p>Manage the services your store offers and set per-item prices</p>
-      </div>
+      <header class="admin-topbar">
+        <div style="display:flex;align-items:center;gap:14px">
+          <button class="hamburger" onclick="openSidebar()"><span></span><span></span><span></span></button>
+          <span class="topbar-title" id="topbarTitle">Services & Pricing</span>
+        </div>
+        <div class="topbar-right">
+          <span class="topbar-store">Fresh &amp; Clean Laundry</span>
+          <div class="topbar-avatar">FC</div>
+        </div>
+      </header>
+      <main class="admin-content">
+        <div class="section active" id="sec-services">
+          <div class="page-header">
+            <h1>Services &amp; Pricing</h1>
+            <p>Manage the services your store offers and set per-item prices</p>
+          </div>
 
-      <!-- Add service form -->
-      <div class="add-service-card">
-        <h3>➕ Add New Service</h3>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Service Name</label>
-            <input class="form-control" type="text" placeholder="e.g. Steam Ironing" id="newServiceName">
-          </div>
-          <div class="form-group">
-            <label>Category</label>
-            <select class="form-control" id="newServiceCat">
-              <option>Washing</option>
-              <option>Ironing</option>
-              <option>Dry Cleaning</option>
-              <option>Folding</option>
-              <option>Other</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Price per Item (₹)</label>
-            <input class="form-control" type="number" placeholder="e.g. 25" id="newServicePrice">
-          </div>
-          <div class="form-group">
-            <label>Turnaround (hrs)</label>
-            <input class="form-control" type="number" placeholder="e.g. 24" id="newServiceTat">
-          </div>
-        </div>
-        <button class="btn-primary" onclick="addService()">Add Service</button>
-      </div>
+          <!-- Add service form -->
+          <div class="add-service-card">
+            <h3>➕ Add New Service</h3>
 
-      <!-- Services grid -->
-      <div class="services-grid" id="servicesGrid">
-        <div class="service-card c-sky">
-          <div class="service-icon">🫧</div>
-          <div class="service-name">Standard Washing</div>
-          <div class="service-price">₹<strong>20</strong> / item</div>
-          <div class="service-meta">⏱ 24 hrs turnaround · Washing</div>
-          <div class="service-actions">
-            <button class="btn-edit" onclick="editService(this)">✏️ Edit</button>
-            <button class="btn-danger" onclick="removeService(this)">🗑 Remove</button>
+            <div class="form-row">
+
+              <div class="form-group">
+                <label>Service Name</label>
+
+                <input class="form-control" type="text" placeholder="e.g. Steam Ironing" id="newServiceName">
+              </div>
+
+              <div class="form-group">
+                <label>Price per Item (₹)</label>
+
+                <input class="form-control" type="number" placeholder="e.g. 25" id="newServicePrice">
+              </div>
+
+            </div>
+
+            <button class="btn-primary" onclick="addService()">
+              Add Service
+            </button>
+
+          </div>
+
+          <!-- Services grid -->
+          <div class="services-grid" id="servicesGrid">
+            <div class="service-card c-sky">
+              <div class="service-icon">🫧</div>
+              <div class="service-name">Standard Washing</div>
+              <div class="service-price">₹<strong>20</strong> / item</div>
+              <div class="service-meta">⏱ 24 hrs turnaround · Washing</div>
+              <div class="service-actions">
+                <button class="btn-edit" onclick="editService(this)">✏️ Edit</button>
+                <button class="btn-danger"onclick="removeService(this, '${service.id}')">🗑 Remove</button>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="service-card c-green">
-          <div class="service-icon">👔</div>
-          <div class="service-name">Shirt Ironing</div>
-          <div class="service-price">₹<strong>15</strong> / item</div>
-          <div class="service-meta">⏱ 12 hrs turnaround · Ironing</div>
-          <div class="service-actions">
-            <button class="btn-edit" onclick="editService(this)">✏️ Edit</button>
-            <button class="btn-danger" onclick="removeService(this)">🗑 Remove</button>
-          </div>
-        </div>
-        <div class="service-card c-orange">
-          <div class="service-icon">🧥</div>
-          <div class="service-name">Dry Cleaning</div>
-          <div class="service-price">₹<strong>150</strong> / item</div>
-          <div class="service-meta">⏱ 48 hrs turnaround · Dry Cleaning</div>
-          <div class="service-actions">
-            <button class="btn-edit" onclick="editService(this)">✏️ Edit</button>
-            <button class="btn-danger" onclick="removeService(this)">🗑 Remove</button>
-          </div>
-        </div>
-        <div class="service-card c-purple">
-          <div class="service-icon">🛏</div>
-          <div class="service-name">Bed Sheet Wash</div>
-          <div class="service-price">₹<strong>80</strong> / item</div>
-          <div class="service-meta">⏱ 36 hrs turnaround · Washing</div>
-          <div class="service-actions">
-            <button class="btn-edit" onclick="editService(this)">✏️ Edit</button>
-            <button class="btn-danger" onclick="removeService(this)">🗑 Remove</button>
-          </div>
-        </div>
-        <div class="service-card c-sky">
-          <div class="service-icon">🧺</div>
-          <div class="service-name">Wash + Fold</div>
-          <div class="service-price">₹<strong>35</strong> / item</div>
-          <div class="service-meta">⏱ 24 hrs turnaround · Washing</div>
-          <div class="service-actions">
-            <button class="btn-edit" onclick="editService(this)">✏️ Edit</button>
-            <button class="btn-danger" onclick="removeService(this)">🗑 Remove</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </main>
-</div>
-</div>
-<!-- ══ ORDER DETAIL MODAL ══ -->
-<div class="modal-backdrop" id="orderModal" onclick="handleBackdropClick(event)">
-  <div class="modal-box" id="modalBox">
-    <div class="modal-header">
-      <div>
-        <h3 id="modalTitle">Order #VV-1045</h3>
-        <span id="modalSub">Customer: Rahul Kumar</span>
-      </div>
-      <button class="modal-close" onclick="closeModal()">✕</button>
-    </div>
-    <div class="modal-body">
-      <!-- Basic Info -->
-      <div class="detail-section">
-        <div class="section-label">📋 Customer & Pickup Info</div>
-        <div class="info-grid">
-          <div><div class="info-label">Customer Name</div><div class="info-value hi" id="mCustName">Rahul Kumar</div></div>
-          <div><div class="info-label">Phone</div><div class="info-value" id="mPhone">+91 98765 43210</div></div>
-          <div style="grid-column:1/-1"><div class="info-label">Pickup Address</div><div class="info-value" id="mAddress">14B, Koregaon Park, Pune — 411001</div></div>
-          <div><div class="info-label">Pickup Slot</div><div class="info-value" id="mPickup">03 May 2026, 10:00 AM</div></div>
-          <div><div class="info-label">Payment</div><div class="info-value" id="mPayment"><span class="badge badge-paid">Paid</span></div></div>
-        </div>
-      </div>
-      <!-- Services -->
-      <div class="detail-section">
-        <div class="section-label">🧺 Selected Services</div>
-        <div id="mServices">
-          <div class="service-item-row"><div><div class="si-name">Standard Washing</div><div class="si-qty">× 3 items</div></div><div class="si-price">₹60</div></div>
-          <div class="service-item-row"><div><div class="si-name">Shirt Ironing</div><div class="si-qty">× 3 items</div></div><div class="si-price">₹45</div></div>
-        </div>
-        <div style="display:flex;justify-content:space-between;padding:10px 0 0;border-top:1px dashed var(--border);margin-top:10px">
-          <span style="font-weight:600;color:var(--text-muted)">Total</span>
-          <span style="font-size:16px;font-weight:800;color:var(--navy)" id="mTotal">₹349</span>
-        </div>
-      </div>
-      <!-- Status -->
-      <div class="detail-section">
-        <div class="section-label">📦 Order Status</div>
-        <div id="mStatusContent" style="font-size:14px;color:var(--text)">Awaiting acceptance from vendor.</div>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn-secondary" onclick="closeModal()">Close</button>
+      </main>
     </div>
   </div>
-</div>
-<script>
-/* ── Sidebar ── */
-function openSidebar() {
-  document.getElementById('adminSidebar').classList.add('open');
-  document.getElementById('sidebarOverlay').classList.add('open');
-}
-function closeSidebar() {
-  document.getElementById('adminSidebar').classList.remove('open');
-  document.getElementById('sidebarOverlay').classList.remove('open');
-}
-function showToast(message) {
-  const toast = document.createElement("div");
-  toast.innerText = message;
-
-  toast.style.position = "fixed";
-  toast.style.bottom = "20px";
-  toast.style.right = "20px";
-  toast.style.background = "#1e3a8a";
-  toast.style.color = "white";
-  toast.style.padding = "12px 16px";
-  toast.style.borderRadius = "8px";
-  toast.style.boxShadow = "0 4px 10px rgba(0,0,0,0.2)";
-  toast.style.zIndex = "9999";
-
-  document.body.appendChild(toast);
-
-  setTimeout(() => {
-    toast.remove();
-  }, 3000);
-}
-/* ── Services ── */
-const colorCycle = ['c-sky','c-green','c-orange','c-purple'];
-const iconMap = { Washing:'🫧', Ironing:'👔', 'Dry Cleaning':'🧥', Folding:'🧺', Other:'✨' };
-let colorIdx = 0;
-function addService() {
-  const name  = document.getElementById('newServiceName').value.trim();
-  const cat   = document.getElementById('newServiceCat').value;
-  const price = document.getElementById('newServicePrice').value;
-  const tat   = document.getElementById('newServiceTat').value;
-  if (!name && !price) {
-  showToast("Please enter name and price ⚠️");
-  return;
-}
-
-if (!name) {
-  showToast("Please enter service name ⚠️");
-  return;
-}
-
-if (!price) {
-  showToast("Please enter price ⚠️");
-  return;
-}
-  const icon = iconMap[cat] || '✨';
-  const color = colorCycle[colorIdx % colorCycle.length]; colorIdx++;
-  const card = document.createElement('div');
-  card.className = `service-card ${color}`;
-  card.innerHTML = `
-    <div class="service-icon">${icon}</div>
-    <div class="service-name">${name}</div>
-    <div class="service-price">₹<strong>${price}</strong> / item</div>
-    <div class="service-meta">⏱ ${tat || '24'} hrs turnaround · ${cat}</div>
-    <div class="service-actions">
-      <button class="btn-edit" onclick="editService(this)">✏️ Edit</button>
-      <button class="btn-danger" onclick="removeService(this)">🗑 Remove</button>
-    </div>`;
-  document.getElementById('servicesGrid').appendChild(card);
-  ['newServiceName','newServicePrice','newServiceTat'].forEach(id => document.getElementById(id).value = '');
-  showToast(`Service "${name}" added ✅`);
-}
-function removeService(btn) {
-  const card = btn.closest('.service-card');
-  card.style.transform = 'scale(.9)';
-  card.style.opacity = '0';
-  card.style.transition = 'all .25s';
-  setTimeout(() => card.remove(), 250);
-}
-function editService(btn) {
-  const card = btn.closest('.service-card');
-  const name = card.querySelector('.service-name').textContent;
-  const newName = prompt('Edit service name:', name);
-  if (newName) card.querySelector('.service-name').textContent = newName;
-  const priceEl = card.querySelector('.service-price strong');
-  const newPrice = prompt('Edit price per item (₹):', priceEl.textContent);
-  if (newPrice) priceEl.textContent = newPrice;
-}
-</script>
+  <!-- ══ ORDER DETAIL MODAL ══ -->
+  <div class="modal-backdrop" id="orderModal" onclick="handleBackdropClick(event)">
+    <div class="modal-box" id="modalBox">
+      <div class="modal-header">
+        <div>
+          <h3 id="modalTitle">Order #VV-1045</h3>
+          <span id="modalSub">Customer: Rahul Kumar</span>
+        </div>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <!-- Basic Info -->
+        <div class="detail-section">
+          <div class="section-label">📋 Customer & Pickup Info</div>
+          <div class="info-grid">
+            <div>
+              <div class="info-label">Customer Name</div>
+              <div class="info-value hi" id="mCustName">Rahul Kumar</div>
+            </div>
+            <div>
+              <div class="info-label">Phone</div>
+              <div class="info-value" id="mPhone">+91 98765 43210</div>
+            </div>
+            <div style="grid-column:1/-1">
+              <div class="info-label">Pickup Address</div>
+              <div class="info-value" id="mAddress">14B, Koregaon Park, Pune — 411001</div>
+            </div>
+            <div>
+              <div class="info-label">Pickup Slot</div>
+              <div class="info-value" id="mPickup">03 May 2026, 10:00 AM</div>
+            </div>
+            <div>
+              <div class="info-label">Payment</div>
+              <div class="info-value" id="mPayment"><span class="badge badge-paid">Paid</span></div>
+            </div>
+          </div>
+        </div>
+        <!-- Services -->
+        <div class="detail-section">
+          <div class="section-label">🧺 Selected Services</div>
+          <div id="mServices">
+            <div class="service-item-row">
+              <div>
+                <div class="si-name">Standard Washing</div>
+                <div class="si-qty">× 3 items</div>
+              </div>
+              <div class="si-price">₹60</div>
+            </div>
+            <div class="service-item-row">
+              <div>
+                <div class="si-name">Shirt Ironing</div>
+                <div class="si-qty">× 3 items</div>
+              </div>
+              <div class="si-price">₹45</div>
+            </div>
+          </div>
+          <div
+            style="display:flex;justify-content:space-between;padding:10px 0 0;border-top:1px dashed var(--border);margin-top:10px">
+            <span style="font-weight:600;color:var(--text-muted)">Total</span>
+            <span style="font-size:16px;font-weight:800;color:var(--navy)" id="mTotal">₹349</span>
+          </div>
+        </div>
+        <!-- Status -->
+        <div class="detail-section">
+          <div class="section-label">📦 Order Status</div>
+          <div id="mStatusContent" style="font-size:14px;color:var(--text)">Awaiting acceptance from vendor.</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="closeModal()">Close</button>
+      </div>
+    </div>
+  </div>
+ <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
+
 </html>

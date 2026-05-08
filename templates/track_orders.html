@@ -1,137 +1,153 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Track Orders</title>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="track_orders.css">
-<link rel="stylesheet" href="{{ url_for('static',filename='track_orders.css')}}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Track Orders</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="track_orders.css">
+    <link rel="stylesheet" href="{{ url_for('static',filename='track_orders.css')}}">
 </head>
+
 <body>
 
-<div class="container">
+    <div class="container">
 
-<div class="page-header">
-<h1>Track Your Orders</h1>
-<p>Monitor pickup, cleaning progress and delivery of your laundry orders.</p>
-</div>
+        <div class="page-header">
+            <h1>Track Your Orders</h1>
+            <p>Monitor pickup, cleaning progress and delivery of your laundry orders.</p>
+        </div>
 
-<div class="filter-card">
-<div class="filter-grid">
-<input class="input" placeholder="Search Order ID / Vendor">
-<select class="select">
-<option>Status</option>
-<option>Placed</option>
-<option>Picked Up</option>
-<option>Processing</option>
-<option>Out for Delivery</option>
-<option>Delivered</option>
-</select>
-<input type="date" class="input">
-<select class="select">
-<option>Service</option>
-<option>Wash & Iron</option>
-<option>Dry Clean</option>
-<option>Premium Care</option>
-</select>
-<button class="btn btn-primary">Apply</button>
-</div>
-</div>
+        <!-- <div class="filter-card">
+            <div class="filter-grid">
+                <input class="input" placeholder="Search Order ID / Vendor">
+                <select class="select">
+                    <option>Status</option>
+                    <option>Placed</option>
+                    <option>Picked Up</option>
+                    <option>Processing</option>
+                    <option>Out for Delivery</option>
+                    <option>Delivered</option>
+                </select>
+                <input type="date" class="input">
+                <select class="select">
+                    <option>Service</option>
+                    <option>Wash & Iron</option>
+                    <option>Dry Clean</option>
+                    <option>Premium Care</option>
+                </select>
+                <button class="btn btn-primary">Apply</button>
+            </div>
+        </div> -->
 
-<div class="table-card">
-<div class="table-head">My Laundry Orders</div>
+        <div class="table-card">
+            <div class="table-head">My Laundry Orders</div>
 
-<div class="table-wrap">
-<table>
-<thead>
-<tr>
-<th>Order ID</th>
-<th>Vendor</th>
-<th>Status</th>
-<th>Service</th>
-<th>Amount</th>
-<th>Action</th>
-</tr>
-</thead>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Vendor</th>
+                            <th>Status</th>
+                            <th>Service</th>
+                            <th>Amount</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
 
-<tbody>
+                    <tbody>
 
-<tr>
-<td>#VV101</td>
-<td>AquaFresh Pro</td>
-<td><span class="badge processing">Processing</span></td>
-<td>Wash & Iron</td>
-<td class="amount">₹220</td>
-<td><button class="btn btn-light" onclick="openModal()">View</button></td>
-</tr>
+                        {% for order in orders %}
+                        <tr>
 
-<tr>
-<td>#VV102</td>
-<td>QuickClean Hub</td>
-<td><span class="badge delivery">Out for Delivery</span></td>
-<td>Dry Clean</td>
-<td class="amount">₹480</td>
-<td><button class="btn btn-light" onclick="openModal()">View</button></td>
-</tr>
+                            <td>{{ order.id }}</td>
 
-<tr>
-<td>#VV103</td>
-<td>FreshFold Center</td>
-<td><span class="badge delivered">Delivered</span></td>
-<td>Premium Care</td>
-<td class="amount">₹799</td>
-<td><button class="btn btn-light" onclick="openModal()">View</button></td>
-</tr>
+                            <td>{{ order.vendor_name }}</td>
 
-</tbody>
-</table>
-</div>
-</div>
-</div>
+                            <td>
+                                <span class="badge {{ order.status }}">
+                                    {{ order.status.replace('_',' ').title() }}
+                                </span>
+                            </td>
+
+                            <td>{{ order.service_name }}</td>
+
+                            <td class="amount">₹{{ order.total_amount }}</td>
+
+                            <td>
+                                <button class="btn btn-light"
+                                    onclick="openModal('{{ order.id }}')">
+                                    View
+                                </button>
+                            </td>
+
+                        </tr>
+                        {% endfor %}
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 
 
-<div class="modal" id="orderModal">
-<div class="modal-box">
+    <div class="modal" id="orderModal">
+        <div class="modal-box">
 
-<div class="modal-header">
-<h2>Order Details</h2>
-<button class="close" onclick="closeModal()">×</button>
-</div>
+            <div class="modal-header">
+                <h2>Order Details</h2>
+                <button class="close" onclick="closeModal()">×</button>
+            </div>
 
-<div class="modal-body">
-<div class="info-card">
-<div class="section-title">Basic Info</div>
-<div class="info-row"><span>Order ID</span><strong>#VV101</strong></div>
-<div class="info-row"><span>Customer Name</span><strong>Rahul Sharma</strong></div>
-<div class="info-row"><span>Phone</span><strong>+91 9876543210</strong></div>
-<div class="info-row"><span>Address</span><strong>Baner, Pune</strong></div>
-<div class="info-row"><span>Payment Method & Status</span><strong>UPI Paid</strong></div>
-</div>
-</div>
+            <div class="modal-body">
+                <div class="info-card">
+                    <div class="section-title">Basic Info</div>
+                    <div class="info-row"><span>Order ID</span><strong>#VV101</strong></div>
+                    <div class="info-row"><span>Customer Name</span><strong>Rahul Sharma</strong></div>
+                    <div class="info-row"><span>Phone</span><strong>+91 9876543210</strong></div>
+                    <div class="info-row"><span>Address</span><strong>Baner, Pune</strong></div>
+                    <div class="info-row"><span>Payment Method & Status</span><strong>UPI Paid</strong></div>
+                </div>
+            </div>
 
-</div>
-</div>
-</div>
+        </div>
+    </div>
+    </div>
 
-<script>
-function openModal(){
-document.getElementById("orderModal").classList.add("show");
-}
+    <script>
+        function openModal(order_id) {
 
-function closeModal(){
-document.getElementById("orderModal").classList.remove("show");
-}
+            fetch(`/order_details/${order_id}`)
+                .then(res => res.json())
+                .then(data => {
 
-window.onclick=function(e){
-const modal=document.getElementById("orderModal");
-if(e.target===modal){
-closeModal();
-}
-}
-</script>
+                document.querySelector(".info-row:nth-child(2) strong").innerText = "#" + data.id;
+                document.querySelector(".info-row:nth-child(3) strong").innerText = data.name;
+                document.querySelector(".info-row:nth-child(4) strong").innerText = data.phone;
+                document.querySelector(".info-row:nth-child(5) strong").innerText = data.address;
+                document.querySelector(".info-row:nth-child(6) strong").innerText = data.payment;
+
+                document.getElementById("orderModal").style.display = "flex";
+                });
+            }
+
+            function closeModal() {
+            document.getElementById("orderModal").style.display = "none";
+            }
+
+        window.onclick = function (e) {
+            const modal = document.getElementById("orderModal");
+            if (e.target === modal) {
+                closeModal();
+            }
+        }
+    </script>
 
 </body>
+
 </html>

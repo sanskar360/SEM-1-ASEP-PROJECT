@@ -1,239 +1,131 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Vendor Portal - Order Processing</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="vendor_dashboard.css"/>
-<link rel="stylesheet" href="{{ url_for('static', filename='vendor_dashboard.css') }}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vendor Portal - Order Processing</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='vendor_dashboard.css') }}">
 </head>
+
 <body>
-<div class="admin-layout">
-<aside class="admin-sidebar">
-  <div class="sidebar-brand">
-    <a href="{{ url_for('vendors_incoming') }}" class="brand-name">Vega<span>Vastra</span></a>
-    <span class="brand-role">🏪 Vendor Portal</span>
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <div class="sidebar-brand">
+        <a href="{{ url_for('vendors_incoming') }}" class="brand-name">Vega<span>Vastra</span></a>
+        <span class="brand-role">🏪 Vendor Portal</span>
+      </div>
+      <nav class="sidebar-nav">
+        <span class="nav-section-label">Orders</span>
+        <a class="nav-link" href="{{ url_for('vendors_incoming') }}">
+          <span class="nl-icon">📥</span><span>Incoming Orders</span>
+          <span class="nav-badge"  id="incomingBadge">3</span>
+        </a>
+        <a class="nav-link active" href="{{ url_for('vendors_processing') }}">
+          <span class="nl-icon">⚙️</span><span>Order Processing</span>
+        </a>
+        <a class="nav-link" href="{{ url_for('vendors_history') }}">
+          <span class="nl-icon">🕐</span><span>Order History</span>
+        </a>
+        <span class="nav-section-label">Store</span>
+        <a class="nav-link" href="{{ url_for('vendors_services') }}">
+          <span class="nl-icon">🧺</span><span>Services &amp; Pricing</span>
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <a href="{{ url_for('home') }}" class="logout-link"><span class="nl-icon">🚪</span><span>Logout</span></a>
+      </div>
+    </aside>
+    <div class="admin-main">
+      <header class="admin-topbar">
+        <div style="display:flex;align-items:center;gap:14px">
+          <span class="topbar-title">Order Processing</span>
+        </div>
+        <div class="topbar-right">
+          <span class="topbar-store">Fresh &amp; Clean Laundry</span>
+          <div class="topbar-avatar">FC</div>
+        </div>
+      </header>
+      <main class="admin-content">
+        <div class="section active" id="sec-processing">
+          <div class="page-header">
+            <h1>Order Processing</h1>
+            <p>Update progress for accepted orders — notify admin when ready for pickup</p>
+          </div>
+
+          <div class="info-note">
+            ℹ️ <strong>Role separation:</strong> You manage laundry status only. Once you mark an order as <strong>Ready
+              for Pickup</strong>, admin is automatically notified to assign a delivery boy.
+          </div>
+
+          <div class="stats-row">
+            <div class="stat-card c-sky">
+              <div class="stat-label">Accepted</div>
+              <div class="stat-value" id="acceptedCount">0</div>
+              <div class="stat-sub">Active orders</div>
+            </div>
+            <div class="stat-card c-orange">
+              <div class="stat-label">Processing</div>
+              <div class="stat-value" id="processingCount">0</div>
+              <div class="stat-sub">In progress</div>
+            </div>
+            <div class="stat-card c-purple">
+              <div class="stat-label">Ready</div>
+              <div class="stat-value" id="readyCount">0</div>
+              <div class="stat-sub">Awaiting pickup</div>
+            </div>
+          </div>
+
+          <div class="table-card">
+            <div class="table-card-header">
+              <h2>Active Orders</h2>
+            </div>
+            <div class="table-wrap">
+              <table class="db-table" id="processingTable">
+                <thead>
+                  <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Services</th>
+                    <th>Accepted</th>
+                    <th>Current Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td data-label="Order ID"><span class="order-id-text">#VV-1040</span></td>
+                    <td data-label="Customer">
+                      <div class="cust-cell">
+                        <div class="cust-av">SK</div>
+                        <div class="cust-name">Sanjay Kaul</div>
+                      </div>
+                    </td>
+                    <td data-label="Services">Washing × 5 items</td>
+                    <td data-label="Accepted">01 May 2026</td>
+                    <td data-label="Status">
+                      <select class="form-select form-select-sm status-dropdown">
+                        <option value="accepted">Accepted</option>
+                        <option value="processing">Processing</option>
+                        <option value="ready">Ready for Pickup</option>
+                      </select>
+
+                      <button class="btn btn-sm btn-primary mt-1 save-status-btn">
+                        Save
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
   </div>
-  <nav class="sidebar-nav">
-    <span class="nav-section-label">Orders</span>
-    <a class="nav-link" href="{{ url_for('vendors_incoming') }}">
-      <span class="nl-icon">📥</span><span>Incoming Orders</span>
-      <span class="nav-badge">3</span>
-    </a>
-    <a class="nav-link active" href="{{ url_for('vendors_processing') }}">
-      <span class="nl-icon">⚙️</span><span>Order Processing</span>
-    </a>
-    <a class="nav-link" href="{{ url_for('vendors_history') }}">
-      <span class="nl-icon">🕐</span><span>Order History</span>
-    </a>
-    <span class="nav-section-label">Store</span>
-    <a class="nav-link" href="{{ url_for('vendors_services') }}">
-      <span class="nl-icon">🧺</span><span>Services &amp; Pricing</span>
-    </a>
-  </nav>
-  <div class="sidebar-footer">
-    <a href="{{ url_for('home') }}" class="logout-link"><span class="nl-icon">🚪</span><span>Logout</span></a>
-  </div>
-</aside>
-<div class="admin-main">
-  <header class="admin-topbar">
-    <div style="display:flex;align-items:center;gap:14px">
-      <span class="topbar-title">Order Processing</span>
-    </div>
-    <div class="topbar-right">
-      <span class="topbar-store">Fresh &amp; Clean Laundry</span>
-      <div class="topbar-avatar">FC</div>
-    </div>
-  </header>
-  <main class="admin-content">
-    <div class="section active" id="sec-processing">
-      <div class="page-header">
-        <h1>Order Processing</h1>
-        <p>Update progress for accepted orders — notify admin when ready for pickup</p>
-      </div>
-
-      <div class="info-note">
-        ℹ️ <strong>Role separation:</strong> You manage laundry status only. Once you mark an order as <strong>Ready for Pickup</strong>, admin is automatically notified to assign a delivery boy.
-      </div>
-
-      <div class="stats-row">
-        <div class="stat-card c-sky">
-          <div class="stat-label">Accepted</div>
-          <div class="stat-value">4</div>
-          <div class="stat-sub">Active orders</div>
-        </div>
-        <div class="stat-card c-orange">
-          <div class="stat-label">Processing</div>
-          <div class="stat-value">2</div>
-          <div class="stat-sub">In progress</div>
-        </div>
-        <div class="stat-card c-purple">
-          <div class="stat-label">Ready</div>
-          <div class="stat-value">1</div>
-          <div class="stat-sub">Awaiting pickup</div>
-        </div>
-      </div>
-
-      <div class="table-card">
-        <div class="table-card-header">
-          <h2>Active Orders</h2>
-        </div>
-        <div class="table-wrap">
-          <table class="db-table" id="processingTable">
-            <thead>
-              <tr>
-                <th>Order ID</th>
-                <th>Customer</th>
-                <th>Services</th>
-                <th>Accepted</th>
-                <th>Current Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td data-label="Order ID"><span class="order-id-text">#VV-1040</span></td>
-                <td data-label="Customer">
-                  <div class="cust-cell"><div class="cust-av">SK</div><div class="cust-name">Sanjay Kaul</div></div>
-                </td>
-                <td data-label="Services">Washing × 5 items</td>
-                <td data-label="Accepted">01 May 2026</td>
-                <td data-label="Status">
-                  <select class="form-select form-select-sm status-dropdown">
-  <option value="accepted">Accepted</option>
-  <option value="processing">Processing</option>
-  <option value="ready">Ready for Pickup</option>
-</select>
-
-<button class="btn btn-sm btn-primary mt-1 save-status-btn">
-  Save
-</button>
-                </td>
-              </tr>
-              <tr>
-                <td data-label="Order ID"><span class="order-id-text">#VV-1038</span></td>
-                <td data-label="Customer">
-                  <div class="cust-cell"><div class="cust-av">NP</div><div class="cust-name">Neha Pawar</div></div>
-                </td>
-                <td data-label="Services">Dry Cleaning · Ironing × 3</td>
-                <td data-label="Accepted">30 Apr 2026</td>
-                <td data-label="Status">
-                <select class="form-select form-select-sm status-dropdown">
-                  <option value="accepted" selected>Accepted</option>
-                  <option value="processing">Processing</option>
-                  <option value="ready">Ready for Pickup</option>
-                </select>
-
-                <button class="btn btn-sm btn-primary mt-1 save-status-btn">
-                  Save
-                </button>
-                </td>
-              </tr>
-              <tr>
-                <td data-label="Order ID"><span class="order-id-text">#VV-1036</span></td>
-                <td data-label="Customer">
-                  <div class="cust-cell"><div class="cust-av">VD</div><div class="cust-name">Vishal Desai</div></div>
-                </td>
-                <td data-label="Services">Washing · Fold × 8 items</td>
-                <td data-label="Accepted">30 Apr 2026</td>
-                <td data-label="Status">
-                  <select class="form-select form-select-sm status-dropdown">
-                  <option value="accepted" selected>Accepted</option>
-                  <option value="processing">Processing</option>
-                  <option value="ready">Ready for Pickup</option>
-                </select>
-
-                <button class="btn btn-sm btn-primary mt-1 save-status-btn">
-                  Save
-                </button>
-                </td>
-              </tr>
-              <tr>
-                <td data-label="Order ID"><span class="order-id-text">#VV-1034</span></td>
-                <td data-label="Customer">
-                  <div class="cust-cell"><div class="cust-av">RB</div><div class="cust-name">Rohan Bhat</div></div>
-                </td>
-                <td data-label="Services">Ironing × 10 items</td>
-                <td data-label="Accepted">29 Apr 2026</td>
-                <td data-label="Status">
-                  <select class="form-select form-select-sm status-dropdown">
-                  <option value="accepted" selected>Accepted</option>
-                  <option value="processing">Processing</option>
-                  <option value="ready">Ready for Pickup</option>
-                </select>
-
-                <button class="btn btn-sm btn-primary mt-1 save-status-btn">
-                  Save
-                </button>
-                </td>
-              </tr>
-              <tr>
-                <td data-label="Order ID"><span class="order-id-text">#VV-1030</span></td>
-                <td data-label="Customer">
-                  <div class="cust-cell"><div class="cust-av">TN</div><div class="cust-name">Tanya Nair</div></div>
-                </td>
-                <td data-label="Services">Dry Cleaning × 2 items</td>
-                <td data-label="Accepted">28 Apr 2026</td>
-                <td data-label="Status">
-                  <select class="form-select form-select-sm status-dropdown">
-                  <option value="accepted" selected>Accepted</option>
-                  <option value="processing">Processing</option>
-                  <option value="ready">Ready for Pickup</option>
-                </select>
-
-                <button class="btn btn-sm btn-primary mt-1 save-status-btn">
-                  Save
-                </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="table-footer">
-          <span class="table-info">5 active orders</span>
-        </div>
-      </div>
-    </div>
-  </main>
-</div>
-</div>
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-
-  document.querySelectorAll(".save-status-btn").forEach(button => {
-
-    button.addEventListener("click", function () {
-
-      const td = this.closest("td");
-      const dropdown = td.querySelector(".status-dropdown");
-
-      const value = dropdown.value;
-
-      let text = "";
-      let className = "";
-
-      if (value === "accepted") {
-        text = "Accepted";
-        className = "badge badge-accepted";
-      } 
-      else if (value === "processing") {
-        text = "Processing";
-        className = "badge badge-processing";
-      } 
-      else if (value === "ready") {
-        text = "Ready for Pickup";
-        className = "badge badge-ready";
-      }
-
-      // 🔹 Replace dropdown + button with badge
-      td.innerHTML = `<span class="${className}">${text}</span>`;
-
-    });
-
-  });
-
-});
-</script>
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
+
 </html>

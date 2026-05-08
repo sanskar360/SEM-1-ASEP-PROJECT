@@ -20,7 +20,7 @@
     <span class="nav-section-label">Orders</span>
     <a class="nav-link active" href="{{ url_for('vendors_incoming') }}">
       <span class="nl-icon">📥</span><span>Incoming Orders</span>
-      <span class="nav-badge">3</span>
+      <span class="nav-badge" id="incomingBadge">3</span>
     </a>
     <a class="nav-link" href="{{ url_for('vendors_processing') }}">
       <span class="nl-icon">⚙️</span><span>Order Processing</span>
@@ -57,17 +57,17 @@
       <div class="stats-row">
         <div class="stat-card c-sky">
           <div class="stat-label">New Today</div>
-          <div class="stat-value">3</div>
+          <div class="stat-value" id="newTodayCount">0</div>
           <div class="stat-sub">Awaiting action</div>
         </div>
         <div class="stat-card c-green">
           <div class="stat-label">Accepted</div>
-          <div class="stat-value">12</div>
+          <div class="stat-value" id="acceptedCount">0</div>
           <div class="stat-sub">This week</div>
         </div>
         <div class="stat-card c-red">
           <div class="stat-label">Rejected</div>
-          <div class="stat-value">1</div>
+          <div class="stat-value" id="rejectedCount">0</div>
           <div class="stat-sub">This week</div>
         </div>
         
@@ -93,17 +93,16 @@
             </thead>
             <tbody>
               <tr>
-                <td data-label="Order ID"><span class="order-id-text">#VV-1045</span></td>
+                <td data-label="Order ID"><span class="order-id-text"></span></td>
                 <td data-label="Customer">
                   <div class="cust-cell">
-                    <div class="cust-av">RK</div>
-                    <div><div class="cust-name">Rahul Kumar</div><div class="cust-phone">+91 98765 43210</div></div>
+                    <div><div class="cust-name"></div><div class="cust-phone"></div></div>
                   </div>
                 </td>
-                <td data-label="Services">Washing · Ironing <span style="color:var(--text-muted);font-size:12px">× 3 items</span></td>
-                <td data-label="Pickup Date">03 May 2026, 10am</td>
-                <td data-label="Payment"><span class="badge badge-paid">Paid</span></td>
-                <td data-label="Amount"><span class="amount-text">₹349</span></td>
+                <td data-label="Services"><span style="color:var(--text-muted);font-size:12px"></span></td>
+                <td data-label="Pickup Date"></td>
+                <td data-label="Payment"><span class="badge badge-paid"></span></td>
+                <td data-label="Amount"><span class="amount-text"></span></td>
                 <td data-label="Actions">
                   <div class="action-btns">
                     <button class="btn-accept" onclick="acceptOrder(this,'#VV-1045')">✅ Accept</button>
@@ -111,152 +110,14 @@
                   </div>
                 </td>
               </tr>
-              <tr>
-                <td data-label="Order ID"><span class="order-id-text">#VV-1044</span></td>
-                <td data-label="Customer">
-                  <div class="cust-cell">
-                    <div class="cust-av">PS</div>
-                    <div><div class="cust-name">Priya Sharma</div><div class="cust-phone">+91 87654 32109</div></div>
-                  </div>
-                </td>
-                <td data-label="Services">Dry Cleaning <span style="color:var(--text-muted);font-size:12px">× 2 items</span></td>
-                <td data-label="Pickup Date">03 May 2026, 2pm</td>
-                <td data-label="Payment"><span class="badge badge-cod">COD</span></td>
-                <td data-label="Amount"><span class="amount-text">₹599</span></td>
-                <td data-label="Actions">
-                  <div class="action-btns">
-                    <button class="btn-accept" onclick="acceptOrder(this,'#VV-1044')">✅ Accept</button>
-                    <button class="btn-reject" onclick="rejectOrder(this,'#VV-1044')">❌ Reject</button>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td data-label="Order ID"><span class="order-id-text">#VV-1043</span></td>
-                <td data-label="Customer">
-                  <div class="cust-cell">
-                    <div class="cust-av">AM</div>
-                    <div><div class="cust-name">Amit Mehta</div><div class="cust-phone">+91 76543 21098</div></div>
-                  </div>
-                </td>
-                <td data-label="Services">Washing · Fold <span style="color:var(--text-muted);font-size:12px">× 6 items</span></td>
-                <td data-label="Pickup Date">04 May 2026, 9am</td>
-                <td data-label="Payment"><span class="badge badge-paid">Paid</span></td>
-                <td data-label="Amount"><span class="amount-text">₹279</span></td>
-                <td data-label="Actions">
-                  <div class="action-btns">
-                    <button class="btn-accept" onclick="acceptOrder(this,'#VV-1043')">✅ Accept</button>
-                    <button class="btn-reject" onclick="rejectOrder(this,'#VV-1043')">❌ Reject</button>
-                  </div>
-                </td>
-              </tr>
             </tbody>
           </table>
-        </div>
-        <div class="table-footer">
-          <span class="table-info">3 pending orders</span>
         </div>
       </div>
     </div>
   </main>
 </div>
 </div>
-<script>
-/* ── Sidebar ── */
-function openSidebar() {
-  document.getElementById('adminSidebar').classList.add('open');
-  document.getElementById('sidebarOverlay').classList.add('open');
-}
-function closeSidebar() {
-  document.getElementById('adminSidebar').classList.remove('open');
-  document.getElementById('sidebarOverlay').classList.remove('open');
-}
-
-/* ── Table search ── */
-function filterTable(input, tableId) {
-  const f = input.value.toLowerCase();
-  document.getElementById(tableId).querySelectorAll('tbody tr').forEach(r => {
-    r.style.display = r.textContent.toLowerCase().includes(f) ? '' : 'none';
-  });
-}
-
-/* ── Accept / Reject incoming ── */
-function acceptOrder(btn, id) {
-  const row = btn.closest('tr');
-  row.style.opacity = '.5';
-  row.style.pointerEvents = 'none';
-  setTimeout(() => {
-    row.remove();
-    updateIncomingBadge();
-    showToast(`Order ${id} accepted ✅ — moved to Processing`);
-  }, 400);
-}
-function rejectOrder(btn, id) {
-  const row = btn.closest('tr');
-  row.style.opacity = '.5';
-  row.style.pointerEvents = 'none';
-  setTimeout(() => {
-    row.remove();
-    updateIncomingBadge();
-    showToast(`Order ${id} rejected ❌`);
-  }, 400);
-}
-function updateIncomingBadge() {
-  const count = document.querySelectorAll('#incomingTable tbody tr').length;
-  const badge = document.getElementById('incomingBadge');
-  badge.textContent = count;
-  if (count === 0) badge.style.display = 'none';
-}
-
-/* ── Update processing status ── */
-function updateStatus(btn, orderId, newStatus) {
-  const row = btn.closest('tr');
-  const statusCell = row.querySelector('.badge');
-  if (newStatus === 'processing') {
-    statusCell.className = 'badge badge-processing';
-    statusCell.textContent = 'Processing';
-    row.dataset.status = 'processing';
-    const actCell = btn.parentElement;
-    btn.remove();
-    const readyBtn = document.createElement('button');
-    readyBtn.className = 'btn-ready';
-    readyBtn.innerHTML = '📦 Mark Ready';
-    readyBtn.onclick = function(){ updateStatus(this, orderId, 'ready_for_pickup'); };
-    actCell.appendChild(readyBtn);
-    showToast(`#${orderId} — Processing started`);
-  } else if (newStatus === 'ready_for_pickup') {
-    statusCell.className = 'badge badge-ready';
-    statusCell.textContent = 'Ready for Pickup';
-    row.dataset.status = 'ready_for_pickup';
-    btn.remove();
-    const note = document.createElement('span');
-    note.style.cssText = 'font-size:12px;color:var(--text-muted)';
-    note.textContent = '🔔 Admin notified';
-    btn.parentElement ? btn.parentElement.appendChild(note) : row.lastElementChild.appendChild(note);
-    document.getElementById('readyBanner').classList.add('show');
-    setTimeout(() => document.getElementById('readyBanner').classList.remove('show'), 5000);
-    showToast(`#${orderId} — Marked ready! Admin notified 🔔`);
-  }
-}
-
-
-
-/* ── Order Modal ── */
-const modalData = {
-  '#VV-1045': { cust:'Rahul Kumar', phone:'+91 98765 43210', address:'14B, Koregaon Park, Pune — 411001', pickup:'03 May 2026, 10:00 AM', payment:'<span class="badge badge-paid">Paid</span>', services:[{n:'Standard Washing',q:'× 3 items',p:'₹60'},{n:'Shirt Ironing',q:'× 3 items',p:'₹45'}], total:'₹349', statusText:'Awaiting your acceptance.' },
-  '#VV-1044': { cust:'Priya Sharma',phone:'+91 87654 32109',address:'7, MG Road, Nashik — 422001',pickup:'03 May 2026, 2:00 PM',payment:'<span class="badge badge-cod">COD</span>',services:[{n:'Dry Cleaning',q:'× 2 items',p:'₹300'}],total:'₹599',statusText:'Awaiting your acceptance.' },
-  '#VV-1043': { cust:'Amit Mehta',phone:'+91 76543 21098',address:'22, Baner Rd, Pune — 411045',pickup:'04 May 2026, 9:00 AM',payment:'<span class="badge badge-paid">Paid</span>',services:[{n:'Standard Washing',q:'× 4 items',p:'₹80'},{n:'Wash + Fold',q:'× 2 items',p:'₹70'}],total:'₹279',statusText:'Awaiting your acceptance.' },
-  '#VV-1040': { cust:'Sanjay Kaul',phone:'+91 99887 76655',address:'5, Sadhu Vaswani Rd, Pune',pickup:'01 May 2026, 11:00 AM',payment:'<span class="badge badge-paid">Paid</span>',services:[{n:'Standard Washing',q:'× 5 items',p:'₹100'}],total:'₹100',statusText:'Order accepted. Waiting to start processing.' },
-  '#VV-1038': { cust:'Neha Pawar',phone:'+91 88776 65544',address:'12, FC Road, Pune — 411004',pickup:'30 Apr 2026, 3:00 PM',payment:'<span class="badge badge-paid">Paid</span>',services:[{n:'Dry Cleaning',q:'× 2 items',p:'₹300'},{n:'Shirt Ironing',q:'× 1 item',p:'₹15'}],total:'₹315',statusText:'Currently being processed at your store.' },
-  '#VV-1036': { cust:'Vishal Desai',phone:'+91 77665 54433',address:'34, Tilak Rd, Pune',pickup:'30 Apr 2026, 10:00 AM',payment:'<span class="badge badge-cod">COD</span>',services:[{n:'Standard Washing',q:'× 5 items',p:'₹100'},{n:'Wash + Fold',q:'× 3 items',p:'₹105'}],total:'₹280',statusText:'Currently being processed at your store.' },
-  '#VV-1034': { cust:'Rohan Bhat',phone:'+91 66554 43322',address:'8, Wakad, Pune — 411057',pickup:'29 Apr 2026, 9:00 AM',payment:'<span class="badge badge-paid">Paid</span>',services:[{n:'Shirt Ironing',q:'× 10 items',p:'₹150'}],total:'₹150',statusText:'Order accepted. Waiting to start processing.' },
-  '#VV-1030': { cust:'Tanya Nair',phone:'+91 55443 32211',address:'3, Koregaon Park, Pune',pickup:'28 Apr 2026, 2:00 PM',payment:'<span class="badge badge-paid">Paid</span>',services:[{n:'Dry Cleaning',q:'× 2 items',p:'₹300'}],total:'₹300',statusText:'✅ Marked as Ready for Pickup. Admin has been notified.' },
-  '#VV-1029': { cust:'Meera Kulkarni',phone:'+91 91234 56789',address:'6, Laxmi Rd, Pune',pickup:'28 Apr 2026, 11:00 AM',payment:'<span class="badge badge-paid">Paid</span>',services:[{n:'Standard Washing',q:'× 4 items',p:'₹80'}],total:'₹80',statusText:'✅ Order delivered successfully.' },
-  '#VV-1027': { cust:'Arjun Patil',phone:'+91 90123 45678',address:'11, SB Rd, Pune — 411016',pickup:'26 Apr 2026',payment:'<span class="badge badge-paid">Paid</span>',services:[{n:'Dry Cleaning',q:'× 1 item',p:'₹150'}],total:'₹150',statusText:'✅ Order delivered successfully.' },
-  '#VV-1025': { cust:'Sneha Joshi',phone:'+91 89012 34567',address:'2, Bund Garden, Pune',pickup:'25 Apr 2026',payment:'<span class="badge badge-cod">COD</span>',services:[{n:'Shirt Ironing',q:'× 7 items',p:'₹105'}],total:'—',statusText:'❌ Order was rejected.' },
-  '#VV-1022': { cust:'Kavya Rao',phone:'+91 78901 23456',address:'9, Camp Area, Pune — 411001',pickup:'23 Apr 2026',payment:'<span class="badge badge-paid">Paid</span>',services:[{n:'Wash + Fold',q:'× 5 items',p:'₹175'}],total:'₹525',statusText:'✅ Order delivered successfully.' },
-  '#VV-1020': { cust:'Dev Malhotra',phone:'+91 67890 12345',address:'16, Deccan, Pune',pickup:'21 Apr 2026',payment:'<span class="badge badge-paid">Paid</span>',services:[{n:'Dry Cleaning',q:'× 3 items',p:'₹450'}],total:'₹450',statusText:'✅ Order delivered successfully.' },
-  '#VV-1017': { cust:'Pooja Kadam',phone:'+91 56789 01234',address:'23, Kothrud, Pune — 411038',pickup:'19 Apr 2026',payment:'<span class="badge badge-paid">Paid</span>',services:[{n:'Standard Washing',q:'× 6 items',p:'₹120'}],total:'₹420',statusText:'✅ Order delivered successfully.' },
-};
-</script> 
+<script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>

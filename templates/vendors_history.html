@@ -1,153 +1,123 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Vendor Portal - Order History</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="vendor_dashboard.css"/>
-<link rel="stylesheet" href="{{ url_for('static', filename='vendor_dashboard.css') }}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vendor Portal - Order History</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='vendor_dashboard.css') }}">
 </head>
+
 <body>
-<div class="admin-layout">
-<aside class="admin-sidebar">
-  <div class="sidebar-brand">
-    <a href="{{ url_for('vendors_incoming') }}" class="brand-name">Vega<span>Vastra</span></a>
-    <span class="brand-role">🏪 Vendor Portal</span>
-  </div>
-  <nav class="sidebar-nav">
-    <span class="nav-section-label">Orders</span>
-    <a class="nav-link" href="{{ url_for('vendors_incoming') }}">
-      <span class="nl-icon">📥</span><span>Incoming Orders</span>
-      <span class="nav-badge">3</span>
-    </a>
-    <a class="nav-link" href="{{ url_for('vendors_processing') }}">
-      <span class="nl-icon">⚙️</span><span>Order Processing</span>
-    </a>
-    <a class="nav-link active" href="{{ url_for('vendors_history') }}">
-      <span class="nl-icon">🕐</span><span>Order History</span>
-    </a>
-    <span class="nav-section-label">Store</span>
-    <a class="nav-link" href="{{ url_for('vendors_services') }}">
-      <span class="nl-icon">🧺</span><span>Services &amp; Pricing</span>
-    </a>
-  </nav>
-  <div class="sidebar-footer">
-    <a href="{{ url_for('home') }}" class="logout-link"><span class="nl-icon">🚪</span><span>Logout</span></a>
-  </div>
-</aside>
-<div class="admin-main">
-  <header class="admin-topbar">
-    <div style="display:flex;align-items:center;gap:14px">
-      <span class="topbar-title">Order History</span>
-    </div>
-    <div class="topbar-right">
-      <span class="topbar-store">Fresh &amp; Clean Laundry</span>
-      <div class="topbar-avatar">FC</div>
-    </div>
-  </header>
-  <main class="admin-content">
-    <div class="section active" id="sec-history">
-      <div class="page-header">
-        <h1>Order History</h1>
-        <p>Past orders and performance analytics</p>
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <div class="sidebar-brand">
+        <a href="{{ url_for('vendors_incoming') }}" class="brand-name">Vega<span>Vastra</span></a>
+        <span class="brand-role">🏪 Vendor Portal</span>
       </div>
+      <nav class="sidebar-nav">
+        <span class="nav-section-label">Orders</span>
+        <a class="nav-link" href="{{ url_for('vendors_incoming') }}">
+          <span class="nl-icon">📥</span><span>Incoming Orders</span>
+          <span class="nav-badge"  id="incomingBadge">3</span>
+        </a>
+        <a class="nav-link" href="{{ url_for('vendors_processing') }}">
+          <span class="nl-icon">⚙️</span><span>Order Processing</span>
+        </a>
+        <a class="nav-link active" href="{{ url_for('vendors_history') }}">
+          <span class="nl-icon">🕐</span><span>Order History</span>
+        </a>
+        <span class="nav-section-label">Store</span>
+        <a class="nav-link" href="{{ url_for('vendors_services') }}">
+          <span class="nl-icon">🧺</span><span>Services &amp; Pricing</span>
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <a href="{{ url_for('home') }}" class="logout-link"><span class="nl-icon">🚪</span><span>Logout</span></a>
+      </div>
+    </aside>
+    <div class="admin-main">
+      <header class="admin-topbar">
+        <div style="display:flex;align-items:center;gap:14px">
+          <span class="topbar-title">Order History</span>
+        </div>
+        <div class="topbar-right">
+          <span class="topbar-store">Fresh &amp; Clean Laundry</span>
+          <div class="topbar-avatar">FC</div>
+        </div>
+      </header>
+      <main class="admin-content">
+        <div class="section active" id="sec-history">
+          <div class="page-header">
+            <h1>Order History</h1>
+            <p>Past orders and performance analytics</p>
+          </div>
 
-      <div class="stats-row">
-        <div class="stat-card c-sky">
-          <div class="stat-label">Total Orders</div>
-          <div class="stat-value">87</div>
-          
-        </div>
-        <div class="stat-card c-green">
-          <div class="stat-label">Delivered</div>
-          <div class="stat-value">79</div>
-          
-        </div>
-        <div class="stat-card c-red">
-          <div class="stat-label">Rejected</div>
-          <div class="stat-value">8</div>
-          
-        </div>
-        
-      </div>
+          <div class="stats-row">
+            <div class="stat-card c-sky">
+              <div class="stat-label">Total Orders</div>
+              <div class="stat-value" id="totalOrdersCount">0</div>
 
-      <div class="table-card">
-        <div class="table-card-header">
-          <h2>Past Orders</h2>
+            </div>
+            <div class="stat-card c-green">
+              <div class="stat-label">Delivered</div>
+              <div class="stat-value" id="deliveredCount">0</div>
+
+
+            </div>
+            <div class="stat-card c-red">
+              <div class="stat-label">Rejected</div>
+              <div class="stat-value" id="rejectedCount">0</div>
+
+            </div>
+
+          </div>
+
+          <div class="table-card">
+            <div class="table-card-header">
+              <h2>Past Orders</h2>
+            </div>
+            <div class="table-wrap">
+              <table class="db-table" id="historyTable">
+                <thead>
+                  <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Services</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td data-label="Order ID"><span class="order-id-text">#VV-1029</span></td>
+                    <td data-label="Customer">
+                      <div class="cust-cell">
+                        <div class="cust-av">MK</div>
+                        <div class="cust-name">Meera Kulkarni</div>
+                      </div>
+                    </td>
+                    <td data-label="Services">Washing × 4</td>
+                    <td data-label="Date">28 Apr 2026</td>
+                    <td data-label="Status"><span class="badge badge-delivered">Delivered</span></td>
+                    <td data-label="Amount"><span class="amount-text">₹280</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="table-footer">
+              <span class="table-info">Showing 6 of 79 delivered orders</span>
+            </div>
+          </div>
         </div>
-        <div class="table-wrap">
-          <table class="db-table" id="historyTable">
-            <thead>
-              <tr>
-                <th>Order ID</th>
-                <th>Customer</th>
-                <th>Services</th>
-                <th>Date</th>
-                <th>Status</th>
-                <th>Amount</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td data-label="Order ID"><span class="order-id-text">#VV-1029</span></td>
-                <td data-label="Customer"><div class="cust-cell"><div class="cust-av">MK</div><div class="cust-name">Meera Kulkarni</div></div></td>
-                <td data-label="Services">Washing × 4</td>
-                <td data-label="Date">28 Apr 2026</td>
-                <td data-label="Status"><span class="badge badge-delivered">Delivered</span></td>
-                <td data-label="Amount"><span class="amount-text">₹280</span></td>
-              </tr>
-              <tr>
-                <td data-label="Order ID"><span class="order-id-text">#VV-1027</span></td>
-                <td data-label="Customer"><div class="cust-cell"><div class="cust-av">AP</div><div class="cust-name">Arjun Patil</div></div></td>
-                <td data-label="Services">Dry Cleaning × 1</td>
-                <td data-label="Date">26 Apr 2026</td>
-                <td data-label="Status"><span class="badge badge-delivered">Delivered</span></td>
-                <td data-label="Amount"><span class="amount-text">₹150</span></td>
-              </tr>
-              <tr>
-                <td data-label="Order ID"><span class="order-id-text">#VV-1025</span></td>
-                <td data-label="Customer"><div class="cust-cell"><div class="cust-av">SJ</div><div class="cust-name">Sneha Joshi</div></div></td>
-                <td data-label="Services">Ironing × 7</td>
-                <td data-label="Date">25 Apr 2026</td>
-                <td data-label="Status"><span class="badge badge-rejected">Rejected</span></td>
-                <td data-label="Amount"><span class="amount-text">—</span></td>
-              </tr>
-              <tr>
-                <td data-label="Order ID"><span class="order-id-text">#VV-1022</span></td>
-                <td data-label="Customer"><div class="cust-cell"><div class="cust-av">KR</div><div class="cust-name">Kavya Rao</div></div></td>
-                <td data-label="Services">Wash + Fold × 5</td>
-                <td data-label="Date">23 Apr 2026</td>
-                <td data-label="Status"><span class="badge badge-delivered">Delivered</span></td>
-                <td data-label="Amount"><span class="amount-text">₹525</span></td>
-              </tr>
-              <tr>
-                <td data-label="Order ID"><span class="order-id-text">#VV-1020</span></td>
-                <td data-label="Customer"><div class="cust-cell"><div class="cust-av">DM</div><div class="cust-name">Dev Malhotra</div></div></td>
-                <td data-label="Services">Dry Cleaning × 3</td>
-                <td data-label="Date">21 Apr 2026</td>
-                <td data-label="Status"><span class="badge badge-delivered">Delivered</span></td>
-                <td data-label="Amount"><span class="amount-text">₹450</span></td>
-              </tr>
-              <tr>
-                <td data-label="Order ID"><span class="order-id-text">#VV-1017</span></td>
-                <td data-label="Customer"><div class="cust-cell"><div class="cust-av">PK</div><div class="cust-name">Pooja Kadam</div></div></td>
-                <td data-label="Services">Washing × 6</td>
-                <td data-label="Date">19 Apr 2026</td>
-                <td data-label="Status"><span class="badge badge-delivered">Delivered</span></td>
-                <td data-label="Amount"><span class="amount-text">₹420</span></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="table-footer">
-          <span class="table-info">Showing 6 of 79 delivered orders</span>
-        </div>
-      </div>
+      </main>
     </div>
-  </main>
-</div>
-</div>
+  </div>
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
+
 </html>

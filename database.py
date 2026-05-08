@@ -225,16 +225,23 @@ def get_all_services():
 def get_vendors(service_id, city, pincode):
     with engine.connect() as conn:
         query = text("""
-            SELECT DISTINCT v.*
+            SELECT DISTINCT 
+                v.id,
+                v.name,
+                v.rating,
+                v.active_orders,
+                v.city,
+                v.pincode
+
             FROM vendors v
-            JOIN vendor_services vs ON v.id = vs.vendor_id
-            WHERE vs.service_id = :service_id
-            AND v.city = :city
-            ORDER BY 
-                CASE 
-                    WHEN v.pincode = :pincode THEN 1
-                    ELSE 2
-                END
+
+            JOIN vendor_services vs 
+                ON v.id = vs.vendor_id
+
+            WHERE 
+                vs.service_id = :service_id
+                AND v.city = :city
+                AND v.status = 'Active'
         """)
 
         result = conn.execute(query, {
@@ -503,4 +510,524 @@ def delete_user_db(user_id):
 
     with engine.connect() as conn:
         conn.execute(text("DELETE FROM users_table WHERE id = :id"), {"id": user_id})
+        conn.commit()
+
+#Function for delivery boys page
+
+def get_delivery_boy_orders(boy_id):
+
+    with engine.connect() as conn:
+
+        query = text("""
+            SELECT 
+                o.id,
+                o.created_at,
+                o.status,
+                o.payment_method,
+
+                a.user_name,
+                a.phone_no,
+                a.city,
+                a.state,
+                a.pincode,
+
+                s.name AS service_name,
+
+                -- total items
+                (
+                    SELECT SUM(quantity) 
+                    FROM order_items 
+                    WHERE order_id = o.id
+                ) AS total_items
+
+            FROM addd_orders o
+
+            JOIN address a ON o.address_id = a.id
+            JOIN services s ON o.service_id = s.id
+
+            WHERE o.delivery_boy_id = :boy_id
+
+            ORDER BY o.id DESC
+        """)
+
+        return conn.execute(query, {"boy_id": boy_id}).fetchall()
+    
+def get_delivery_records(boy_id):
+
+    with engine.connect() as conn:
+
+        query = text("""
+            SELECT 
+                o.id,
+                o.created_at,
+                o.status,
+                o.payment_method,
+                o.payment_status,
+                o.total_amount,
+
+                a.user_name,
+                a.phone_no,
+
+                s.name AS service_name,
+
+                (
+                    SELECT SUM(quantity)
+                    FROM order_items
+                    WHERE order_id = o.id
+                ) AS total_items
+
+            FROM addd_orders o
+            JOIN address a ON o.address_id = a.id
+            JOIN services s ON o.service_id = s.id
+
+            WHERE o.delivery_boy_id = :boy_id
+
+            ORDER BY o.id DESC
+        """)
+
+        return conn.execute(query, {"boy_id": boy_id}).fetchall()
+
+def get_vendors2():
+
+    with engine.connect() as conn:
+
+        query = text("""
+            SELECT 
+                v.id,
+                v.name,
+                v.city,
+                v.rating,
+
+                GROUP_CONCAT(DISTINCT s.name) AS services
+
+            FROM vendors v
+
+            JOIN vendor_services vs
+                ON v.id = vs.vendor_id
+
+            JOIN item_types it
+                ON vs.item_type_id = it.id
+                     
+            JOIN services s
+                ON vs.service_id = s.id
+
+            WHERE v.status = 'Active'
+
+            GROUP BY v.id
+            ORDER BY v.rating DESC
+        """)
+
+        return conn.execute(query).fetchall()
+    
+from sqlalchemy import text
+
+def get_user_orders(user_id):
+
+    with engine.connect() as conn:
+
+        query = text("""
+            SELECT 
+                o.id,
+                o.status,
+                o.total_amount,
+
+                v.name AS vendor_name,
+                s.name AS service_name
+
+            FROM addd_orders o
+
+            JOIN vendors v 
+                ON o.vendor_id = v.id
+
+            JOIN services s 
+                ON o.service_id = s.id
+
+            WHERE o.user_id = :user_id
+
+            ORDER BY o.id DESC
+        """)
+
+        return conn.execute(query, {"user_id": user_id}).fetchall()
+    
+def get_order_details(order_id):
+
+    with engine.connect() as conn:
+
+        query = text("""
+            SELECT 
+                o.id,
+                o.payment_method,
+                o.payment_status,
+
+                a.user_name,
+                a.phone_no,
+                a.city,
+                a.state
+
+            FROM addd_orders o
+
+            JOIN address a 
+                ON o.address_id = a.id
+
+            WHERE o.id = :order_id
+        """)
+
+        return conn.execute(query, {"order_id": order_id}).fetchone()
+    
+# vendors_panel/incoming
+
+def assign_vendor(order_id, vendor_id):
+    with engine.connect() as conn:
+        query = text("""
+            UPDATE addd_orders
+            SET vendor_id = :vendor_id
+            WHERE id = :order_id
+        """)
+        conn.execute(query, {
+            "vendor_id": vendor_id,
+            "order_id": order_id
+        })
+        conn.commit()
+
+
+def get_pending_orders(vendor_id):
+    with engine.connect() as conn:
+        query = text("""
+            SELECT 
+                o.id,
+                o.user_id,
+                s.name AS service_name,
+                o.created_at,
+                o.payment_status,
+                o.total_amount
+            FROM addd_orders o
+            JOIN services s ON o.service_id = s.id
+            WHERE o.status = 'pending'
+            AND o.vendor_id = :vendor_id
+            ORDER BY o.created_at DESC
+        """)
+
+        result = conn.execute(query, {"vendor_id": vendor_id})
+        return result.fetchall()
+
+
+def update_order_status(order_id, new_status):
+    with engine.connect() as conn:
+        query = text("""
+            UPDATE addd_orders
+            SET status = :status
+            WHERE id = :order_id
+        """)
+        conn.execute(query, {
+            "status": new_status,
+            "order_id": order_id
+        })
+        conn.commit()
+
+def get_dashboard_stats(vendor_id):
+    with engine.connect() as conn:
+        query = text("""
+            SELECT
+                SUM(CASE 
+                    WHEN status = 'pending' 
+                    AND DATE(created_at) = CURDATE() 
+                    AND vendor_id = :vendor_id 
+                    THEN 1 ELSE 0 END) AS new_today,
+
+                SUM(CASE 
+                    WHEN status = 'accepted' 
+                    AND YEARWEEK(created_at, 1) = YEARWEEK(CURDATE(), 1)
+                    AND vendor_id = :vendor_id 
+                    THEN 1 ELSE 0 END) AS accepted,
+
+                SUM(CASE 
+                    WHEN status = 'rejected' 
+                    AND YEARWEEK(created_at, 1) = YEARWEEK(CURDATE(), 1)
+                    AND vendor_id = :vendor_id 
+                    THEN 1 ELSE 0 END) AS rejected
+
+            FROM addd_orders
+        """)
+
+        result = conn.execute(query, {"vendor_id": vendor_id}).fetchone()
+        return result
+    
+# vendors_panel/processing
+
+def get_active_orders(vendor_id):
+    with engine.connect() as conn:
+        query = text("""
+            SELECT 
+                o.id,
+                o.user_id,
+                s.name AS service_name,
+                o.created_at,
+                o.status
+            FROM addd_orders o
+            JOIN services s 
+                ON o.service_id = s.id
+            WHERE o.vendor_id = :vendor_id
+            AND o.status IN ('accepted', 'processing', 'ready')
+            ORDER BY o.created_at DESC
+        """)
+
+        result = conn.execute(query, {
+            "vendor_id": vendor_id
+        })
+
+        return result.fetchall()
+    
+def get_active_orders_stats(vendor_id):
+
+    with engine.connect() as conn:
+
+        query = text("""
+
+            SELECT
+
+                SUM(CASE
+                    WHEN status = 'accepted'
+                    AND vendor_id = :vendor_id
+                    THEN 1 ELSE 0
+                END) AS accepted,
+
+                SUM(CASE
+                    WHEN status = 'processing'
+                    AND vendor_id = :vendor_id
+                    THEN 1 ELSE 0
+                END) AS processing,
+
+                SUM(CASE
+                    WHEN status = 'ready'
+                    AND vendor_id = :vendor_id
+                    THEN 1 ELSE 0
+                END) AS ready_count
+
+            FROM addd_orders
+
+        """)
+
+        result = conn.execute(
+            query,
+            {"vendor_id": vendor_id}
+        ).fetchone()
+
+        return result
+
+def update_active_order_status(order_id, status):
+    with engine.connect() as conn:
+        query = text("""
+            UPDATE addd_orders
+            SET status = :status
+            WHERE id = :order_id
+        """)
+
+        conn.execute(query, {
+            "status": status,
+            "order_id": order_id
+        })
+
+        conn.commit()
+
+
+# vendors/history
+
+def get_history_orders(vendor_id):
+
+    with engine.connect() as conn:
+
+        query = text("""
+
+            SELECT
+                o.id,
+                o.user_id,
+                s.name AS service_name,
+                o.created_at,
+                o.status,
+                o.total_amount
+
+            FROM addd_orders o
+
+            JOIN services s
+                ON o.service_id = s.id
+
+            WHERE o.vendor_id = :vendor_id
+
+            AND o.status IN ('picked_up', 'delivered','rejected')
+
+            ORDER BY o.created_at DESC
+
+        """)
+
+        result = conn.execute(
+            query,
+            {"vendor_id": vendor_id}
+        ).fetchall()
+
+
+        return result
+    
+def get_history_stats(vendor_id):
+    with engine.connect() as conn:
+        query = text("""
+                    SELECT
+                        SUM(CASE
+                            WHEN status IN ('picked_up', 'delivered', 'rejected')
+                            AND vendor_id = :vendor_id
+                            THEN 1 ELSE 0
+                        END) As total_orders,
+                     
+                        SUM(CASE
+                            WHEN status = 'delivered'
+                            AND vendor_id = :vendor_id
+                            THEN 1 ELSE 0
+                        END) As delivered,
+                     
+                        SUM(CASE 
+                            WHEN status = 'rejected'
+                            AND vendor_id = :vendor_id
+                            THEN 1 ELSE 0
+                            END) As rejected
+                     
+                    FROM addd_orders
+
+                """)
+        
+        result = conn.execute(
+            query,
+            {"vendor_id" : vendor_id}
+        ).fetchone()
+        
+    return result
+    
+# vendors/services
+
+def add_vendor_service(
+    vendor_id,
+    service_name,
+    price
+):
+
+    with engine.connect() as conn:
+
+        # check if service exists
+
+        query = text("""
+
+            SELECT id
+            FROM services
+            WHERE name = :name
+
+        """)
+
+        service = conn.execute(
+            query,
+            {"name": service_name}
+        ).fetchone()
+
+        # create service if not exists
+
+        if not service:
+
+            insert_query = text("""
+
+                INSERT INTO services(name)
+                VALUES(:name)
+
+            """)
+
+            conn.execute(
+                insert_query,
+                {"name": service_name}
+            )
+
+            conn.commit()
+
+            service = conn.execute(
+                query,
+                {"name": service_name}
+            ).fetchone()
+
+        service_id = service.id
+
+        # insert vendor service
+
+        vendor_query = text("""
+
+            INSERT INTO vendor_services(
+                vendor_id,
+                service_id,
+                price
+            )
+
+            VALUES(
+                :vendor_id,
+                :service_id,
+                :price
+            )
+
+        """)
+
+        conn.execute(vendor_query, {
+
+            "vendor_id": vendor_id,
+            "service_id": service_id,
+            "price": price
+
+        })
+
+        conn.commit()
+
+def get_vendor_services(vendor_id):
+
+    with engine.connect() as conn:
+
+        query = text("""
+
+            SELECT
+
+                MIN(vs.id) AS id,
+                s.id AS service_id,
+                s.name,
+                MIN(vs.price) AS price
+
+            FROM vendor_services vs
+
+            JOIN services s
+                ON vs.service_id = s.id
+
+            WHERE vs.vendor_id = :vendor_id
+
+            GROUP BY s.id, s.name
+
+        """)
+
+        result = conn.execute(
+            query,
+            {"vendor_id": vendor_id}
+        ).fetchall()
+
+        return result
+    
+
+def delete_vendor_service(service_id, vendor_id):
+
+    with engine.connect() as conn:
+
+        query = text("""
+
+            DELETE FROM vendor_services
+
+            WHERE id = :service_id
+            AND vendor_id = :vendor_id
+
+        """)
+
+        conn.execute(query, {
+
+            "service_id": service_id,
+            "vendor_id": vendor_id
+
+        })
+
         conn.commit()

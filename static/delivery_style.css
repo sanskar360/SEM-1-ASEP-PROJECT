@@ -732,3 +732,14 @@ button, input, select, textarea { font-family:inherit; }
     .db-content { padding:12px 10px 20px; }
     .perf-grid { grid-template-columns:1fr 1fr; gap:8px; }
 }
+
+.badge-delivered {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.badge-picked {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+

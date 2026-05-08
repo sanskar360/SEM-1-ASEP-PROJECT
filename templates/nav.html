@@ -3,13 +3,10 @@
     <a href="{{ url_for('home') }}">
         <img src="{{ url_for('static', filename='Logo.png') }}" class="logo">
     </a>
-
-    <div class="hamburger" id="hamburger">☰</div>
-
     <ul id="navLinks">
+        <li><a href="{{ url_for('how_it_works') }}">How it works</a></li>
         <li><a href="{{ url_for('services') }}">Services</a></li>
         <li><a href="{{ url_for('track_orders') }}">Track Orders</a></li>
-        <li><a href="{{ url_for('payments') }}">Payment</a></li>
         <li><a href="{{ url_for('profile') }}">Profile</a></li>
         <li><a href="{{ url_for('login') }}" id="login"> Login </a></li>
     </ul>

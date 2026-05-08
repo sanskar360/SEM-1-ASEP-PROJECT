@@ -188,7 +188,6 @@ function closeAddModal() { document.getElementById('addModal').classList.remove(
 
 function assignDelivery(order_id) {
 
-  console.log("working")
   const select = document.getElementById("db_" + order_id);
   const delivery_boy_id = select.value;
 
@@ -413,3 +412,776 @@ function filterTable(input, tableId) {
                 row.style.display = row.textContent.toLowerCase().includes(filter) ? '' : 'none';
             });
         }
+
+// vendors_panel
+
+function loadDashboardStats() {
+  fetch("/api/dashboard_stats")
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById("newTodayCount").textContent = data.new_today;
+      document.getElementById("acceptedCount").textContent = data.accepted;
+      document.getElementById("rejectedCount").textContent = data.rejected;
+    });
+}
+
+function updateIncomingBadge() {
+  const rows = document.querySelectorAll('#incomingTable tbody tr');
+  const count = rows.length;
+
+  const badge = document.getElementById('incomingBadge');
+
+  if (!badge) return; // safety check
+
+  badge.textContent = count;
+
+  if (count === 0) {
+    badge.style.display = 'none';
+  } else {
+    badge.style.display = 'inline-block';
+  }
+}
+
+function acceptOrder(btn, id) {
+  const row = btn.closest('tr');
+
+  row.style.opacity = '.5';
+  row.style.pointerEvents = 'none';
+
+  fetch("/accept_order", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      order_id: id.replace('#VV-', '')   // clean ID
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      setTimeout(() => {
+        row.remove();
+        updateIncomingBadge();
+        loadDashboardStats();   // 🔥 ADD THIS
+        showToast(`Order ${id} accepted ✅ — moved to Processing`);
+      }, 400);
+    }
+  })
+  .catch(() => {
+    row.style.opacity = '1';
+    row.style.pointerEvents = 'auto';
+    showToast("Something went wrong ❌");
+  });
+}
+
+function rejectOrder(btn, id) {
+  const row = btn.closest('tr');
+
+  row.style.opacity = '.5';
+  row.style.pointerEvents = 'none';
+
+  fetch("/reject_order", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      order_id: id.replace('#VV-', '')
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      setTimeout(() => {
+        row.remove();
+       updateIncomingBadge();
+       loadDashboardStats();   // 🔥 ADD THIS
+        showToast(`Order ${id} rejected ❌`);
+      }, 400);
+    }
+  })
+  .catch(() => {
+    row.style.opacity = '1';
+    row.style.pointerEvents = 'auto';
+    showToast("Something went wrong ❌");
+  });
+}
+
+window.onload = function () {
+  loadPendingOrders();
+  loadDashboardStats();
+};
+
+function loadPendingOrders() {
+  fetch("/api/pending_orders")
+    .then(res => res.json())
+    .then(data => {
+      const tbody = document.querySelector("#incomingTable tbody");
+      tbody.innerHTML = "";
+
+      data.forEach(order => {
+        const row = `
+          <tr>
+            <td><span class="order-id-text">#VV-${order.id}</span></td>
+            <td>${order.user}</td>
+            <td>${order.service}</td>
+            <td>${order.pickup_date}</td>
+            <td>${order.payment}</td>
+            <td>₹${order.amount}</td>
+            <td>
+              <div class="action-btns">
+                <button class="btn-accept" onclick="acceptOrder(this,'#VV-${order.id}')">✅ Accept</button>
+                <button class="btn-reject" onclick="rejectOrder(this,'#VV-${order.id}')">❌ Reject</button>
+              </div>
+            </td>
+          </tr>
+        `;
+        tbody.innerHTML += row;
+      });
+
+      updateIncomingBadge(); // update count
+    });
+}
+
+
+// vendor/processing
+
+function saveStatus(btn, orderId) {
+
+  const row = btn.closest("tr");
+
+  const dropdown = row.querySelector(".status-dropdown");
+
+  const status = dropdown.value;
+
+  fetch("/update_order_status", {
+
+    method: "POST",
+
+    headers: {
+      "Content-Type": "application/json"
+    },
+
+    body: JSON.stringify({
+      order_id: orderId,
+      status: status
+    })
+
+  })
+
+  .then(res => res.json())
+
+  .then(data => {
+
+    if (data.success) {
+
+      // remove old badge classes
+      dropdown.classList.remove(
+        "badge-accepted",
+        "badge-processing",
+        "badge-ready"
+      );
+
+      // add new color class
+      if (status === "accepted") {
+        dropdown.classList.add("badge-accepted");
+      }
+
+      else if (status === "processing") {
+        dropdown.classList.add("badge-processing");
+      }
+
+      else if (status === "ready") {
+        dropdown.classList.add("badge-ready");
+      }
+
+      showToast("Status updated ✅");
+
+      loadActiveStats();
+
+    }
+
+  });
+
+}
+
+document.addEventListener("change", function(e) {
+
+  if (e.target.classList.contains("status-dropdown")) {
+
+    e.target.classList.remove(
+      "badge-accepted",
+      "badge-processing",
+      "badge-ready"
+    );
+
+    if (e.target.value === "accepted") {
+      e.target.classList.add("badge-accepted");
+    }
+
+    else if (e.target.value === "processing") {
+      e.target.classList.add("badge-processing");
+    }
+
+    else if (e.target.value === "ready") {
+      e.target.classList.add("badge-ready");
+    }
+
+  }
+
+});
+
+function loadActiveOrders() {
+
+  fetch("/api/active_orders")
+    .then(res => res.json())
+    .then(data => {
+
+      const tbody = document.querySelector("#processingTable tbody");
+
+      tbody.innerHTML = "";
+
+      data.forEach(order => {
+
+        const row = `
+          <tr>
+            <td>
+              <span class="order-id-text">
+                #VV-${order.id}
+              </span>
+            </td>
+
+            <td>${order.user}</td>
+
+            <td>${order.service}</td>
+
+            <td>${order.accepted}</td>
+
+            <td>
+              <select class="form-select form-select-sm status-dropdown">
+
+                <option value="accepted"
+                  ${order.status === 'accepted' ? 'selected' : ''}>
+                  Accepted
+                </option>
+
+                <option value="processing"
+                  ${order.status === 'processing' ? 'selected' : ''}>
+                  Processing
+                </option>
+
+                <option value="ready"
+                  ${order.status === 'ready' ? 'selected' : ''}>
+                  Ready for Pickup
+                </option>
+
+              </select>
+
+              <button 
+                class="btn btn-sm btn-primary mt-1"
+                onclick="saveStatus(this, '${order.id}')">
+
+                Save
+
+              </button>
+            </td>
+          </tr>
+        `;
+
+        tbody.innerHTML += row;
+
+      });
+
+    });
+}
+
+function saveStatus(btn, orderId) {
+
+  const row = btn.closest("tr");
+
+  const status = row.querySelector(".status-dropdown").value;
+
+  fetch("/update_order_status", {
+
+    method: "POST",
+
+    headers: {
+      "Content-Type": "application/json"
+    },
+
+    body: JSON.stringify({
+      order_id: orderId,
+      status: status
+    })
+
+  })
+
+  .then(res => res.json())
+
+  .then(data => {
+
+    if (data.success) {
+
+      showToast("Status updated ✅");
+
+      loadActiveStats();
+
+    }
+
+  });
+
+}
+
+function loadActiveStats() {
+
+  fetch("/api/active_stats")
+    .then(res => res.json())
+    .then(data => {
+
+      document.getElementById("acceptedCount").textContent =
+        data.accepted;
+
+      document.getElementById("processingCount").textContent =
+        data.processing;
+
+      document.getElementById("readyCount").textContent =
+        data.ready;
+
+    });
+
+}
+
+// vendors/history
+
+function loadHistoryOrders() {
+
+  fetch("/api/history_orders")
+
+    .then(res => res.json())
+
+    .then(data => {
+
+      const tbody =
+        document.querySelector("#historyTable tbody");
+
+      tbody.innerHTML = "";
+
+      data.forEach(order => {
+
+        let badgeClass = "";
+
+        if (order.status === "delivered") {
+          badgeClass = "badge-delivered";
+        }
+
+        else if (order.status === "picked_up") {
+          badgeClass = "badge-picked";
+        }
+        
+        else{
+          badgeClass = "badge-rejected";
+        }
+
+        const row = `
+
+          <tr>
+
+            <td>
+              <span class="order-id-text">
+                #VV-${order.id}
+              </span>
+            </td>
+
+            <td>${order.user}</td>
+
+            <td>${order.service}</td>
+
+            <td>${order.date}</td>
+
+            <td>
+              <span class="badge ${badgeClass}">
+                ${order.status}
+              </span>
+            </td>
+
+            <td>
+              ₹${order.amount}
+            </td>
+
+          </tr>
+
+        `;
+
+        tbody.innerHTML += row;
+
+      });
+
+    });
+
+}
+
+function loadHistoryStats() {
+
+  fetch("/api/history_stats")
+
+    .then(res => res.json())
+
+    .then(data => {
+
+      document.getElementById("totalOrdersCount")
+        .textContent = data.total_orders;
+
+      document.getElementById("deliveredCount")
+        .textContent = data.delivered;
+
+      document.getElementById("rejectedCount")
+        .textContent = data.rejected;
+
+    });
+
+}
+function openSidebar() {
+  document.getElementById('adminSidebar')
+    .classList.add('open');
+
+  document.getElementById('sidebarOverlay')
+    .classList.add('open');
+}
+
+function closeSidebar() {
+  document.getElementById('adminSidebar')
+    .classList.remove('open');
+
+  document.getElementById('sidebarOverlay')
+    .classList.remove('open');
+}
+
+
+/* ───────────────── Toast ───────────────── */
+
+function showToast(message) {
+
+  const toast = document.createElement("div");
+
+  toast.innerText = message;
+
+  toast.style.position = "fixed";
+  toast.style.bottom = "20px";
+  toast.style.right = "20px";
+  toast.style.background = "#1e3a8a";
+  toast.style.color = "white";
+  toast.style.padding = "12px 16px";
+  toast.style.borderRadius = "8px";
+  toast.style.boxShadow =
+    "0 4px 10px rgba(0,0,0,0.2)";
+
+  toast.style.zIndex = "9999";
+
+  document.body.appendChild(toast);
+
+  setTimeout(() => {
+    toast.remove();
+  }, 3000);
+
+}
+
+
+/* ───────────────── Services ───────────────── */
+
+const colorCycle = [
+  'c-sky',
+  'c-green',
+  'c-orange',
+  'c-purple'
+];
+
+let colorIdx = 0;
+
+
+/* ───────────── Add Service ───────────── */
+
+function addService() {
+
+  const name =
+    document.getElementById('newServiceName')
+    .value.trim();
+
+  const price =
+    document.getElementById('newServicePrice')
+    .value;
+
+  if (!name && !price) {
+
+    showToast(
+      "Please enter name and price ⚠️"
+    );
+
+    return;
+  }
+
+  if (!name) {
+
+    showToast(
+      "Please enter service name ⚠️"
+    );
+
+    return;
+  }
+
+  if (!price) {
+
+    showToast(
+      "Please enter price ⚠️"
+    );
+
+    return;
+  }
+
+  fetch("/add_service", {
+
+    method: "POST",
+
+    headers: {
+      "Content-Type": "application/json"
+    },
+
+    body: JSON.stringify({
+
+      name: name,
+      price: price
+
+    })
+
+  })
+
+  .then(res => res.json())
+
+  .then(data => {
+
+    if (data.success) {
+
+      showToast(
+        `Service "${name}" added ✅`
+      );
+
+      document.getElementById(
+        'newServiceName'
+      ).value = '';
+
+      document.getElementById(
+        'newServicePrice'
+      ).value = '';
+
+      loadVendorServices();
+
+    }
+
+  });
+
+}
+
+
+/* ───────────── Load Services ───────────── */
+
+function loadVendorServices() {
+
+  fetch("/api/vendor_services")
+
+    .then(res => res.json())
+
+    .then(data => {
+
+      const grid =
+        document.getElementById(
+          'servicesGrid'
+        );
+
+      grid.innerHTML = "";
+
+      data.forEach(service => {
+
+        const color =
+          colorCycle[
+            colorIdx % colorCycle.length
+          ];
+
+        colorIdx++;
+
+        const card = document.createElement('div');
+
+        card.className =
+          `service-card ${color}`;
+
+        card.innerHTML = `
+
+          <div class="service-icon">
+            🫧
+          </div>
+
+          <div class="service-name">
+            ${service.name}
+          </div>
+
+          <div class="service-price">
+            ₹<strong>${service.price}</strong>
+            / item
+          </div>
+
+          <div class="service-actions">
+
+            <button
+              class="btn-edit"
+              onclick="editService(this,
+              '${service.id}')">
+
+              ✏️ Edit
+
+            </button>
+
+            <button
+              class="btn-danger"
+              onclick="removeService(this,
+              '${service.id}')">
+
+              🗑 Remove
+
+            </button>
+
+          </div>
+
+        `;
+
+        grid.appendChild(card);
+
+      });
+
+    });
+
+}
+
+
+/* ───────────── Remove Service ───────────── */
+
+function removeService(btn, serviceId) {
+
+  fetch(`/delete_service/${serviceId}`, {
+
+    method: "DELETE"
+
+  })
+
+  .then(res => res.json())
+
+  .then(data => {
+
+    if (data.success) {
+
+      const card =
+        btn.closest('.service-card');
+
+      card.style.transform = 'scale(.9)';
+      card.style.opacity = '0';
+      card.style.transition = 'all .25s';
+
+      setTimeout(() => {
+        card.remove();
+      }, 250);
+
+      showToast("Service removed 🗑");
+
+    }
+
+  });
+
+}
+
+
+/* ───────────── Edit Service ───────────── */
+
+function editService(btn, serviceId) {
+
+  const card =
+    btn.closest('.service-card');
+
+  const currentName =
+    card.querySelector('.service-name')
+    .textContent;
+
+  const currentPrice =
+    card.querySelector(
+      '.service-price strong'
+    ).textContent;
+
+  const newName =
+    prompt(
+      'Edit service name:',
+      currentName
+    );
+
+  if (!newName) return;
+
+  const newPrice =
+    prompt(
+      'Edit price per item (₹):',
+      currentPrice
+    );
+
+  if (!newPrice) return;
+
+  fetch(`/edit_service/${serviceId}`, {
+
+    method: "PUT",
+
+    headers: {
+      "Content-Type": "application/json"
+    },
+
+    body: JSON.stringify({
+
+      name: newName,
+      price: newPrice
+
+    })
+
+  })
+
+  .then(res => res.json())
+
+  .then(data => {
+
+    if (data.success) {
+
+      showToast(
+        "Service updated ✏️"
+      );
+
+      loadVendorServices();
+
+    }
+
+  });
+
+}
+
+
+window.onload = function () {
+
+  loadPendingOrders();
+
+  loadDashboardStats();
+
+  loadActiveOrders();
+
+  loadActiveStats();
+
+  loadHistoryOrders();
+
+  loadHistoryStats();
+
+  updateIncomingBadge();
+
+  loadVendorServices();
+
+};
+
