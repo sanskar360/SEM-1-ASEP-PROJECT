@@ -22,7 +22,7 @@
         <span class="nav-section-label">Orders</span>
         <a class="nav-link" href="{{ url_for('vendors_incoming') }}">
           <span class="nl-icon">📥</span><span>Incoming Orders</span>
-          <span class="nav-badge">3</span>
+          <span class="nav-badge"  id="incomingBadge">3</span>
         </a>
         <a class="nav-link active" href="{{ url_for('vendors_processing') }}">
           <span class="nl-icon">⚙️</span><span>Order Processing</span>
@@ -64,17 +64,17 @@
           <div class="stats-row">
             <div class="stat-card c-sky">
               <div class="stat-label">Accepted</div>
-              <div class="stat-value">4</div>
+              <div class="stat-value" id="acceptedCount">0</div>
               <div class="stat-sub">Active orders</div>
             </div>
             <div class="stat-card c-orange">
               <div class="stat-label">Processing</div>
-              <div class="stat-value">2</div>
+              <div class="stat-value" id="processingCount">0</div>
               <div class="stat-sub">In progress</div>
             </div>
             <div class="stat-card c-purple">
               <div class="stat-label">Ready</div>
-              <div class="stat-value">1</div>
+              <div class="stat-value" id="readyCount">0</div>
               <div class="stat-sub">Awaiting pickup</div>
             </div>
           </div>
@@ -119,9 +119,6 @@
                   </tr>
                 </tbody>
               </table>
-            </div>
-            <div class="table-footer">
-              <span class="table-info">5 active orders</span>
             </div>
           </div>
         </div>

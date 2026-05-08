@@ -830,3 +830,75 @@ def update_active_order_status(order_id, status):
         conn.commit()
 
 
+# vendors/history
+
+def get_history_orders(vendor_id):
+
+    with engine.connect() as conn:
+
+        query = text("""
+
+            SELECT
+                o.id,
+                o.user_id,
+                s.name AS service_name,
+                o.created_at,
+                o.status,
+                o.total_amount
+
+            FROM addd_orders o
+
+            JOIN services s
+                ON o.service_id = s.id
+
+            WHERE o.vendor_id = :vendor_id
+
+            AND o.status IN ('picked_up', 'delivered','rejected')
+
+            ORDER BY o.created_at DESC
+
+        """)
+
+        result = conn.execute(
+            query,
+            {"vendor_id": vendor_id}
+        ).fetchall()
+
+        print(result)
+
+        return result
+    
+def get_history_stats(vendor_id):
+    with engine.connect() as conn:
+        query = text("""
+                    SELECT
+                        SUM(CASE
+                            WHEN status IN ('picked_up', 'delivered', 'rejected')
+                            AND vendor_id = :vendor_id
+                            THEN 1 ELSE 0
+                        END) As total_orders,
+                     
+                        SUM(CASE
+                            WHEN status = 'delivered'
+                            AND vendor_id = :vendor_id
+                            THEN 1 ELSE 0
+                        END) As delivered,
+                     
+                        SUM(CASE 
+                            WHEN status = 'rejected'
+                            AND vendor_id = :vendor_id
+                            THEN 1 ELSE 0
+                            END) As rejected
+                     
+                    FROM addd_orders
+
+                """)
+        
+        result = conn.execute(
+            query,
+            {"vendor_id" : vendor_id}
+        ).fetchone()
+        
+    return result
+    
+

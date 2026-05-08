@@ -20,7 +20,7 @@
     <span class="nav-section-label">Orders</span>
     <a class="nav-link active" href="{{ url_for('vendors_incoming') }}">
       <span class="nl-icon">📥</span><span>Incoming Orders</span>
-      <span class="nav-badge">3</span>
+      <span class="nav-badge" id="incomingBadge">3</span>
     </a>
     <a class="nav-link" href="{{ url_for('vendors_processing') }}">
       <span class="nl-icon">⚙️</span><span>Order Processing</span>
@@ -93,17 +93,16 @@
             </thead>
             <tbody>
               <tr>
-                <td data-label="Order ID"><span class="order-id-text">#VV-1045</span></td>
+                <td data-label="Order ID"><span class="order-id-text"></span></td>
                 <td data-label="Customer">
                   <div class="cust-cell">
-                    <div class="cust-av">RK</div>
-                    <div><div class="cust-name">Rahul Kumar</div><div class="cust-phone">+91 98765 43210</div></div>
+                    <div><div class="cust-name"></div><div class="cust-phone"></div></div>
                   </div>
                 </td>
-                <td data-label="Services">Washing · Ironing <span style="color:var(--text-muted);font-size:12px">× 3 items</span></td>
-                <td data-label="Pickup Date">03 May 2026, 10am</td>
-                <td data-label="Payment"><span class="badge badge-paid">Paid</span></td>
-                <td data-label="Amount"><span class="amount-text">₹349</span></td>
+                <td data-label="Services"><span style="color:var(--text-muted);font-size:12px"></span></td>
+                <td data-label="Pickup Date"></td>
+                <td data-label="Payment"><span class="badge badge-paid"></span></td>
+                <td data-label="Amount"><span class="amount-text"></span></td>
                 <td data-label="Actions">
                   <div class="action-btns">
                     <button class="btn-accept" onclick="acceptOrder(this,'#VV-1045')">✅ Accept</button>
@@ -113,9 +112,6 @@
               </tr>
             </tbody>
           </table>
-        </div>
-        <div class="table-footer">
-          <span class="table-info">3 pending orders</span>
         </div>
       </div>
     </div>

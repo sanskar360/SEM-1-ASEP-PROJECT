@@ -517,7 +517,7 @@ function loadPendingOrders() {
   fetch("/api/pending_orders")
     .then(res => res.json())
     .then(data => {
-      const tbody = document.querySelector("#processingTable tbody");
+      const tbody = document.querySelector("#incomingTable tbody");
       tbody.innerHTML = "";
 
       data.forEach(order => {
@@ -752,6 +752,97 @@ function loadActiveStats() {
 
 }
 
+// vendors/history
+
+function loadHistoryOrders() {
+
+  fetch("/api/history_orders")
+
+    .then(res => res.json())
+
+    .then(data => {
+
+      const tbody =
+        document.querySelector("#historyTable tbody");
+
+      tbody.innerHTML = "";
+
+      data.forEach(order => {
+
+        let badgeClass = "";
+
+        if (order.status === "delivered") {
+          badgeClass = "badge-delivered";
+        }
+
+        else if (order.status === "picked_up") {
+          badgeClass = "badge-picked";
+        }
+        
+        else{
+          badgeClass = "badge-rejected";
+        }
+
+        const row = `
+
+          <tr>
+
+            <td>
+              <span class="order-id-text">
+                #VV-${order.id}
+              </span>
+            </td>
+
+            <td>${order.user}</td>
+
+            <td>${order.service}</td>
+
+            <td>${order.date}</td>
+
+            <td>
+              <span class="badge ${badgeClass}">
+                ${order.status}
+              </span>
+            </td>
+
+            <td>
+              ₹${order.amount}
+            </td>
+
+          </tr>
+
+        `;
+
+        tbody.innerHTML += row;
+
+      });
+
+    });
+
+}
+
+function loadHistoryStats() {
+
+  fetch("/api/history_stats")
+
+    .then(res => res.json())
+
+    .then(data => {
+
+      document.getElementById("totalOrdersCount")
+        .textContent = data.total_orders;
+
+      document.getElementById("deliveredCount")
+        .textContent = data.delivered;
+
+      document.getElementById("rejectedCount")
+        .textContent = data.rejected;
+
+    });
+
+}
+
+
 window.onload = function () {
 
   loadPendingOrders();
@@ -761,5 +852,11 @@ window.onload = function () {
   loadActiveOrders();
 
   loadActiveStats();
+
+  loadHistoryOrders();
+
+  loadHistoryStats();
+
+  updateIncomingBadge()
 
 };
