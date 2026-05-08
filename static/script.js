@@ -841,6 +841,328 @@ function loadHistoryStats() {
     });
 
 }
+function openSidebar() {
+  document.getElementById('adminSidebar')
+    .classList.add('open');
+
+  document.getElementById('sidebarOverlay')
+    .classList.add('open');
+}
+
+function closeSidebar() {
+  document.getElementById('adminSidebar')
+    .classList.remove('open');
+
+  document.getElementById('sidebarOverlay')
+    .classList.remove('open');
+}
+
+
+/* ───────────────── Toast ───────────────── */
+
+function showToast(message) {
+
+  const toast = document.createElement("div");
+
+  toast.innerText = message;
+
+  toast.style.position = "fixed";
+  toast.style.bottom = "20px";
+  toast.style.right = "20px";
+  toast.style.background = "#1e3a8a";
+  toast.style.color = "white";
+  toast.style.padding = "12px 16px";
+  toast.style.borderRadius = "8px";
+  toast.style.boxShadow =
+    "0 4px 10px rgba(0,0,0,0.2)";
+
+  toast.style.zIndex = "9999";
+
+  document.body.appendChild(toast);
+
+  setTimeout(() => {
+    toast.remove();
+  }, 3000);
+
+}
+
+
+/* ───────────────── Services ───────────────── */
+
+const colorCycle = [
+  'c-sky',
+  'c-green',
+  'c-orange',
+  'c-purple'
+];
+
+let colorIdx = 0;
+
+
+/* ───────────── Add Service ───────────── */
+
+function addService() {
+
+  const name =
+    document.getElementById('newServiceName')
+    .value.trim();
+
+  const price =
+    document.getElementById('newServicePrice')
+    .value;
+
+  if (!name && !price) {
+
+    showToast(
+      "Please enter name and price ⚠️"
+    );
+
+    return;
+  }
+
+  if (!name) {
+
+    showToast(
+      "Please enter service name ⚠️"
+    );
+
+    return;
+  }
+
+  if (!price) {
+
+    showToast(
+      "Please enter price ⚠️"
+    );
+
+    return;
+  }
+
+  fetch("/add_service", {
+
+    method: "POST",
+
+    headers: {
+      "Content-Type": "application/json"
+    },
+
+    body: JSON.stringify({
+
+      name: name,
+      price: price
+
+    })
+
+  })
+
+  .then(res => res.json())
+
+  .then(data => {
+
+    if (data.success) {
+
+      showToast(
+        `Service "${name}" added ✅`
+      );
+
+      document.getElementById(
+        'newServiceName'
+      ).value = '';
+
+      document.getElementById(
+        'newServicePrice'
+      ).value = '';
+
+      loadVendorServices();
+
+    }
+
+  });
+
+}
+
+
+/* ───────────── Load Services ───────────── */
+
+function loadVendorServices() {
+
+  fetch("/api/vendor_services")
+
+    .then(res => res.json())
+
+    .then(data => {
+
+      const grid =
+        document.getElementById(
+          'servicesGrid'
+        );
+
+      grid.innerHTML = "";
+
+      data.forEach(service => {
+
+        const color =
+          colorCycle[
+            colorIdx % colorCycle.length
+          ];
+
+        colorIdx++;
+
+        const card = document.createElement('div');
+
+        card.className =
+          `service-card ${color}`;
+
+        card.innerHTML = `
+
+          <div class="service-icon">
+            🫧
+          </div>
+
+          <div class="service-name">
+            ${service.name}
+          </div>
+
+          <div class="service-price">
+            ₹<strong>${service.price}</strong>
+            / item
+          </div>
+
+          <div class="service-actions">
+
+            <button
+              class="btn-edit"
+              onclick="editService(this,
+              '${service.id}')">
+
+              ✏️ Edit
+
+            </button>
+
+            <button
+              class="btn-danger"
+              onclick="removeService(this,
+              '${service.id}')">
+
+              🗑 Remove
+
+            </button>
+
+          </div>
+
+        `;
+
+        grid.appendChild(card);
+
+      });
+
+    });
+
+}
+
+
+/* ───────────── Remove Service ───────────── */
+
+function removeService(btn, serviceId) {
+
+  fetch(`/delete_service/${serviceId}`, {
+
+    method: "DELETE"
+
+  })
+
+  .then(res => res.json())
+
+  .then(data => {
+
+    if (data.success) {
+
+      const card =
+        btn.closest('.service-card');
+
+      card.style.transform = 'scale(.9)';
+      card.style.opacity = '0';
+      card.style.transition = 'all .25s';
+
+      setTimeout(() => {
+        card.remove();
+      }, 250);
+
+      showToast("Service removed 🗑");
+
+    }
+
+  });
+
+}
+
+
+/* ───────────── Edit Service ───────────── */
+
+function editService(btn, serviceId) {
+
+  const card =
+    btn.closest('.service-card');
+
+  const currentName =
+    card.querySelector('.service-name')
+    .textContent;
+
+  const currentPrice =
+    card.querySelector(
+      '.service-price strong'
+    ).textContent;
+
+  const newName =
+    prompt(
+      'Edit service name:',
+      currentName
+    );
+
+  if (!newName) return;
+
+  const newPrice =
+    prompt(
+      'Edit price per item (₹):',
+      currentPrice
+    );
+
+  if (!newPrice) return;
+
+  fetch(`/edit_service/${serviceId}`, {
+
+    method: "PUT",
+
+    headers: {
+      "Content-Type": "application/json"
+    },
+
+    body: JSON.stringify({
+
+      name: newName,
+      price: newPrice
+
+    })
+
+  })
+
+  .then(res => res.json())
+
+  .then(data => {
+
+    if (data.success) {
+
+      showToast(
+        "Service updated ✏️"
+      );
+
+      loadVendorServices();
+
+    }
+
+  });
+
+}
 
 
 window.onload = function () {
@@ -857,6 +1179,9 @@ window.onload = function () {
 
   loadHistoryStats();
 
-  updateIncomingBadge()
+  updateIncomingBadge();
+
+  loadVendorServices();
 
 };
+

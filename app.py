@@ -1,5 +1,5 @@
 from flask import Flask, render_template,request, redirect, url_for, flash, session,jsonify
-from database import load_orders_from_db, add_user_to_db, login_user_from_db, user_from_addresses_db, get_addresses_from_db, add_address_to_db,delete_address_from_db,get_all_services,get_vendors,get_vendors2, get_address_by_id,get_items_for_vendor,get_address_by_id, insert_order, insert_order_items,get_delivery_boys,assign_delivery_boy,get_admin_orders,insert_delivery_boy, toggle_delivery_boy_status,get_payments,  update_user_db, delete_user_db,get_users,get_delivery_boy_orders,get_delivery_records,get_user_orders,get_order_details,update_order_status,get_pending_orders, get_dashboard_stats,get_active_orders,update_active_order_status,get_active_orders_stats,get_history_stats,get_history_orders
+from database import load_orders_from_db, add_user_to_db, login_user_from_db, user_from_addresses_db, get_addresses_from_db, add_address_to_db,delete_address_from_db,get_all_services,get_vendors,get_vendors2, get_address_by_id,get_items_for_vendor,get_address_by_id, insert_order, insert_order_items,get_delivery_boys,assign_delivery_boy,get_admin_orders,insert_delivery_boy, toggle_delivery_boy_status,get_payments,  update_user_db, delete_user_db,get_users,get_delivery_boy_orders,get_delivery_records,get_user_orders,get_order_details,update_order_status,get_pending_orders, get_dashboard_stats,get_active_orders,update_active_order_status,get_active_orders_stats,get_history_stats,get_history_orders,add_vendor_service, get_vendor_services,delete_vendor_service
 
 app = Flask(__name__)
 app.secret_key = "mysecret123"
@@ -620,4 +620,64 @@ def history_stats():
         "total_orders": stats.total_orders or 0,
         "delivered": stats.delivered or 0,
         "rejected": stats.rejected or 0
+    })
+
+# vendors/services
+
+@app.route("/add_service", methods=["POST"])
+def add_service_route():
+
+    vendor_id = 1
+
+    data = request.json
+
+    add_vendor_service(
+
+        vendor_id,
+
+        data.get("name"),
+        data.get("price")
+
+    )
+
+    return jsonify({
+        "success": True
+    })
+
+@app.route("/api/vendor_services")
+def vendor_services():
+
+    vendor_id = 1   # replace with session later
+
+    services = get_vendor_services(vendor_id)
+
+    data = []
+
+    for s in services:
+
+        data.append({
+
+            "id": s.id,
+            "name": s.name,
+            "price": s.price
+
+        })
+
+    return jsonify(data)
+
+@app.route(
+    "/delete_service/<int:service_id>",
+    methods=["DELETE"]
+)
+def delete_service(service_id):
+
+    vendor_id = 1   # replace with session later
+
+    delete_vendor_service(
+        service_id,
+        vendor_id
+    )
+
+    return jsonify({
+        "success": True
     })

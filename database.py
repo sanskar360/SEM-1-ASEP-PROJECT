@@ -864,7 +864,6 @@ def get_history_orders(vendor_id):
             {"vendor_id": vendor_id}
         ).fetchall()
 
-        print(result)
 
         return result
     
@@ -901,4 +900,134 @@ def get_history_stats(vendor_id):
         
     return result
     
+# vendors/services
 
+def add_vendor_service(
+    vendor_id,
+    service_name,
+    price
+):
+
+    with engine.connect() as conn:
+
+        # check if service exists
+
+        query = text("""
+
+            SELECT id
+            FROM services
+            WHERE name = :name
+
+        """)
+
+        service = conn.execute(
+            query,
+            {"name": service_name}
+        ).fetchone()
+
+        # create service if not exists
+
+        if not service:
+
+            insert_query = text("""
+
+                INSERT INTO services(name)
+                VALUES(:name)
+
+            """)
+
+            conn.execute(
+                insert_query,
+                {"name": service_name}
+            )
+
+            conn.commit()
+
+            service = conn.execute(
+                query,
+                {"name": service_name}
+            ).fetchone()
+
+        service_id = service.id
+
+        # insert vendor service
+
+        vendor_query = text("""
+
+            INSERT INTO vendor_services(
+                vendor_id,
+                service_id,
+                price
+            )
+
+            VALUES(
+                :vendor_id,
+                :service_id,
+                :price
+            )
+
+        """)
+
+        conn.execute(vendor_query, {
+
+            "vendor_id": vendor_id,
+            "service_id": service_id,
+            "price": price
+
+        })
+
+        conn.commit()
+
+def get_vendor_services(vendor_id):
+
+    with engine.connect() as conn:
+
+        query = text("""
+
+            SELECT
+
+                MIN(vs.id) AS id,
+                s.id AS service_id,
+                s.name,
+                MIN(vs.price) AS price
+
+            FROM vendor_services vs
+
+            JOIN services s
+                ON vs.service_id = s.id
+
+            WHERE vs.vendor_id = :vendor_id
+
+            GROUP BY s.id, s.name
+
+        """)
+
+        result = conn.execute(
+            query,
+            {"vendor_id": vendor_id}
+        ).fetchall()
+
+        return result
+    
+
+def delete_vendor_service(service_id, vendor_id):
+
+    with engine.connect() as conn:
+
+        query = text("""
+
+            DELETE FROM vendor_services
+
+            WHERE id = :service_id
+            AND vendor_id = :vendor_id
+
+        """)
+
+        conn.execute(query, {
+
+            "service_id": service_id,
+            "vendor_id": vendor_id
+
+        })
+
+        conn.commit()
