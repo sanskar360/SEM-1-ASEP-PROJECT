@@ -340,6 +340,7 @@ def get_delivery_boys():
                 db.phone,
                 db.status,
                 db.rating,
+                db.is_busy,
 
                 -- assigned orders
                 (
@@ -359,6 +360,7 @@ def get_delivery_boys():
                 ) AS completed_today
 
             FROM delivery_boys db
+            WHERE db.is_busy = false
             ORDER BY db.id DESC
         """)
 
@@ -395,6 +397,37 @@ def get_admin_orders():
             o.total_amount,
             o.suggestion,
             o.payment_status,
+            o.status,
+
+            SUM(oi.quantity) AS total_items
+
+        FROM addd_orders o
+        JOIN address a ON o.address_id = a.id
+        JOIN services s ON o.service_id = s.id
+        LEFT JOIN order_items oi ON oi.order_id = o.id
+        WHERE o.status IN ('accepted','ready')
+
+        GROUP BY o.id
+        ORDER BY o.id DESC;
+        """)
+
+        return conn.execute(query).fetchall()
+    
+def get_admin_orders2():
+
+    with engine.connect() as conn:
+
+        query = text("""
+           SELECT 
+            o.id,
+            a.user_name AS customer_name,
+            s.name AS service,
+            o.created_at,
+            o.payment_method,
+            o.total_amount,
+            o.suggestion,
+            o.payment_status,
+            o.status,
 
             SUM(oi.quantity) AS total_items
 
@@ -546,11 +579,40 @@ def get_delivery_boy_orders(boy_id):
             JOIN services s ON o.service_id = s.id
 
             WHERE o.delivery_boy_id = :boy_id
+            AND o.status IN ('accepted', 'picked_up', 'ready', 'delivered_to_vendor', 'picked_from_vendor')
 
             ORDER BY o.id DESC
         """)
 
         return conn.execute(query, {"boy_id": boy_id}).fetchall()
+
+
+    
+def update_delivery_order_status(
+    order_id,
+    status
+):
+
+    with engine.connect() as conn:
+
+        query = text("""
+
+            UPDATE addd_orders
+
+            SET status = :status
+
+            WHERE id = :order_id
+
+        """)
+
+        conn.execute(query, {
+
+            "status": status,
+            "order_id": order_id
+
+        })
+
+        conn.commit()
     
 def get_delivery_records(boy_id):
 
@@ -581,11 +643,59 @@ def get_delivery_records(boy_id):
             JOIN services s ON o.service_id = s.id
 
             WHERE o.delivery_boy_id = :boy_id
+            AND o.status = 'delivered'
 
             ORDER BY o.id DESC
         """)
 
         return conn.execute(query, {"boy_id": boy_id}).fetchall()
+    
+def get_delivery_boy_id(order_id):
+
+    with engine.connect() as conn:
+
+        query = text("""
+
+            SELECT delivery_boy_id
+
+            FROM addd_orders
+
+            WHERE id = :order_id
+
+        """)
+
+        result = conn.execute(
+            query,
+            {"order_id": order_id}
+        ).fetchone()
+
+        return result.delivery_boy_id
+    
+def update_delivery_boy_busy_status(
+    boy_id,
+    busy
+):
+
+    with engine.connect() as conn:
+
+        query = text("""
+
+            UPDATE delivery_boys
+
+            SET is_busy = :busy
+
+            WHERE id = :boy_id
+
+        """)
+
+        conn.execute(query, {
+
+            "busy": busy,
+            "boy_id": boy_id
+
+        })
+
+        conn.commit()
 
 def get_vendors2():
 
@@ -619,7 +729,6 @@ def get_vendors2():
 
         return conn.execute(query).fetchall()
     
-from sqlalchemy import text
 
 def get_user_orders(user_id):
 
@@ -1031,3 +1140,74 @@ def delete_vendor_service(service_id, vendor_id):
         })
 
         conn.commit()
+
+
+# vendors/addresses
+
+def save_vendor_address(
+    vendor_id,
+    street,
+    city,
+    state,
+    pin,
+    phone
+):
+
+    with engine.connect() as conn:
+
+        query = text("""
+
+            UPDATE vendors
+
+            SET
+
+                street_address = :street,
+                city = :city,
+                state = :state,
+                pincode = :pin,
+                phone = :phone
+
+            WHERE id = :vendor_id
+
+        """)
+
+        conn.execute(query, {
+
+            "street": street,
+            "city": city,
+            "state": state,
+            "pin": pin,
+            "phone": phone,
+            "vendor_id": vendor_id
+
+        })
+
+        conn.commit()
+
+def get_vendor_address(vendor_id):
+
+    with engine.connect() as conn:
+
+        query = text("""
+
+            SELECT
+
+                street_address,
+                city,
+                state,
+                pincode,
+                phone
+
+            FROM vendors
+
+            WHERE id = :vendor_id
+
+        """)
+
+        result = conn.execute(
+            query,
+            {"vendor_id": vendor_id}
+        ).fetchone()
+
+        return result
+    

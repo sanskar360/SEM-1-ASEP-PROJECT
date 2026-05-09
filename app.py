@@ -1,5 +1,5 @@
 from flask import Flask, render_template,request, redirect, url_for, flash, session,jsonify
-from database import load_orders_from_db, add_user_to_db, login_user_from_db, user_from_addresses_db, get_addresses_from_db, add_address_to_db,delete_address_from_db,get_all_services,get_vendors,get_vendors2, get_address_by_id,get_items_for_vendor,get_address_by_id, insert_order, insert_order_items,get_delivery_boys,assign_delivery_boy,get_admin_orders,insert_delivery_boy, toggle_delivery_boy_status,get_payments,  update_user_db, delete_user_db,get_users,get_delivery_boy_orders,get_delivery_records,get_user_orders,get_order_details,update_order_status,get_pending_orders, get_dashboard_stats,get_active_orders,update_active_order_status,get_active_orders_stats,get_history_stats,get_history_orders,add_vendor_service, get_vendor_services,delete_vendor_service
+from database import load_orders_from_db, add_user_to_db, get_admin_orders2,  update_delivery_order_status, login_user_from_db, user_from_addresses_db, get_addresses_from_db, add_address_to_db,delete_address_from_db,get_all_services,get_vendors,get_vendors2, get_address_by_id,get_items_for_vendor,get_address_by_id, insert_order, insert_order_items,get_delivery_boys,assign_delivery_boy,get_admin_orders,insert_delivery_boy, toggle_delivery_boy_status,get_payments,  update_user_db, delete_user_db,get_users,get_delivery_boy_orders,get_delivery_records,get_user_orders,get_order_details,update_order_status,get_pending_orders, get_dashboard_stats,get_active_orders,update_active_order_status,get_active_orders_stats,get_history_stats,get_history_orders,add_vendor_service, get_vendor_services,delete_vendor_service,get_vendor_address,save_vendor_address, get_delivery_boy_id, update_delivery_boy_busy_status
 
 app = Flask(__name__)
 app.secret_key = "mysecret123"
@@ -40,11 +40,13 @@ def admin_payment():
 @app.route("/admin_orders_table")
 def admin_orders():
     orders = get_admin_orders()
+    orders2 = get_admin_orders2()
     delivery_boys = get_delivery_boys()
 
     return render_template(
         "admin_orders_table.html",
         orders=orders,
+        orders2 = orders2,
         delivery_boys=delivery_boys
     )
 
@@ -66,6 +68,62 @@ def delivery_assigned():
                 "delivery_assigned.html",
                 orders=orders
             )
+@app.route(
+    "/delivery_update_status",
+    methods=["POST"]
+)
+
+@app.route(
+    "/delivery_update_status",
+    methods=["POST"]
+)
+def delivery_update_status():
+
+    order_id = request.form.get("order_id")
+
+    new_status = request.form.get("order_status")
+
+
+    # ───────── UPDATE ORDER STATUS ─────────
+
+    update_delivery_order_status(
+        order_id,
+        new_status
+    )
+
+
+    # ───────── GET DELIVERY BOY ID ─────────
+
+    boy_id = get_delivery_boy_id(order_id)
+
+
+    # ───────── BUSY STATES ─────────
+
+    if new_status in [
+        "picked_up",
+        "picked_from_vendor"
+    ]:
+
+        update_delivery_boy_busy_status(
+            boy_id,
+            True
+        )
+
+
+    # ───────── FREE STATES ─────────
+
+    elif new_status in [
+        "delivered_to_vendor",
+        "delivered"
+    ]:
+
+        update_delivery_boy_busy_status(
+            boy_id,
+            False
+        )
+
+
+    return redirect("/delivery_assigned")
 
 @app.route("/delivery_history")
 def delivery_history():
@@ -103,6 +161,10 @@ def vendors_processing():
 @app.route("/vendors_services.html")
 def vendors_services():
     return render_template("vendors_services.html")
+
+@app.route("/vendors_address")
+def vendors_addresses():
+    return render_template("vendors_addresses.html")
 
 
 @app.context_processor
@@ -680,4 +742,53 @@ def delete_service(service_id):
 
     return jsonify({
         "success": True
+    })
+
+# vendors addresses
+
+@app.route(
+    "/save_vendor_address",
+    methods=["POST"]
+)
+def save_vendor_address_route():
+
+    vendor_id = 1   # replace with session later
+
+    data = request.json
+
+    save_vendor_address(
+
+        vendor_id,
+
+        data.get("street"),
+        data.get("city"),
+        data.get("state"),
+        data.get("pin"),
+        data.get("phone")
+
+    )
+
+    return jsonify({
+        "success": True
+    })
+
+@app.route("/api/vendor_address")
+def vendor_address():
+
+    vendor_id = 1
+
+    address = get_vendor_address(vendor_id)
+
+    if not address:
+
+        return jsonify({})
+
+    return jsonify({
+
+        "street": address.street_address,
+        "city": address.city,
+        "state": address.state,
+        "pin": address.pincode,
+        "phone": address.phone
+
     })

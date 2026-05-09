@@ -1,100 +1,104 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Assigned Orders — Vega Vastra Delivery</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="{{ url_for('static', filename='delivery_style.css') }}">
 </head>
+
 <body>
 
-<div class="db-layout">
+    <div class="db-layout">
 
-    <!-- ═══════════════════════════════════════════════════════
+        <!-- ═══════════════════════════════════════════════════════
          SIDEBAR NAV
     ════════════════════════════════════════════════════════ -->
-    <aside class="db-sidebar">
-        <div class="sidebar-brand">
-            <a href="{{ url_for('delivery_assigned') }}" class="brand-name"><img src="{{ url_for('static', filename='Logo.png') }}" alt="Vega Vastra" class="sidebar-logo-img"></a>
-            <span class="brand-role">🛵 Delivery Portal</span>
-        </div>
+        <aside class="db-sidebar">
+            <div class="sidebar-brand">
+                <a href="{{ url_for('delivery_assigned') }}" class="brand-name"><img
+                        src="{{ url_for('static', filename='Logo.png') }}" alt="Vega Vastra"
+                        class="sidebar-logo-img"></a>
+                <span class="brand-role">🛵 Delivery Portal</span>
+            </div>
 
-        <div class="sidebar-identity">
-            <div class="si-avatar">RK</div>
-            <div class="si-info">
-                <div class="si-name">Ravi Kumar</div>
-                <div class="si-id">ID: DB-001</div>
-                <div class="si-status">
-                    <span class="si-dot"></span>
-                    <span class="si-status-text">Online</span>
+            <div class="sidebar-identity">
+                <div class="si-avatar">RK</div>
+                <div class="si-info">
+                    <div class="si-name">Ravi Kumar</div>
+                    <div class="si-id">ID: DB-001</div>
+                    <div class="si-status">
+                        <span class="si-dot"></span>
+                        <span class="si-status-text">Online</span>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <nav class="sidebar-nav">
-            <span class="nav-label">My Work</span>
-           
-            <a href="{{ url_for('delivery_assigned') }}" class="nav-link active">
-                <span class="nl-icon">📦</span>
-                <span class="nl-text">Assigned Orders</span>
-                <span class="nl-badge">3</span>
-            </a>
-            <a href="{{ url_for('delivery_history') }}" class="nav-link">
-                <span class="nl-icon">📋</span>
-                <span class="nl-text">Order History</span>
-            </a>
-            <span class="nav-label">Account</span>
-            <a href="{{ url_for('delivery_profile') }}" class="nav-link">
-                <span class="nl-icon">👤</span>
-                <span class="nl-text">My Profile</span>
-            </a>
-        </nav>
+            <nav class="sidebar-nav">
+                <span class="nav-label">My Work</span>
 
-        <div class="sidebar-footer">
-            <a href="{{ url_for('logout') }}" class="logout-link">
-                <span class="nl-icon">🚪</span>
-                <span>Logout</span>
-            </a>
-        </div>
-    </aside>
-    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+                <a href="{{ url_for('delivery_assigned') }}" class="nav-link active">
+                    <span class="nl-icon">📦</span>
+                    <span class="nl-text">Assigned Orders</span>
+                    <span class="nl-badge">3</span>
+                </a>
+                <a href="{{ url_for('delivery_history') }}" class="nav-link">
+                    <span class="nl-icon">📋</span>
+                    <span class="nl-text">Order History</span>
+                </a>
+                <span class="nav-label">Account</span>
+                <a href="{{ url_for('delivery_profile') }}" class="nav-link">
+                    <span class="nl-icon">👤</span>
+                    <span class="nl-text">My Profile</span>
+                </a>
+            </nav>
 
-    <!-- ═══════════════════════════════════════════════════════
+            <div class="sidebar-footer">
+                <a href="{{ url_for('logout') }}" class="logout-link">
+                    <span class="nl-icon">🚪</span>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </aside>
+        <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+        <!-- ═══════════════════════════════════════════════════════
          MAIN
     ════════════════════════════════════════════════════════ -->
-    <div class="db-main">
+        <div class="db-main">
 
-        <header class="db-topbar">
-            <button class="hamburger" onclick="openSidebar()" aria-label="Open menu">
-                <span></span><span></span><span></span>
-            </button>
-            <div>
-                <div class="topbar-greeting">Assigned <span>Orders</span></div>
-                <div class="topbar-date" id="js-date"></div>
-            </div>
-            <div class="topbar-right">
-                <div class="topbar-notif">🔔<span class="notif-pip"></span></div>
-                <div class="topbar-avatar">RK</div>
-            </div>
-        </header>
+            <header class="db-topbar">
+                <button class="hamburger" onclick="openSidebar()" aria-label="Open menu">
+                    <span></span><span></span><span></span>
+                </button>
+                <div>
+                    <div class="topbar-greeting">Assigned <span>Orders</span></div>
+                    <div class="topbar-date" id="js-date"></div>
+                </div>
+                <div class="topbar-right">
+                    <div class="topbar-notif">🔔<span class="notif-pip"></span></div>
+                    <div class="topbar-avatar">RK</div>
+                </div>
+            </header>
 
-        <main class="db-content">
+            <main class="db-content">
 
-            <div class="page-header">
-                <h1>Assigned Orders</h1>
-                <p>You have <strong style="color:var(--navy);">3</strong> pending orders. Update the status once you pick up or deliver each order.</p>
-            </div>
+                <div class="page-header">
+                    <h1>Assigned Orders</h1>
+                    <p>You have <strong style="color:var(--navy);">3</strong> pending orders. Update the status once you
+                        pick up or deliver each order.</p>
+                </div>
 
-            <!-- Search bar -->
-            <div style="margin-bottom:18px;">
-                <input type="text" id="assignedSearch" class="search-bar" style="width:100%; max-width:340px;"
-                    placeholder="🔍  Search by customer name..."
-                    oninput="filterAssigned(this.value)">
-            </div>
+                <!-- Search bar -->
+                <div style="margin-bottom:18px;">
+                    <input type="text" id="assignedSearch" class="search-bar" style="width:100%; max-width:340px;"
+                        placeholder="🔍  Search by customer name..." oninput="filterAssigned(this.value)">
+                </div>
 
-            <div class="table-wrap">
-                <table class="db-table" id="assignedTable">
+                <div class="table-wrap">
+                    <table class="db-table" id="assignedTable">
                         <thead>
                             <tr>
                                 <th>Order</th>
@@ -112,148 +116,173 @@
 
                         <tbody>
 
-                        {% for order in orders %}
-                        <tr>
+                            {% for order in orders %}
+                            <tr>
 
-                            <!-- ORDER -->
-                            <td class="td-bold">#{{ order.id }}</td>
+                                <!-- ORDER -->
+                                <td class="td-bold">#{{ order.id }}</td>
 
-                            <!-- DATE -->
-                            <td class="td-muted">
-                                {{ order.created_at.strftime('%d %b %Y') }}
-                            </td>
+                                <!-- DATE -->
+                                <td class="td-muted">
+                                    {{ order.created_at.strftime('%d %b %Y') }}
+                                </td>
 
-                            <!-- CUSTOMER -->
-                            <td class="td-bold">{{ order.user_name }}</td>
+                                <!-- CUSTOMER -->
+                                <td class="td-bold">{{ order.user_name }}</td>
 
-                            <!-- PHONE -->
-                            <td>
-                                <a href="tel:{{ order.phone_no }}" style="color:var(--sky); font-weight:600;">
-                                    {{ order.phone_no }}
-                                </a>
-                            </td>
+                                <!-- PHONE -->
+                                <td>
+                                    <a href="tel:{{ order.phone_no }}" style="color:var(--sky); font-weight:600;">
+                                        {{ order.phone_no }}
+                                    </a>
+                                </td>
 
-                            <!-- SERVICE -->
-                            <td>{{ order.service_name }}</td>
+                                <!-- SERVICE -->
+                                <td>{{ order.service_name }}</td>
 
-                            <!-- ITEMS -->
-                            <td>{{ order.total_items }}</td>
+                                <!-- ITEMS -->
+                                <td>{{ order.total_items }}</td>
 
-                            <!-- ADDRESS -->
-                            <td style="font-size:12.5px; color:var(--text-muted); line-height:1.5;">
-                                {{ order.city }},<br>
-                                {{ order.state }} — {{ order.pincode }}
-                            </td>
+                                <!-- ADDRESS -->
+                                <td style="font-size:12.5px; color:var(--text-muted); line-height:1.5;">
+                                    {{ order.city }},<br>
+                                    {{ order.state }} — {{ order.pincode }}
+                                </td>
 
-                            <!-- PAYMENT -->
-                            <td>
-                                <div style="font-size:12.5px;">
-                                    {{ order.payment_method }}
-                                </div>
+                                <!-- PAYMENT -->
+                                <td>
+                                    <div style="font-size:12.5px;">
+                                        {{ order.payment_method }}
+                                    </div>
 
-                                {% if order.payment_method == "Cash on Delivery" %}
+                                    {% if order.payment_method == "Cash on Delivery" %}
                                     <span class="badge badge-red">Collect</span>
-                                {% else %}
-                                    <span class="badge badge-green">Paid</span>
-                                {% endif %}
-                            </td>
-
-                            <!-- STATUS -->
-                            <td>
-                                <span class="badge badge-orange">
-                                    {{ order.status.replace('_',' ').title() }}
-                                </span>
-                            </td>
-
-                            <!-- ACTION -->
-                            <td>
-
-                                <form action="/delivery_update_status" method="POST" style="display:flex; gap:6px; align-items:center;">
-                                    
-                                    <input type="hidden" name="order_id" value="{{ order.id }}">
-
-                                    <!-- STATUS CONTROL -->
-                                    {% if order.status == "assigned" %}
-                                        <button type="submit" name="order_status" value="picked_up" class="btn btn-navy btn-sm">
-                                            Pick Up
-                                        </button>
-
-                                    {% elif order.status == "picked_up" %}
-                                        <button type="submit" name="order_status" value="out_for_delivery" class="btn btn-navy btn-sm">
-                                            Start Delivery
-                                        </button>
-
-                                    {% elif order.status == "out_for_delivery" %}
-                                        <button type="submit" name="order_status" value="delivered" class="btn btn-navy btn-sm">
-                                            Mark Delivered
-                                        </button>
-
-                                    {% elif order.status == "delivered" %}
-                                        <span style="color:green; font-weight:600;">Completed</span>
-
                                     {% else %}
-                                        <span style="color:#999;">Waiting</span>
+                                    <span class="badge badge-green">Paid</span>
                                     {% endif %}
+                                </td>
 
-                                </form>
+                                <!-- STATUS -->
+                                <td>
+                                    <span class="badge badge-orange">
+                                        {{ order.status.replace('_',' ').title() }}
+                                    </span>
+                                </td>
 
-                            </td>
+                                <!-- ACTION -->
+                                <td>
 
-                        </tr>
-                        {% endfor %}
+                                    <form action="/delivery_update_status" method="POST"
+                                        style="display:flex; gap:6px; align-items:center;">
+
+                                        <input type="hidden" name="order_id" value="{{ order.id }}">
+
+                                        <!-- ACCEPTED -->
+                                        {% if order.status == "accepted" %}
+
+                                        <button type="submit" name="order_status" value="picked_up"
+                                            class="btn btn-navy btn-sm">
+
+                                            Picked Up
+
+                                        </button>
+
+                                        <!-- PICKED UP -->
+                                        {% elif order.status == "picked_up" %}
+
+                                        <button type="submit" name="order_status" value="delivered_to_vendor"
+                                            class="btn btn-navy btn-sm">
+
+                                            Delivered to Vendor
+
+                                        </button>
+
+                                        <!-- READY -->
+                                        {% elif order.status == "delivered_to_vendor" %}
+
+                                        <button type="submit" name="order_status" value="picked_from_vendor"
+                                            class="btn btn-navy btn-sm">
+
+                                            Picked From Vendor
+
+                                        </button>
+
+                                        <!-- PICKED FROM VENDOR -->
+                                        {% elif order.status == "picked_from_vendor" %}
+
+                                        <button type="submit" name="order_status" value="delivered"
+                                            class="btn btn-navy btn-sm">
+
+                                            Delivered to Customer
+
+                                        </button>
+
+                                        <span style="color:#999;">
+                                            Waiting
+                                        </span>
+
+                                        {% endif %}
+
+                                    </form>
+
+                                </td>
+
+                            </tr>
+                            {% endfor %}
 
                         </tbody>
 
-  
 
-                </table>
-            </div>
 
-        </main>
+                    </table>
+                </div>
+
+            </main>
+        </div>
     </div>
-</div>
 
-<script>
-    document.getElementById('js-date').textContent =
-        new Date().toLocaleDateString('en-IN', {
-            weekday:'long', year:'numeric', month:'long', day:'numeric'
-        });
-</script>
+    <script>
+        document.getElementById('js-date').textContent =
+            new Date().toLocaleDateString('en-IN', {
+                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+            });
+    </script>
 
-<script>
-function openSidebar() {
-    document.querySelector(".db-sidebar").classList.add("open");
-    document.getElementById("sidebarOverlay").classList.add("open");
-}
-function closeSidebar() {
-    document.querySelector(".db-sidebar").classList.remove("open");
-    document.getElementById("sidebarOverlay").classList.remove("open");
-}
-function filterAssigned(query) {
-    const q = query.toLowerCase();
-    const rows = document.querySelectorAll('#assignedTable tbody tr');
-    rows.forEach(row => {
-        const customer = row.querySelector('[data-label="Customer"]');
-        const text = customer ? customer.textContent.toLowerCase() : row.textContent.toLowerCase();
-        row.style.display = text.includes(q) ? '' : 'none';
-    });
-}
-</script>
+    <script>
+        function openSidebar() {
+            document.querySelector(".db-sidebar").classList.add("open");
+            document.getElementById("sidebarOverlay").classList.add("open");
+        }
+        function closeSidebar() {
+            document.querySelector(".db-sidebar").classList.remove("open");
+            document.getElementById("sidebarOverlay").classList.remove("open");
+        }
+        function filterAssigned(query) {
+            const q = query.toLowerCase();
+            const rows = document.querySelectorAll('#assignedTable tbody tr');
+            rows.forEach(row => {
+                const customer = row.querySelector('[data-label="Customer"]');
+                const text = customer ? customer.textContent.toLowerCase() : row.textContent.toLowerCase();
+                row.style.display = text.includes(q) ? '' : 'none';
+            });
+        }
+    </script>
 
-<!-- Bottom Nav -->
-<nav class="bottom-nav">
-    <a href="{{ url_for('delivery_assigned') }}" class="bn-item active">
-      <span class="bn-badge">3</span><span class="bn-icon">📦</span>
-      <span>Orders</span>
-    </a>
-    <a href="{{ url_for('delivery_history') }}" class="bn-item">
-      <span class="bn-icon">📋</span>
-      <span>History</span>
-    </a>
-    <a href="{{ url_for('delivery_profile') }}" class="bn-item">
-      <span class="bn-icon">👤</span>
-      <span>Profile</span>
-    </a>
-</nav>
+    <!-- Bottom Nav -->
+    <nav class="bottom-nav">
+        <a href="{{ url_for('delivery_assigned') }}" class="bn-item active">
+            <span class="bn-badge">3</span><span class="bn-icon">📦</span>
+            <span>Orders</span>
+        </a>
+        <a href="{{ url_for('delivery_history') }}" class="bn-item">
+            <span class="bn-icon">📋</span>
+            <span>History</span>
+        </a>
+        <a href="{{ url_for('delivery_profile') }}" class="bn-item">
+            <span class="bn-icon">👤</span>
+            <span>Profile</span>
+        </a>
+    </nav>
 </body>
+
 </html>
