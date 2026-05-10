@@ -1,13 +1,48 @@
-<nav class="navbar">
-    
-    <a href="{{ url_for('home') }}">
-        <img src="{{ url_for('static', filename='Logo.png') }}" class="logo">
-    </a>
-    <ul id="navLinks">
-        <li><a href="{{ url_for('how_it_works') }}">How it works</a></li>
-        <li><a href="{{ url_for('services') }}">Services</a></li>
-        <li><a href="{{ url_for('track_orders') }}">Track Orders</a></li>
-        <li><a href="{{ url_for('profile') }}">Profile</a></li>
-        <li><a href="{{ url_for('login') }}" id="login"> Login </a></li>
-    </ul>
-</nav>
+<link rel="stylesheet" href="{{ url_for('static', filename='navbar.css') }}">
+<link rel="stylesheet" href="navbar.css">
+<header class="site-header">
+    <nav class="navbar">
+
+        <a href="{{ url_for('home') }}" class="logo-link">
+            <img src="{{ url_for('static', filename='Logo.png') }}" class="logo" alt="Vega Vastra">
+        </a>
+
+        <ul id="navLinks" class="nav-links">
+            <li>
+                <a href="{{ url_for('how_it_works') }}" class="nav-link">
+                    <span class="nav-icon">✦</span>How it works
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('services') }}" class="nav-link">
+                    <span class="nav-icon">✦</span>Services
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('track_orders') }}" class="nav-link">
+                    <span class="nav-icon">✦</span>Track Orders
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('profile') }}" class="nav-link">
+                    <span class="nav-icon">✦</span>Profile
+                </a>
+            </li>
+        </ul>
+
+        <div class="nav-right">
+            <a href="{{ url_for('login') }}" id="login" class="login-btn">
+                <span>Login</span>
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                    <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </a>
+            <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+
+    </nav>
+</header>
+
+
