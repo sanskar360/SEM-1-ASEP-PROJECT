@@ -1,5 +1,5 @@
 from flask import Flask, render_template,request, redirect, url_for, flash, session,jsonify
-from database import load_orders_from_db, add_user_to_db, get_admin_orders2,  update_delivery_order_status, login_user_from_db, user_from_addresses_db, get_addresses_from_db, add_address_to_db,delete_address_from_db,get_all_services,get_vendors,get_vendors2, get_address_by_id,get_items_for_vendor,get_address_by_id, insert_order, insert_order_items,get_delivery_boys,assign_delivery_boy,get_admin_orders,insert_delivery_boy, toggle_delivery_boy_status,get_payments,  update_user_db, delete_user_db,get_users,get_delivery_boy_orders,get_delivery_records,get_user_orders,get_order_details,update_order_status,get_pending_orders, get_dashboard_stats,get_active_orders,update_active_order_status,get_active_orders_stats,get_history_stats,get_history_orders,add_vendor_service, get_vendor_services,delete_vendor_service,get_vendor_address,save_vendor_address, get_delivery_boy_id, update_delivery_boy_busy_status
+from database import load_orders_from_db, add_user_to_db, get_admin_orders2,  update_delivery_order_status, login_user_from_db, user_from_addresses_db, get_addresses_from_db, add_address_to_db,delete_address_from_db,get_all_services,get_vendors,get_vendors2, get_address_by_id,get_items_for_vendor,get_address_by_id, insert_order, insert_order_items,get_delivery_boys,assign_delivery_boy,get_admin_orders,insert_delivery_boy, toggle_delivery_boy_status,get_payments,  update_user_db, delete_user_db,get_users,get_delivery_boy_orders,get_delivery_records,get_user_orders,get_order_details,update_order_status,get_pending_orders, get_dashboard_stats,get_active_orders,update_active_order_status,get_active_orders_stats,get_history_stats,get_history_orders,add_vendor_service, get_vendor_services,delete_vendor_service,get_vendor_address,save_vendor_address, get_delivery_boy_id, update_delivery_boy_busy_status,mark_order_payment_paid
 
 app = Flask(__name__)
 app.secret_key = "mysecret123"
@@ -135,6 +135,20 @@ def delivery_history():
                 "delivery_history.html",
                 deliveries=deliveries
             )
+    
+@app.route("/mark-payment-paid/<int:order_id>", methods=["POST"])
+def mark_payment_paid(order_id):
+
+    method = request.args.get("method")
+    rider_id = session.get("delivery_boy_id")
+
+    mark_order_payment_paid(
+        order_id,
+        method,
+        rider_id
+    )
+
+    return redirect("/delivery_assigned")
 
 @app.route("/delivery_login.html")
 def delivery_login():

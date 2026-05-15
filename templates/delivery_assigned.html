@@ -109,6 +109,11 @@
                                 <th>Items</th>
                                 <th>Address</th>
                                 <th>Payment</th>
+                                {% for order in orders %}
+                                    {% if (order.status == "picked_from_vendor" ) and order.payment_status != "paid" %}
+                                        <th>Payment Action</th>
+                                    {% endif %}
+                                {% endfor %}
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
@@ -160,6 +165,34 @@
                                     {% else %}
                                     <span class="badge badge-green">Paid</span>
                                     {% endif %}
+                                </td>
+                                <!-- PAYMENT ACTION -->
+                                <td>
+
+                                    {% if (order.status == "picked_from_vendor" ) and order.payment_status != "paid" %}
+
+                                    <button type="button"
+                                        class="btn btn-green btn-sm"
+                                        onclick="openPaymentModal('{{ order.id }}', '{{ order.total_amount }}')">
+
+                                        Collect Payment
+
+                                    </button>
+
+                                    {% elif order.payment_status == "paid" %}
+
+                                    <span class="badge badge-green">
+                                        Paid
+                                    </span>
+
+                                    {% else %}
+
+                                    <span style="color:#999;">
+                                        Waiting
+                                    </span>
+
+                                    {% endif %}
+
                                 </td>
 
                                 <!-- STATUS -->
@@ -266,6 +299,30 @@
                 row.style.display = text.includes(q) ? '' : 'none';
             });
         }
+
+
+        function openPaymentModal(orderId, amount){
+
+            document.getElementById("paymentModal").style.display = "flex";
+
+            document.getElementById("paymentAmount").innerHTML =
+                "Amount to Collect: ₹" + amount;
+
+            document.getElementById("cashForm").action =
+                "/mark-payment-paid/" + orderId + "?method=cash";
+
+            document.getElementById("upiForm").action =
+                "/mark-payment-paid/" + orderId + "?method=upi";
+        }
+
+        window.onclick = function(e){
+            let modal = document.getElementById("paymentModal");
+
+            if(e.target == modal){
+                modal.style.display = "none";
+            }
+        }
+
     </script>
 
     <!-- Bottom Nav -->
@@ -283,6 +340,36 @@
             <span>Profile</span>
         </a>
     </nav>
+
+    <div id="paymentModal" class="payment-modal">
+
+    <div class="payment-box">
+
+        <h3>Collect Payment</h3>
+
+        <p id="paymentAmount"></p>
+
+        <img src="/static/images/upi_qr.png" class="upi-qr">
+
+        <div class="payment-actions">
+
+            <form id="cashForm" method="POST">
+                <button class="btn btn-green">
+                    Cash Received
+                </button>
+            </form>
+
+            <form id="upiForm" method="POST">
+                <button class="btn btn-navy">
+                    UPI Received
+                </button>
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
 </body>
 
 </html>

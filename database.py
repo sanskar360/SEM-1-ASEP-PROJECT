@@ -783,6 +783,28 @@ def get_order_details(order_id):
 
         return conn.execute(query, {"order_id": order_id}).fetchone()
     
+def mark_order_payment_paid(order_id, method, rider_id):
+
+    with engine.connect() as conn:
+
+        query = text("""
+            UPDATE addd_orders
+            SET
+                payment_status = 'paid',
+                payment_method = :method,
+                paid_at = NOW(),
+                paid_by_rider_id = :rider_id
+            WHERE id = :order_id
+        """)
+
+        conn.execute(query, {
+            "method": method,
+            "rider_id": rider_id,
+            "order_id": order_id
+        })
+
+        conn.commit()
+    
 # vendors_panel/incoming
 
 def assign_vendor(order_id, vendor_id):

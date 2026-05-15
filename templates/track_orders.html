@@ -13,6 +13,12 @@
     <link rel="stylesheet" href="{{ url_for('static',filename='track_orders.css')}}">
 </head>
 
+<header>
+    <nav>
+        {% include 'nav.html' %}
+    </nav>
+</header>
+
 <body>
 
     <div class="container">
@@ -21,28 +27,6 @@
             <h1>Track Your Orders</h1>
             <p>Monitor pickup, cleaning progress and delivery of your laundry orders.</p>
         </div>
-
-        <!-- <div class="filter-card">
-            <div class="filter-grid">
-                <input class="input" placeholder="Search Order ID / Vendor">
-                <select class="select">
-                    <option>Status</option>
-                    <option>Placed</option>
-                    <option>Picked Up</option>
-                    <option>Processing</option>
-                    <option>Out for Delivery</option>
-                    <option>Delivered</option>
-                </select>
-                <input type="date" class="input">
-                <select class="select">
-                    <option>Service</option>
-                    <option>Wash & Iron</option>
-                    <option>Dry Clean</option>
-                    <option>Premium Care</option>
-                </select>
-                <button class="btn btn-primary">Apply</button>
-            </div>
-        </div> -->
 
         <div class="table-card">
             <div class="table-head">My Laundry Orders</div>
