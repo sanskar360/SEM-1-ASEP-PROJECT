@@ -6,78 +6,110 @@
     <title>Profile</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 </head>
 <body>
+
+    <!-- NAV — completely untouched -->
     <header>
         <nav>
             {% include 'nav.html' %}
         </nav>
     </header>
+
+    <!-- PROFILE HERO BANNER -->
+    <div class="profile-hero">
+        <div class="profile-hero-inner">
+            <div class="profile-avatar-wrap">
+                <img class="user" src="{{ url_for('static', filename='icons/user.png') }}">
+            </div>
+            <div class="profile-hero-text">
+                <h2>{{ session.username }}</h2>
+                <p>{{ session.email }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN WRAPPER -->
     <div class="profile-layout">
 
         <!-- SIDEBAR -->
         <aside class="sidebar">
-            <div class="profile-top">
-                <img class="user" src="{{ url_for('static', filename='icons/user.png') }}">
-                <h3>{{ session.username }}</h3>
-                <p>{{ session.email }}</p>
-            </div>
-
+            <p class="sidebar-label">My Account</p>
             <ul class="menu">
-                <li><a href="{{ url_for('services') }}">Add Orders</a></li>
-                <li><a href="{{ url_for('track_orders') }}">Track Orders</a></li>
-                <li><a href="{{ url_for('payments') }}">Payment</a></li>
-                <li><a href="{{ url_for('manage_addresses') }}">Manage Address</a></li>
-                <li><a href="{{ url_for('logout') }}">Logout</a></li>
+                <li><a href="{{ url_for('services') }}">
+                    <i class="fa-solid fa-cart-plus menu-icon"></i> Add Orders
+                </a></li>
+                <li><a href="{{ url_for('track_orders') }}">
+                    <i class="fa-solid fa-box menu-icon"></i> Track Orders
+                </a></li>
+                <li><a href="{{ url_for('payments') }}">
+                    <i class="fa-solid fa-credit-card menu-icon"></i> Payment
+                </a></li>
+                <li><a href="{{ url_for('manage_addresses') }}">
+                    <i class="fa-solid fa-location-dot menu-icon"></i> Manage Address
+                </a></li>
+            </ul>
+            <div class="sidebar-divider"></div>
+            <ul class="menu">
+                <li><a class="logout-link" href="{{ url_for('logout') }}">
+                    <i class="fa-solid fa-right-from-bracket menu-icon logout-icon"></i> Logout
+                </a></li>
             </ul>
         </aside>
-
 
         <!-- MAIN CONTENT -->
         <main class="profile-content">
 
-            <h2 class="page-title">Personal Information</h2>
-
-            <!-- USER INFO CARD -->
-            <div class="card">
-                <h3>Basic Details</h3>
-
-                <div class="info-grid">
-                    <div class="info-box">
-                        <span>Username</span>
-                        <p>{{ session.username }}</p>
-                    </div>
-
-                    <div class="info-box">
-                        <span>Email</span>
-                        <p>{{ session.email }}</p>
-                    </div>
-                </div>
+            <div class="section-header">
+                <h2 class="page-title">Personal Information</h2>
+                <span class="section-pill">Verified</span>
             </div>
 
-            <!-- CONTACT CARD -->
-            <div class="card">
-                <h3>Contact Details</h3>
+            <!-- TWO CARDS SIDE BY SIDE -->
+            <div class="cards-row">
 
-                <div class="info-grid">
-                    <div class="info-box">
-                        <span>Phone Number</span>
-                        <p>{{ address.phone_no }}</p>
-                    </div>
-
-                    <div class="info-box">
-                        <span>Alternate Number</span>
-                        <p>{{ address.alternate_phone_no }}</p>
+                <div class="card profile-card">
+                    <div class="card-top-bar bar-blue"></div>
+                    <h3>Basic Details</h3>
+                    <div class="info-grid">
+                        <div class="info-box">
+                            <span>Username</span>
+                            <p>{{ session.username }}</p>
+                        </div>
+                        <div class="info-box">
+                            <span>Email</span>
+                            <p>{{ session.email }}</p>
+                        </div>
                     </div>
                 </div>
+
+                <div class="card profile-card">
+                    <div class="card-top-bar bar-light"></div>
+                    <h3>Contact Details</h3>
+                    <div class="info-grid">
+                        <div class="info-box">
+                            <span>Phone Number</span>
+                            <p>{{ address.phone_no }}</p>
+                        </div>
+                        <div class="info-box">
+                            <span>Alternate Number</span>
+                            <p>{{ address.alternate_phone_no }}</p>
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
-            <!-- IMAGE -->
+            <!-- IMAGE CARD -->
             <div class="image-card">
+                <div class="image-card-label"><span>Photo</span></div>
                 <img src="{{ url_for('static', filename='image3.jpg') }}">
             </div>
 
         </main>
     </div>
+
 </body>
 </html>
