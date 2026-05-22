@@ -9,10 +9,8 @@
 </head>
 <body>
     <header>
-        <nav class="navbar shadow-sm fixed-top bg-white">
-            <a href="{{ url_for('home') }}">
-            <img src="{{ url_for('static', filename='Logo.png') }}" class="logo">
-            </a>
+        <nav>
+            {% include 'nav.html' %}
         </nav>
     </header>
     <div class="profile-layout">

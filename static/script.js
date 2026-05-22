@@ -87,7 +87,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
 });
-function loadVendors(){
+function loadVendors() {
   window.location.href = "/vendors"
 }
 
@@ -175,12 +175,12 @@ function updateTotal() {
 }
 
 function openSidebar() {
-    document.getElementById('adminSidebar').classList.add('open');
-    document.getElementById('sidebarOverlay').classList.add('open');
+  document.getElementById('adminSidebar').classList.add('open');
+  document.getElementById('sidebarOverlay').classList.add('open');
 }
 function closeSidebar() {
-    document.getElementById('adminSidebar').classList.remove('open');
-    document.getElementById('sidebarOverlay').classList.remove('open');
+  document.getElementById('adminSidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('open');
 }
 /* ── Add Modal ── */
 function openAddModal() { document.getElementById('addModal').classList.add('show'); }
@@ -206,10 +206,10 @@ function assignDelivery(order_id) {
       delivery_boy_id: delivery_boy_id
     })
   })
-  .then(res => res.json())
-  .then(data => {
-    alert("Assigned successfully!");
-  });
+    .then(res => res.json())
+    .then(data => {
+      alert("Assigned successfully!");
+    });
 }
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -247,11 +247,11 @@ document.addEventListener("DOMContentLoaded", function () {
         status: status
       })
     })
-    .then(res => res.json())
-    .then(data => {
-      alert("Delivery boy added!");
-      location.reload();
-    });
+      .then(res => res.json())
+      .then(data => {
+        alert("Delivery boy added!");
+        location.reload();
+      });
 
   });
 
@@ -268,31 +268,31 @@ function deactivate(btn, code) {
     },
     body: JSON.stringify({ code: code })
   })
-  .then(res => res.json())
-  .then(data => {
+    .then(res => res.json())
+    .then(data => {
 
-    if (data.status === "success") {
+      if (data.status === "success") {
 
-      // 🔥 update UI instantly
-      const card = btn.closest(".delivery-card");
-      const badge = card.querySelector(".badge");
+        // 🔥 update UI instantly
+        const card = btn.closest(".delivery-card");
+        const badge = card.querySelector(".badge");
 
-      if (data.new_status === "inactive") {
-        badge.textContent = "Inactive";
-        badge.classList.remove("badge-active");
-        badge.classList.add("badge-inactive");
+        if (data.new_status === "inactive") {
+          badge.textContent = "Inactive";
+          badge.classList.remove("badge-active");
+          badge.classList.add("badge-inactive");
 
-        btn.textContent = "Activate";
-      } else {
-        badge.textContent = "Active";
-        badge.classList.remove("badge-inactive");
-        badge.classList.add("badge-active");
+          btn.textContent = "Activate";
+        } else {
+          badge.textContent = "Active";
+          badge.classList.remove("badge-inactive");
+          badge.classList.add("badge-active");
 
-        btn.textContent = "Deactivate";
+          btn.textContent = "Deactivate";
+        }
       }
-    }
 
-  });
+    });
 }
 
 // ========================
@@ -338,19 +338,19 @@ function updateUser() {
     },
     body: JSON.stringify({ id, role, status })
   })
-  .then(res => res.json())
-  .then(data => {
+    .then(res => res.json())
+    .then(data => {
 
-    if (data.status === "success") {
-      alert("User updated successfully");
-      closeEditModal();
-      location.reload();
-    } else {
-      alert("Update failed");
-    }
+      if (data.status === "success") {
+        alert("User updated successfully");
+        closeEditModal();
+        location.reload();
+      } else {
+        alert("Update failed");
+      }
 
-  })
-  .catch(() => alert("Something went wrong"));
+    })
+    .catch(() => alert("Something went wrong"));
 }
 
 
@@ -390,28 +390,28 @@ function deleteUser() {
     },
     body: JSON.stringify({ id })
   })
-  .then(res => res.json())
-  .then(data => {
+    .then(res => res.json())
+    .then(data => {
 
-    if (data.status === "success") {
-      alert("User deleted successfully");
-      closeDeleteModal();
-      location.reload();
-    } else {
-      alert("Delete failed");
-    }
+      if (data.status === "success") {
+        alert("User deleted successfully");
+        closeDeleteModal();
+        location.reload();
+      } else {
+        alert("Delete failed");
+      }
 
-  })
-  .catch(() => alert("Something went wrong"));
+    })
+    .catch(() => alert("Something went wrong"));
 }
 
 function filterTable(input, tableId) {
-            const filter = input.value.toLowerCase();
-            const rows = document.getElementById(tableId).querySelectorAll('tbody tr');
-            rows.forEach(row => {
-                row.style.display = row.textContent.toLowerCase().includes(filter) ? '' : 'none';
-            });
-        }
+  const filter = input.value.toLowerCase();
+  const rows = document.getElementById(tableId).querySelectorAll('tbody tr');
+  rows.forEach(row => {
+    row.style.display = row.textContent.toLowerCase().includes(filter) ? '' : 'none';
+  });
+}
 
 // vendors_panel
 
@@ -457,22 +457,22 @@ function acceptOrder(btn, id) {
       order_id: id.replace('#VV-', '')   // clean ID
     })
   })
-  .then(res => res.json())
-  .then(data => {
-    if (data.success) {
-      setTimeout(() => {
-        row.remove();
-        updateIncomingBadge();
-        loadDashboardStats();   // 🔥 ADD THIS
-        showToast(`Order ${id} accepted ✅ — moved to Processing`);
-      }, 400);
-    }
-  })
-  .catch(() => {
-    row.style.opacity = '1';
-    row.style.pointerEvents = 'auto';
-    showToast("Something went wrong ❌");
-  });
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        setTimeout(() => {
+          row.remove();
+          updateIncomingBadge();
+          loadDashboardStats();   // 🔥 ADD THIS
+          showToast(`Order ${id} accepted ✅ — moved to Processing`);
+        }, 400);
+      }
+    })
+    .catch(() => {
+      row.style.opacity = '1';
+      row.style.pointerEvents = 'auto';
+      showToast("Something went wrong ❌");
+    });
 }
 
 function rejectOrder(btn, id) {
@@ -490,22 +490,22 @@ function rejectOrder(btn, id) {
       order_id: id.replace('#VV-', '')
     })
   })
-  .then(res => res.json())
-  .then(data => {
-    if (data.success) {
-      setTimeout(() => {
-        row.remove();
-       updateIncomingBadge();
-       loadDashboardStats();   // 🔥 ADD THIS
-        showToast(`Order ${id} rejected ❌`);
-      }, 400);
-    }
-  })
-  .catch(() => {
-    row.style.opacity = '1';
-    row.style.pointerEvents = 'auto';
-    showToast("Something went wrong ❌");
-  });
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        setTimeout(() => {
+          row.remove();
+          updateIncomingBadge();
+          loadDashboardStats();   // 🔥 ADD THIS
+          showToast(`Order ${id} rejected ❌`);
+        }, 400);
+      }
+    })
+    .catch(() => {
+      row.style.opacity = '1';
+      row.style.pointerEvents = 'auto';
+      showToast("Something went wrong ❌");
+    });
 }
 
 window.onload = function () {
@@ -570,43 +570,43 @@ function saveStatus(btn, orderId) {
 
   })
 
-  .then(res => res.json())
+    .then(res => res.json())
 
-  .then(data => {
+    .then(data => {
 
-    if (data.success) {
+      if (data.success) {
 
-      // remove old badge classes
-      dropdown.classList.remove(
-        "badge-accepted",
-        "badge-processing",
-        "badge-ready"
-      );
+        // remove old badge classes
+        dropdown.classList.remove(
+          "badge-accepted",
+          "badge-processing",
+          "badge-ready"
+        );
 
-      // add new color class
-      if (status === "accepted") {
-        dropdown.classList.add("badge-accepted");
+        // add new color class
+        if (status === "accepted") {
+          dropdown.classList.add("badge-accepted");
+        }
+
+        else if (status === "processing") {
+          dropdown.classList.add("badge-processing");
+        }
+
+        else if (status === "ready") {
+          dropdown.classList.add("badge-ready");
+        }
+
+        showToast("Status updated ✅");
+
+        loadActiveStats();
+
       }
 
-      else if (status === "processing") {
-        dropdown.classList.add("badge-processing");
-      }
-
-      else if (status === "ready") {
-        dropdown.classList.add("badge-ready");
-      }
-
-      showToast("Status updated ✅");
-
-      loadActiveStats();
-
-    }
-
-  });
+    });
 
 }
 
-document.addEventListener("change", function(e) {
+document.addEventListener("change", function (e) {
 
   if (e.target.classList.contains("status-dropdown")) {
 
@@ -717,19 +717,19 @@ function saveStatus(btn, orderId) {
 
   })
 
-  .then(res => res.json())
+    .then(res => res.json())
 
-  .then(data => {
+    .then(data => {
 
-    if (data.success) {
+      if (data.success) {
 
-      showToast("Status updated ✅");
+        showToast("Status updated ✅");
 
-      loadActiveStats();
+        loadActiveStats();
 
-    }
+      }
 
-  });
+    });
 
 }
 
@@ -778,8 +778,8 @@ function loadHistoryOrders() {
         else if (order.status === "picked_up") {
           badgeClass = "badge-picked";
         }
-        
-        else{
+
+        else {
           badgeClass = "badge-rejected";
         }
 
@@ -905,11 +905,11 @@ function addService() {
 
   const name =
     document.getElementById('newServiceName')
-    .value.trim();
+      .value.trim();
 
   const price =
     document.getElementById('newServicePrice')
-    .value;
+      .value;
 
   if (!name && !price) {
 
@@ -955,29 +955,29 @@ function addService() {
 
   })
 
-  .then(res => res.json())
+    .then(res => res.json())
 
-  .then(data => {
+    .then(data => {
 
-    if (data.success) {
+      if (data.success) {
 
-      showToast(
-        `Service "${name}" added ✅`
-      );
+        showToast(
+          `Service "${name}" added ✅`
+        );
 
-      document.getElementById(
-        'newServiceName'
-      ).value = '';
+        document.getElementById(
+          'newServiceName'
+        ).value = '';
 
-      document.getElementById(
-        'newServicePrice'
-      ).value = '';
+        document.getElementById(
+          'newServicePrice'
+        ).value = '';
 
-      loadVendorServices();
+        loadVendorServices();
 
-    }
+      }
 
-  });
+    });
 
 }
 
@@ -1003,7 +1003,7 @@ function loadVendorServices() {
 
         const color =
           colorCycle[
-            colorIdx % colorCycle.length
+          colorIdx % colorCycle.length
           ];
 
         colorIdx++;
@@ -1071,28 +1071,28 @@ function removeService(btn, serviceId) {
 
   })
 
-  .then(res => res.json())
+    .then(res => res.json())
 
-  .then(data => {
+    .then(data => {
 
-    if (data.success) {
+      if (data.success) {
 
-      const card =
-        btn.closest('.service-card');
+        const card =
+          btn.closest('.service-card');
 
-      card.style.transform = 'scale(.9)';
-      card.style.opacity = '0';
-      card.style.transition = 'all .25s';
+        card.style.transform = 'scale(.9)';
+        card.style.opacity = '0';
+        card.style.transition = 'all .25s';
 
-      setTimeout(() => {
-        card.remove();
-      }, 250);
+        setTimeout(() => {
+          card.remove();
+        }, 250);
 
-      showToast("Service removed 🗑");
+        showToast("Service removed 🗑");
 
-    }
+      }
 
-  });
+    });
 
 }
 
@@ -1106,7 +1106,7 @@ function editService(btn, serviceId) {
 
   const currentName =
     card.querySelector('.service-name')
-    .textContent;
+      .textContent;
 
   const currentPrice =
     card.querySelector(
@@ -1146,42 +1146,233 @@ function editService(btn, serviceId) {
 
   })
 
-  .then(res => res.json())
+    .then(res => res.json())
 
-  .then(data => {
+    .then(data => {
 
-    if (data.success) {
+      if (data.success) {
 
-      showToast(
-        "Service updated ✏️"
-      );
+        showToast(
+          "Service updated ✏️"
+        );
 
-      loadVendorServices();
+        loadVendorServices();
 
-    }
+      }
 
-  });
+    });
+
+}
+
+// vendors/addresses
+
+function openSidebar() {
+
+  document.getElementById('adminSidebar')
+    .classList.add('open');
+
+  document.getElementById('sidebarOverlay')
+    .classList.add('open');
 
 }
 
 
+function closeSidebar() {
+
+  document.getElementById('adminSidebar')
+    .classList.remove('open');
+
+  document.getElementById('sidebarOverlay')
+    .classList.remove('open');
+
+}
+
+
+/* ───────────────── Toast ───────────────── */
+
+function showToast(msg) {
+
+  const t = document.createElement('div');
+
+  t.innerText = msg;
+
+  Object.assign(t.style, {
+
+    position: 'fixed',
+    bottom: '20px',
+    right: '20px',
+
+    background: '#1e3a8a',
+    color: '#fff',
+
+    padding: '12px 16px',
+    borderRadius: '8px',
+
+    boxShadow: '0 4px 10px rgba(0,0,0,.2)',
+
+    zIndex: '9999',
+
+    fontFamily: 'Plus Jakarta Sans,sans-serif',
+    fontSize: '13px'
+
+  });
+
+  document.body.appendChild(t);
+
+  setTimeout(() => t.remove(), 3000);
+
+}
+
+
+/* ───────────────── Save Address ───────────────── */
+
+function addAddress() {
+
+  const street =
+    document.getElementById(
+      'newAddrStreet'
+    ).value.trim();
+
+  const city =
+    document.getElementById(
+      'newAddrCity'
+    ).value.trim();
+
+  const state =
+    document.getElementById(
+      'newAddrState'
+    ).value.trim();
+
+  const pin =
+    document.getElementById(
+      'newAddrPin'
+    ).value.trim();
+
+  const phone =
+    document.getElementById(
+      'newAddrPhone'
+    ).value.trim();
+
+
+  /* ───────── Validation ───────── */
+
+  if (!street) {
+
+    showToast(
+      'Please enter a street address ⚠️'
+    );
+
+    return;
+  }
+
+  if (!city) {
+
+    showToast(
+      'Please enter a city ⚠️'
+    );
+
+    return;
+  }
+
+  if (!pin) {
+
+    showToast(
+      'Please enter PIN code ⚠️'
+    );
+
+    return;
+  }
+
+  if (!/^\d{6}$/.test(pin)) {
+
+    showToast(
+      'Please enter valid 6-digit PIN ⚠️'
+    );
+
+    return;
+  }
+
+
+  /* ───────── Save to Backend ───────── */
+
+  fetch("/save_vendor_address", {
+
+    method: "POST",
+
+    headers: {
+      "Content-Type": "application/json"
+    },
+
+    body: JSON.stringify({
+
+      street,
+      city,
+      state,
+      pin,
+      phone
+
+    })
+
+  })
+
+    .then(res => res.json())
+
+    .then(data => {
+
+      if (data.success) {
+
+        showToast(
+          'Address saved ✅'
+        );
+      }
+    });
+}
+
+/* ───────────────── Load Existing Address ───────────────── */
+
+function loadVendorAddress() {
+
+  fetch("/api/vendor_address")
+
+    .then(res => res.json())
+
+    .then(data => {
+
+      document.getElementById(
+        'newAddrStreet'
+      ).value = data.street || "";
+
+      document.getElementById(
+        'newAddrCity'
+      ).value = data.city || "";
+
+      document.getElementById(
+        'newAddrState'
+      ).value = data.state || "";
+
+      document.getElementById(
+        'newAddrPin'
+      ).value = data.pin || "";
+
+      document.getElementById(
+        'newAddrPhone'
+      ).value = data.phone || "";
+
+    });
+
+}
+
+/* ───────────────── Initial Load ───────────────── */
+
 window.onload = function () {
-
   loadPendingOrders();
-
   loadDashboardStats();
-
   loadActiveOrders();
-
   loadActiveStats();
-
   loadHistoryOrders();
-
   loadHistoryStats();
-
   updateIncomingBadge();
-
   loadVendorServices();
-
+  loadVendorAddress();
 };
 

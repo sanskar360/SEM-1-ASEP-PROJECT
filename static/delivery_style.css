@@ -743,3 +743,32 @@ button, input, select, textarea { font-family:inherit; }
   color: #1d4ed8;
 }
 
+.payment-modal{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.45);
+    display:none;
+    justify-content:center;
+    align-items:center;
+    z-index:999;
+}
+
+.payment-box{
+    width:340px;
+    background:#fff;
+    border-radius:16px;
+    padding:24px;
+    text-align:center;
+}
+
+.upi-qr{
+    width:220px;
+    margin:18px auto;
+    display:block;
+}
+
+.payment-actions{
+    display:flex;
+    gap:12px;
+    justify-content:center;
+}
