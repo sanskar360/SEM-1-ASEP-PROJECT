@@ -1643,3 +1643,464 @@ body {
     grid-template-columns: 1fr;
   }
 }
+
+
+/* ================================================================
+   VEGA VASTRA – Service Selection Page
+   All rules scoped under .vv-page to prevent collisions
+   ================================================================ */
+
+/* ── Reset (scoped) ── */
+.vv-page *, .vv-page *::before, .vv-page *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── CSS Variables ── */
+.vv-page {
+  --vv-brand:          #1a56db;
+  --vv-brand-light:    #e8eefb;
+  --vv-bg:             #f0f4fb;
+  --vv-surface:        #ffffff;
+  --vv-border:         #dde5f4;
+  --vv-text:           #1a2340;
+  --vv-muted:          #6b7a99;
+  --vv-price:          #1a56db;
+  --vv-badge-pop:      #e8eefb;   --vv-badge-pop-t:  #1a56db;
+  --vv-badge-fast:     #e8f5e9;   --vv-badge-fast-t: #2e7d32;
+  --vv-badge-prem:     #fff3e0;   --vv-badge-prem-t: #e65100;
+  --vv-badge-lim:      #fce4ec;   --vv-badge-lim-t:  #c62828;
+  --vv-sel-border:     #1a56db;
+  --vv-sel-bg:         #eaf0fd;
+  --vv-radius:         14px;
+  --vv-shadow:         0 2px 12px rgba(26,86,219,.07);
+  --vv-shadow-hover:   0 8px 28px rgba(26,86,219,.15);
+
+  font-family: 'DM Sans', sans-serif;
+  background: var(--vv-bg);
+  color: var(--vv-text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 96px;
+}
+
+/* ── NAV ── */
+.vv-nav {
+  background: var(--vv-surface);
+  border-bottom: 1px solid var(--vv-border);
+  padding: 0 clamp(20px, 5vw, 60px);
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  gap: 12px;
+  box-shadow: 0 1px 8px rgba(26,86,219,.06);
+}
+
+.vv-logo {
+  font-family: 'Nunito', sans-serif;
+  font-size: clamp(1.1rem, 3vw, 1.35rem);
+  font-weight: 800;
+  color: var(--vv-brand);
+  letter-spacing: -.5px;
+  white-space: nowrap;
+}
+
+.vv-nav-links {
+  display: flex;
+  gap: clamp(14px, 2.5vw, 28px);
+  align-items: center;
+}
+
+.vv-nav-links a {
+  text-decoration: none;
+  color: var(--vv-text);
+  font-size: clamp(.78rem, 1.8vw, .92rem);
+  font-weight: 500;
+  transition: color .2s;
+  white-space: nowrap;
+}
+
+.vv-nav-links a:hover { color: var(--vv-brand); }
+
+.vv-nav-icons {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  color: var(--vv-muted);
+  flex-shrink: 0;
+}
+
+.vv-nav-icons svg {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  transition: color .2s;
+}
+
+.vv-nav-icons svg:hover { color: var(--vv-brand); }
+
+@media (max-width: 420px) {
+  .vv-nav-links { display: none; }
+}
+
+/* ── MAIN ── */
+.vv-main {
+  flex: 1;
+  max-width: 1280px;
+  width: 100%;
+  margin: 0 auto;
+  padding: clamp(36px, 5vh, 56px) clamp(24px, 5vw, 56px) 112px;
+}
+
+/* ── STEP PILL ── */
+.vv-step-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--vv-brand-light);
+  color: var(--vv-brand);
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 12px;
+}
+
+.vv-page h1 {
+  font-family: 'Nunito', sans-serif;
+  font-size: clamp(1.4rem, 4vw, 1.9rem);
+  font-weight: 800;
+  color: var(--vv-text);
+  line-height: 1.2;
+  margin-bottom: 6px;
+}
+
+.vv-sub {
+  font-size: clamp(.8rem, 2vw, .88rem);
+  color: var(--vv-muted);
+  margin-bottom: clamp(24px, 3vw, 36px);
+  line-height: 1.5;
+}
+
+/* ── GRID ── */
+.vv-grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: stretch;
+}
+
+.vv-service-radio {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (max-width: 900px) {
+  .vv-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 640px) {
+  .vv-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 380px) {
+  .vv-grid { grid-template-columns: 1fr; }
+}
+
+/* ── CARD ── */
+.vv-card {
+  background: var(--vv-surface);
+  border: 1.5px solid var(--vv-border);
+  border-radius: var(--vv-radius);
+  padding: 24px 22px 22px;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 205px;
+  box-shadow: var(--vv-shadow);
+  transition: box-shadow .2s, border-color .2s, transform .15s;
+  animation: vv-fadeUp .35s ease both;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.vv-card:hover {
+  box-shadow: var(--vv-shadow-hover);
+  border-color: #b3c6f0;
+  transform: translateY(-2px);
+}
+
+.vv-card:active { transform: scale(.98); }
+
+.vv-card.vv-selected {
+  border-color: var(--vv-sel-border);
+  background: var(--vv-sel-bg);
+}
+
+.vv-card.vv-selected .vv-check { display: flex; }
+
+.vv-service-radio:checked + .vv-card {
+  border-color: var(--vv-sel-border);
+  background: var(--vv-sel-bg);
+}
+
+.vv-service-radio:checked + .vv-card .vv-card-name {
+  color: var(--vv-brand);
+}
+
+.vv-service-radio:checked + .vv-card .vv-check {
+  display: flex;
+}
+
+@keyframes vv-fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.vv-card:nth-child(1) { animation-delay: .05s; }
+.vv-card:nth-child(2) { animation-delay: .10s; }
+.vv-card:nth-child(3) { animation-delay: .15s; }
+.vv-card:nth-child(4) { animation-delay: .20s; }
+.vv-card:nth-child(5) { animation-delay: .25s; }
+.vv-card:nth-child(6) { animation-delay: .30s; }
+.vv-card:nth-child(7) { animation-delay: .35s; }
+.vv-card:nth-child(8) { animation-delay: .40s; }
+
+/* ── ICON WRAP ── */
+.vv-icon-wrap {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  background: var(--vv-brand-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 6px;
+  flex-shrink: 0;
+}
+
+.vv-icon-wrap svg { width: 22px; height: 22px; color: var(--vv-brand); }
+
+/* ── CARD TEXT ── */
+.vv-card-name {
+  font-family: 'Nunito', sans-serif;
+  font-size: 1.08rem;
+  font-weight: 800;
+  color: var(--vv-text);
+  line-height: 1.2;
+  padding-right: 36px;
+}
+
+.vv-card-name.vv-selected-text { color: var(--vv-brand); }
+
+.vv-card-desc {
+  font-size: .88rem;
+  color: var(--vv-muted);
+  line-height: 1.4;
+}
+
+.vv-card-meta {
+  margin-top: auto;
+  padding-top: 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.vv-starting {
+  font-size: .62rem;
+  color: var(--vv-muted);
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+
+.vv-price {
+  font-size: .95rem;
+  font-weight: 700;
+  color: var(--vv-price);
+}
+
+.vv-vendors {
+  font-size: .65rem;
+  color: var(--vv-muted);
+  text-align: right;
+}
+
+/* ── BADGES ── */
+.vv-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: clamp(.58rem, 1.2vw, .67rem);
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 20px;
+  letter-spacing: .03em;
+  white-space: nowrap;
+}
+
+.vv-badge-popular  { background: var(--vv-badge-pop);  color: var(--vv-badge-pop-t); }
+.vv-badge-fast     { background: var(--vv-badge-fast); color: var(--vv-badge-fast-t); }
+.vv-badge-premium  { background: var(--vv-badge-prem); color: var(--vv-badge-prem-t); }
+.vv-badge-limited  { background: var(--vv-badge-lim);  color: var(--vv-badge-lim-t); }
+
+/* ── CHECK ── */
+.vv-check {
+  display: none;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 22px;
+  height: 22px;
+  background: var(--vv-brand);
+  border-radius: 50%;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.vv-check svg { width: 12px; height: 12px; color: #fff; }
+
+/* when badge AND check coexist, push check down so they don't overlap */
+.vv-card.vv-selected .vv-badge { display: none; }
+.vv-service-radio:checked + .vv-card .vv-badge { display: none; }
+
+/* ── FOOTER BAR ── */
+.vv-footer-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--vv-surface);
+  border-top: 2px solid var(--vv-border);
+  padding: 12px clamp(20px, 5vw, 60px);
+  padding-bottom: max(12px, env(safe-area-inset-bottom));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  z-index: 99;
+  box-shadow: 0 -4px 24px rgba(26,86,219,.08);
+  min-height: 68px;
+}
+
+.vv-footer-logo {
+  font-family: 'Nunito', sans-serif;
+  font-size: clamp(.85rem, 2.5vw, 1rem);
+  font-weight: 800;
+  color: var(--vv-brand);
+  white-space: nowrap;
+}
+
+.vv-footer-right {
+  display: flex;
+  align-items: center;
+  gap: clamp(10px, 2.5vw, 20px);
+  flex-shrink: 0;
+}
+
+/* ── STEP DOTS ── */
+.vv-steps { display: flex; gap: 5px; align-items: center; }
+
+.vv-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--vv-border);
+  transition: all .3s;
+}
+
+.vv-dot.vv-active {
+  background: var(--vv-brand);
+  width: 20px;
+  border-radius: 4px;
+}
+
+/* ── CTA BUTTON ── */
+.vv-btn-continue {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--vv-brand);
+  color: #fff;
+  font-family: 'DM Sans', sans-serif;
+  font-size: clamp(.85rem, 2vw, 1rem);
+  font-weight: 600;
+  border: none;
+  border-radius: 24px;
+  min-height: 46px;
+  padding: 12px clamp(22px, 3.5vw, 34px);
+  cursor: pointer;
+  transition: background .2s, transform .15s, opacity .2s;
+  opacity: .45;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.vv-btn-continue.vv-active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.vv-btn-continue.vv-active:hover { background: #1446b8; }
+.vv-btn-continue.vv-active:active { transform: scale(.97); }
+.vv-btn-continue svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+@media (max-width: 340px) {
+  .vv-btn-label { display: none; }
+  .vv-btn-continue { padding: 10px 14px; }
+}
+
+/* ── ENHANCED MOBILE TOUCH TARGETS ── */
+@media (max-width: 480px) {
+  .vv-main {
+    padding-top: 28px;
+    padding-bottom: 104px;
+  }
+
+  .vv-card {
+    min-height: 170px;
+    padding: 18px 16px;
+  }
+
+  .vv-card-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+
+  .vv-vendors {
+    text-align: left;
+  }
+
+  .vv-footer-bar {
+    padding-left: clamp(12px, 4vw, 20px);
+    padding-right: clamp(12px, 4vw, 20px);
+  }
+}
+
+/* ── LANDSCAPE PHONE ── */
+@media (max-height: 500px) and (orientation: landscape) {
+  .vv-main {
+    padding-bottom: 90px;
+  }
+
+  .vv-footer-bar {
+    height: 56px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+}
