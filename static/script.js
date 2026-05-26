@@ -191,6 +191,9 @@ function assignDelivery(order_id) {
   const select = document.getElementById("db_" + order_id);
   const delivery_boy_id = select.value;
 
+  console.log(select);
+  console.log(delivery_boy_id);
+  
   if (!delivery_boy_id) {
     alert("Please select delivery boy");
     return;

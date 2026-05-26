@@ -6,7 +6,6 @@
     <title>Vendors — Vega Vastra Admin</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="{{ url_for('static', filename='admin_style.css') }}">
-    <link rel="stylesheet" href="admin_style.css">
 </head>
 <body>
 
@@ -153,81 +152,131 @@
                 {% endfor %}
 
             </div>
-            <!-- /vendor-cards -->
-
-            <!-- <div style="display:flex; justify-content:space-between; align-items:center; padding-top:8px;">
-                <span style="font-size:13px; color:var(--text-muted);">Showing 6 of 24 certified vendors in your region.</span>
-                <div style="display:flex; gap:8px;">
-                    <button class="btn btn-ghost btn-sm">‹</button>
-                    <button class="btn btn-navy btn-sm">1</button>
-                    <button class="btn btn-ghost btn-sm">2</button>
-                    <button class="btn btn-ghost btn-sm">3</button>
-                    <button class="btn btn-ghost btn-sm">›</button>
-                </div>
-            </div> -->
 
         </main>
     </div>
 </div>
 
 <!-- Add Vendor Modal -->
-<div class="modal-backdrop" id="addVendorModal">
+<div class="vendor-modal-backdrop" id="addVendorModal">
     <div class="modal-box">
+
         <div class="modal-header">
             <h3>🏪 Add New Vendor</h3>
+
             <button class="modal-close" onclick="document.getElementById('addVendorModal').classList.remove('show')">✕</button>
         </div>
-        <div class="modal-body">
+
+        <form class="modal-body" id="addVendorForm">
+
             <div class="form-field">
                 <label>Vendor / Shop Name</label>
                 <input type="text" name="name" placeholder="e.g. Clean Express" required>
             </div>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
-                <div class="form-field">
-                    <label>Type / Service</label>
-                    <div class="multi-select-wrapper" id="serviceDropdown">
-                        <div class="multi-select-trigger" onclick="toggleServiceDropdown(event)">
-                            <span id="serviceSelectedText">Select services...</span>
-                            <span class="multi-select-arrow">▾</span>
-                        </div>
-                        <div class="multi-select-options" id="serviceOptions">
-                            <label class="multi-select-option">
-                                <input type="checkbox" name="type" value="Wash & Fold"> Wash &amp; Fold
-                            </label>
-                            <label class="multi-select-option">
-                                <input type="checkbox" name="type" value="Dry Cleaning"> Dry Cleaning
-                            </label>
-                            <label class="multi-select-option">
-                                <input type="checkbox" name="type" value="Iron & Press"> Iron &amp; Press
-                            </label>
-                            <label class="multi-select-option">
-                                <input type="checkbox" name="type" value="Steam Iron"> Steam Iron
-                            </label>
-                            <label class="multi-select-option">
-                                <input type="checkbox" name="type" value="Full Service"> Full Service
-                            </label>
-                        </div>
-                    </div>
-                </div>
-                
+
+            <div class="form-field">
+                <label>Owner Name</label>
+                <input type="text" name="owner_name" placeholder="e.g. Rahul Sharma" required>
             </div>
+
             <div class="form-field">
                 <label>Phone Number</label>
                 <input type="tel" name="phone" placeholder="9876543210" required>
             </div>
+
             <div class="form-field">
-                <label>Area / Location</label>
-                <input type="text" name="area" placeholder="e.g. Koregaon Park, Pune" required>
+                <label>Email Address</label>
+                <input type="email" name="email" placeholder="vendor@gmail.com">
             </div>
+
+            <div class="form-field">
+                <label>Street Address</label>
+                <textarea name="street_address" rows="2" placeholder="Lane no, building, area..."></textarea>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+
+                <div class="form-field">
+                    <label>City</label>
+                    <input type="text" name="city" placeholder="Pune" required>
+                </div>
+
+                <div class="form-field">
+                    <label>State</label>
+                    <input type="text" name="state" placeholder="Maharashtra" required>
+                </div>
+
+            </div>
+
+            <div class="form-field">
+                <label>Pincode</label>
+                <input type="text" name="pincode" placeholder="411001" required>
+            </div>
+
+            <div class="form-field">
+
+                <label>Services</label>
+
+                <div class="multi-select-wrapper" id="serviceDropdown">
+
+                    <div class="multi-select-trigger" onclick="toggleServiceDropdown(event)">
+                        <span id="serviceSelectedText">Select services...</span>
+                        <span class="multi-select-arrow">▾</span>
+                    </div>
+
+                    <div class="multi-select-options" id="serviceOptions">
+
+                        <label class="multi-select-option">
+                            <input type="checkbox" name="service_id" value="1"> Wash & Fold
+                        </label>
+
+                        <label class="multi-select-option">
+                            <input type="checkbox" name="service_id" value="2"> Dry Cleaning
+                        </label>
+
+                        <label class="multi-select-option">
+                            <input type="checkbox" name="service_id" value="3"> Iron & Press
+                        </label>
+
+                        <label class="multi-select-option">
+                            <input type="checkbox" name="service_id" value="4"> Steam Iron
+                        </label>
+
+                        <label class="multi-select-option">
+                            <input type="checkbox" name="service_id" value="5"> Full Service
+                        </label>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-field">
+                <label>Vendor Status</label>
+
+                <select name="status">
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+                </select>
+            </div>
+
             <div class="modal-footer" style="padding:0; margin-top:8px; border:none;">
-                <button type="button" class="btn btn-ghost" onclick="document.getElementById('addVendorModal').classList.remove('show')">Cancel</button>
-                <button type="button" class="btn btn-navy">Add Vendor</button>
+
+                <button type="button" class="btn btn-ghost" onclick="document.getElementById('addVendorModal').classList.remove('show')">
+                    Cancel
+                </button>
+
+                <button type="submit" class="btn btn-navy">
+                    Add Vendor
+                </button>
+
             </div>
-        </div>
+
+        </form>
+
     </div>
 </div>
 
-<style>
+<!-- <style>
 .multi-select-wrapper {
     position: relative;
     width: 100%;
@@ -301,62 +350,184 @@
     cursor: pointer;
     flex-shrink: 0;
 }
-</style>
+</style> -->
 
 <script>
 function toggleServiceDropdown(e) {
+
     e.stopPropagation();
+
     const trigger = document.querySelector('.multi-select-trigger');
     const options = document.getElementById('serviceOptions');
-    const isOpen = options.classList.contains('open');
-    trigger.classList.toggle('open', !isOpen);
-    options.classList.toggle('open', !isOpen);
+
+    trigger.classList.toggle('open');
+    options.classList.toggle('show');
 }
 
 document.addEventListener('click', function(e) {
+
     const wrapper = document.getElementById('serviceDropdown');
+
     if (wrapper && !wrapper.contains(e.target)) {
-        document.querySelector('.multi-select-trigger')?.classList.remove('open');
-        document.getElementById('serviceOptions')?.classList.remove('open');
+
+        document
+            .querySelector('.multi-select-trigger')
+            ?.classList.remove('open');
+
+        document
+            .getElementById('serviceOptions')
+            ?.classList.remove('show');
     }
 });
 
-document.querySelectorAll('#serviceOptions input[type="checkbox"]').forEach(cb => {
+document
+.querySelectorAll('#serviceOptions input[type="checkbox"]')
+.forEach(cb => {
+
     cb.addEventListener('change', function() {
-        const checked = Array.from(document.querySelectorAll('#serviceOptions input[type="checkbox"]:checked'))
-            .map(c => c.value);
+
+        const checked = Array.from(
+            document.querySelectorAll(
+                '#serviceOptions input[type="checkbox"]:checked'
+            )
+        );
+
         const textEl = document.getElementById('serviceSelectedText');
+
         if (checked.length === 0) {
+
             textEl.textContent = 'Select services...';
             textEl.style.color = '';
+
         } else {
-            textEl.textContent = checked.join(', ');
+
+            textEl.textContent = checked
+                .map(c => c.parentElement.textContent.trim())
+                .join(', ');
+
             textEl.style.color = 'var(--text-main, #222)';
         }
     });
 });
-</script>
 
-<script>
 function openSidebar() {
-    document.getElementById('adminSidebar').classList.add('open');
-    document.getElementById('sidebarOverlay').classList.add('open');
+
+    document
+        .getElementById('adminSidebar')
+        .classList.add('open');
+
+    document
+        .getElementById('sidebarOverlay')
+        .classList.add('open');
 }
+
 function closeSidebar() {
-    document.getElementById('adminSidebar').classList.remove('open');
-    document.getElementById('sidebarOverlay').classList.remove('open');
+
+    document
+        .getElementById('adminSidebar')
+        .classList.remove('open');
+
+    document
+        .getElementById('sidebarOverlay')
+        .classList.remove('open');
 }
+
 function filterVendors() {
-    const search = document.getElementById('vendorSearch').value.toLowerCase();
-    const type = document.getElementById('typeFilter').value.toLowerCase();
-    document.querySelectorAll('#vendorCards .vendor-card').forEach(card => {
-        const nameMatch = card.dataset.name.includes(search);
-        const typeMatch = !type || card.dataset.type.includes(type);
-        card.style.display = (nameMatch && typeMatch) ? '' : 'none';
-    });
+
+    const search = document
+        .getElementById('vendorSearch')
+        .value
+        .toLowerCase();
+
+    const type = document
+        .getElementById('typeFilter')
+        .value
+        .toLowerCase();
+
+    document
+        .querySelectorAll('#vendorCards .vendor-card')
+        .forEach(card => {
+
+            const nameMatch = card.dataset.name.includes(search);
+
+            const typeMatch =
+                !type || card.dataset.type.includes(type);
+
+            card.style.display =
+                (nameMatch && typeMatch) ? '' : 'none';
+        });
 }
-document.getElementById('addVendorModal').addEventListener('click', function(e) {
-    if (e.target === this) this.classList.remove('show');
+
+document
+.getElementById('addVendorModal')
+.addEventListener('click', function(e) {
+
+    if (e.target === this) {
+
+        this.classList.remove('show');
+    }
+});
+
+document
+.getElementById("addVendorForm")
+.addEventListener("submit", async function(e) {
+
+    e.preventDefault();
+
+    const service_ids = [];
+
+    document
+    .querySelectorAll('input[name="service_id"]:checked')
+    .forEach(cb => {
+        service_ids.push(cb.value);
+    });
+
+    const data = {
+
+        name: document.querySelector('[name="name"]').value,
+
+        owner_name: document.querySelector('[name="owner_name"]').value,
+
+        phone: document.querySelector('[name="phone"]').value,
+
+        email: document.querySelector('[name="email"]').value,
+
+        street_address: document.querySelector('[name="street_address"]').value,
+
+        city: document.querySelector('[name="city"]').value,
+
+        state: document.querySelector('[name="state"]').value,
+
+        pincode: document.querySelector('[name="pincode"]').value,
+
+        status: document.querySelector('[name="status"]').value,
+
+        service_ids: service_ids
+    };
+
+    const res = await fetch("/add_vendor", {
+
+        method: "POST",
+
+        headers: {
+            "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify(data)
+    });
+
+    const result = await res.json();
+
+    alert(result.message);
+
+    if (result.success) {
+
+        document
+        .getElementById("addVendorModal")
+        .classList.remove("show");
+
+        location.reload();
+    }
 });
 </script>
 </body>

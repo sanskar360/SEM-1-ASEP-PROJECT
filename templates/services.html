@@ -1,47 +1,173 @@
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<link rel="stylesheet" href="{{ url_for('static', filename='booking.css') }}">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#1a56db" />
+<title>Vega Vastra – Choose a Service</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="vv-page">
 
+<!-- NAV -->
 <nav>
     {% include 'nav.html' %}
 </nav>
 
-<div class="services-container">
+<!-- MAIN -->
+<main class="vv-main">
+  <div class="vv-step-pill">Step 1 of 4</div>
+  <h1>Choose a Service</h1>
+  <p class="vv-sub">Select the type of laundry service you need. We'll show matching vendors next.</p>
 
-  {% for s in services %}
-  <div class="service-card" onclick="selectService('{{ s.id }}')">
+  <div class="vv-grid" id="vv-grid">
 
-    <!-- ICON -->
-    <div class="icon">
-      {% if s.name == "Wash & Fold" %} 🧺
-      {% elif s.name == "Dry Clean" %} 👔
-      {% elif s.name == "Wash" %} 🧼
-      {% elif s.name == "Iron & Press" %} 🔥
-      {% elif s.name == "Iron" %} 🔥
-      {% else %} 🧼
-      {% endif %}
-    </div>
+    {% for service in services %}
 
-    <!-- TITLE -->
-    <h3>{{ s.name }}</h3>
+    <input
+        class="vv-service-radio"
+        type="radio"
+        name="vv-service"
+        id="vv-service-{{ service.id }}"
+        onclick="selectService('{{ service.id }}')"
+    >
 
-    <!-- DESCRIPTION -->
-    <p>
-      {% if s.name == "Wash & Fold" %}
-        Regular washing and folding
-      {% elif s.name == "Dry Cleaning" %}
-        Premium fabric dry cleaning
-      {% elif s.name == "Ironing" %}
-        Professional ironing service
-      {% else %}
-        High quality {{ s.name }} service
-      {% endif %}
-    </p>
+    <label
+        class="vv-card"
+        for="vv-service-{{ service.id }}"
+        data-id="{{ service.id }}"
+    >
 
-  </div>
-  {% endfor %}
+        <!-- BADGE -->
+
+        {% if service.badge %}
+
+        <div class="vv-badge">
+
+            {{ service.badge }}
+
+        </div>
+
+        {% endif %}
+
+        <!-- ICON -->
+
+        <div class="vv-icon-wrap">
+
+            {% if service.icon == "iron" %}
+
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 16h12.5A3.5 3.5 0 0 1 20 19.5V20H4v-4z"/>
+                <path d="M7 16l3-6h5l2 6"/>
+                <path d="M11 10V7h4"/>
+            </svg>
+
+            {% elif service.icon == "wash" %}
+
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="7" y="3" width="10" height="18" rx="2"/>
+                <path d="M10 6h4"/>
+                <circle cx="12" cy="13" r="3"/>
+                <path d="M10.5 13c.8.7 2.2.7 3 0"/>
+            </svg>
+
+            {% elif service.icon == "dry-clean" %}
+
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 7a2 2 0 1 0-2-2"/>
+                <path d="M12 7v3"/>
+                <path d="M5 19h14l-7-6-7 6z"/>
+                <path d="M8 16h8"/>
+            </svg>
+
+            {% elif service.icon == "steam" %}
+
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 9h9a3 3 0 1 1 0 6H9"/>
+                <path d="M3 13h8"/>
+                <path d="M6 17h8a2 2 0 1 1 0 4h-2"/>
+                <path d="M5 5h11"/>
+            </svg>
+
+            {% else %}
+
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 8v4"/>
+                <path d="M12 16h.01"/>
+            </svg>
+
+            {% endif %}
+
+        </div>
+
+        <!-- NAME -->
+
+        <div class="vv-card-name">
+
+            {{ service.name }}
+
+        </div>
+
+        <!-- DESCRIPTION -->
+
+        <div class="vv-card-desc">
+
+            {{ service.description or "Professional laundry service" }}
+
+        </div>
+
+        <!-- META -->
+
+        <div class="vv-card-meta">
+
+            <div>
+
+                <div class="vv-starting">
+
+                    Starting From
+
+                </div>
+
+                <div class="vv-price">
+
+                    ₹{{ service.starting_price or 0 }}
+
+                </div>
+
+            </div>
+
+            <div class="vv-vendors">
+
+                {{ service.vendors_count }} vendors
+
+            </div>
+
+        </div>
+
+        <!-- CHECK -->
+
+        <div class="vv-check">
+
+            <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="3"
+            >
+                <polyline points="20 6 9 17 4 12"/>
+            </svg>
+
+        </div>
+
+    </label>
+
+    {% endfor %}
 
 </div>
+</main>
 
 <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

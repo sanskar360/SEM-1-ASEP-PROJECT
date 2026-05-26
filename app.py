@@ -1,8 +1,104 @@
 from flask import Flask, render_template,request, redirect, url_for, flash, session,jsonify
-from database import load_orders_from_db, add_user_to_db, get_admin_orders2,  update_delivery_order_status, login_user_from_db, user_from_addresses_db, get_addresses_from_db, add_address_to_db,delete_address_from_db,get_all_services,get_vendors,get_vendors2, get_address_by_id,get_items_for_vendor,get_address_by_id, insert_order, insert_order_items,get_delivery_boys,assign_delivery_boy,get_admin_orders,insert_delivery_boy, toggle_delivery_boy_status,get_payments,  update_user_db, delete_user_db,get_users,get_delivery_boy_orders,get_delivery_records,get_user_orders,get_order_details,update_order_status,get_pending_orders, get_dashboard_stats,get_active_orders,update_active_order_status,get_active_orders_stats,get_history_stats,get_history_orders,add_vendor_service, get_vendor_services,delete_vendor_service,get_vendor_address,save_vendor_address, get_delivery_boy_id, update_delivery_boy_busy_status,mark_order_payment_paid
+from database import load_orders_from_db, add_user_to_db, get_admin_orders2,  update_delivery_order_status, login_user_from_db, user_from_addresses_db, get_addresses_from_db, add_address_to_db,delete_address_from_db,get_all_services,get_vendors,get_vendors2, get_address_by_id,get_items_for_vendor,get_address_by_id, insert_order, insert_order_items,get_delivery_boys,assign_delivery_boy,get_admin_orders,insert_delivery_boy, toggle_delivery_boy_status,get_payments,  update_user_db, delete_user_db,get_users,get_delivery_boy_orders,get_delivery_records,get_user_orders,get_order_details,update_order_status,get_pending_orders, get_dashboard_stats,get_active_orders,update_active_order_status,get_active_orders_stats,get_history_stats,get_history_orders,add_vendor_service, get_vendor_services,delete_vendor_service,get_vendor_address,save_vendor_address, get_delivery_boy_id, update_delivery_boy_busy_status,mark_order_payment_paid,create_vendor,get_vendor_id_by_user_id
+
+
 
 app = Flask(__name__)
 app.secret_key = "mysecret123"
+
+# Login routes
+
+
+from werkzeug.security import check_password_hash
+
+
+@app.route("/login", methods=["GET"])
+def show_login_page():
+    return render_template("login.html")
+
+
+@app.route("/login", methods=["POST"])
+def login():
+
+
+    email = request.form.get("email")
+    passwords = request.form.get("passwords")
+
+    result = login_user_from_db(email, passwords)
+
+    if not result:
+
+        flash(
+            "User Not Found. Please Go to Sign Up",
+            "error"
+        )
+
+        return redirect(
+            url_for("show_login_page")
+        )
+
+    # HASH PASSWORD CHECK
+    if not check_password_hash(
+        result["password_hash"],
+        str(passwords)
+    ):
+
+        flash(
+            "Incorrect Password. Try Again",
+            "error"
+        )
+
+        return redirect(
+            url_for("show_login_page")
+        )
+
+    session["user_id"] = result["id"]
+    session["username"] = result["username"]
+    session["email"] = result["email"]
+    session["role"] = result["role"]
+
+    user_id = session.get("user_id")
+
+    print(user_id)
+
+    # ADMIN
+    if result["role"] == "admin":
+
+        return redirect(
+            url_for("users_table")
+        )
+
+    # DELIVERY
+    elif result["role"] == "delivery":
+
+        boy_id = user_id
+
+        orders = get_delivery_boy_orders(boy_id)
+        deliveries = get_delivery_records(boy_id)
+
+        return render_template(
+            "delivery_assigned.html",
+            orders=orders,
+            deliveries=deliveries
+        )
+
+    # VENDOR
+    elif result["role"] == "vendor":
+
+        session["vendor_id"] = user_id
+
+        return redirect(
+            url_for("vendors_incoming")
+        )
+
+    flash(
+        "Login Successful!",
+        "success"
+    )
+
+    return redirect(
+        url_for("home")
+    )
 
 
 # Admin routes
@@ -10,6 +106,7 @@ app.secret_key = "mysecret123"
 @app.route("/admin_delivery_boys")
 def delivery_boys():
     delivery_boys = get_delivery_boys()
+    print(delivery_boys)
     return render_template("admin_delivery_boys.html",delivery_boys=delivery_boys)
 
 @app.route("/admin_users_table")
@@ -50,6 +147,47 @@ def admin_orders():
         delivery_boys=delivery_boys
     )
 
+@app.route("/add_vendor", methods=["POST"])
+def add_vendor():
+
+    try:
+        data = request.get_json()
+        id = session.get("user_id")
+        
+        generated_password = data.get("email") + "23"
+        hashed_password = generate_password_hash(generated_password)
+
+        create_vendor(
+            name=data.get("name"),
+            email=data.get("email"),
+            password = hashed_password,
+            phone=data.get("phone"),
+            city=data.get("city"),
+            state=data.get("state"),
+            pincode=data.get("pincode"),
+            street_address=data.get("street_address"),
+            status=data.get("status"),
+            service_ids=data.get("service_ids", []),
+            user_id=id
+        )
+
+
+
+        return jsonify({
+            "success": True,
+            "message": "Vendor added successfully"
+        })
+
+    except Exception as e:
+
+        print(e)
+
+        return jsonify({
+            "success": False,
+            "message": "Something went wrong"
+        })
+    
+
 # How it works section
 
 @app.route("/how_it_works")
@@ -60,14 +198,21 @@ def how_it_works():
 
 @app.route("/delivery_assigned")
 def delivery_assigned():
-        user_id = session.get("user_id")
-        if user_id == 1 or user_id ==  2:
-            boy_id = user_id  
-            orders = get_delivery_boy_orders(boy_id)
-            return render_template(
-                "delivery_assigned.html",
-                orders=orders
-            )
+
+    user_id = session.get("user_id")
+    boy_id = user_id
+
+    orders = get_delivery_boy_orders(
+            boy_id
+        )
+
+    deliveries = get_delivery_records(
+            boy_id
+        )
+    return render_template("delivery_assigned.html",
+                           orders=orders,
+                           deliveries=deliveries)
+
 @app.route(
     "/delivery_update_status",
     methods=["POST"]
@@ -128,12 +273,13 @@ def delivery_update_status():
 @app.route("/delivery_history")
 def delivery_history():
     user_id = session.get("user_id")
-    if user_id == 1 or user_id ==  2:
-            boy_id = user_id  
-            deliveries = get_delivery_records(boy_id)
-            return render_template(
-                "delivery_history.html",
-                deliveries=deliveries
+    role = session.get("role")
+    if role ==  "delivery":
+        boy_id = user_id  
+        deliveries = get_delivery_records(boy_id)
+        return render_template(
+            "delivery_history.html",
+             deliveries=deliveries
             )
     
 @app.route("/mark-payment-paid/<int:order_id>", methods=["POST"])
@@ -181,16 +327,12 @@ def vendors_addresses():
     return render_template("vendors_addresses.html")
 
 
-@app.context_processor
-def inject_admin_id():
-    return dict(ADMIN_ID=ADMIN_ID)
-
 
 @app.route("/")
 def home():
     return render_template("home.html")
 
-ADMIN_ID = 13
+
 @app.route("/track_orders", methods=["GET", "POST"])  
 def track_orders():
 
@@ -227,55 +369,6 @@ def profile():
     return render_template("profile.html", address=address)
 
 
-@app.route("/login", methods=["GET"])
-def show_login_page():
-    return render_template("login.html")
-
-
-@app.route("/login", methods=["POST"])
-def login():
-    print(ADMIN_ID)
-    email = request.form.get("email")
-    passwords = request.form.get("passwords")
-
-    result = login_user_from_db(email, passwords)
-
-    if not result:
-        flash("User Not Found. Please Go to Sign Up", "error")
-        return redirect(url_for("show_login_page"))
-    
-    if str(result.passwords) != str(passwords):
-        flash("Incorrect Password. Try Again", "error")
-        return redirect(url_for("show_login_page"))
-    
-    session["user_id"] = result.id
-    session["username"] = result.username
-    session["email"] = result.email
-
-    user_id = session.get("user_id")
-    print(user_id)
-
-    if user_id == ADMIN_ID:
-        return redirect(url_for("users_table"))
-    
-    if user_id == 1 or user_id ==  2:
-            boy_id = user_id  
-            orders = get_delivery_boy_orders(boy_id)
-            deliveries = get_delivery_records(boy_id)
-            return render_template(
-                "delivery_assigned.html",
-                orders=orders,
-                deliveries=deliveries
-            )
-    
-    if user_id == 54:
-        return redirect(url_for("vendors_incoming"))
-
-
-    flash("Login Successful!", "success")
-    return redirect(url_for("home")) 
-
-
 @app.route("/add_orders/<int:service_id>/<int:address_id>/<int:vendor_id>")
 def add_orders(service_id, address_id, vendor_id):
     if not service_id:
@@ -304,25 +397,62 @@ def add_orders(service_id, address_id, vendor_id):
         items=items
     )
 
+# Signup routes
+
+from werkzeug.security import generate_password_hash
+
 
 @app.route('/signup', methods=["GET", "POST"])
 def signup():
+
     if request.method == "POST":
+
+        hashed_password = generate_password_hash(
+            str(request.form.get("passwords"))
+        )
+
         form_data = {
+
             "email": request.form.get("email"),
+
             "username": request.form.get("username"),
-            "passwords": request.form.get("passwords")
+
+            # STORE HASHED PASSWORD
+            "password_hash": hashed_password,
+
+            # DEFAULT ROLE
+            "role": "customer"
         }
 
         try:
-            add_user_to_db(form_data)
-            flash("Signup Successful!", "success")
-            return render_template("home.html")
-        except Exception as e:
-            flash("Signup Unsuccessful!", "error")
-            return render_template("sign_up.html")
 
-    return render_template("sign_up.html")
+            add_user_to_db(form_data)
+
+            flash(
+                "Signup Successful!",
+                "success"
+            )
+
+            return render_template(
+                "home.html"
+            )
+
+        except Exception as e:
+
+            print(e)
+
+            flash(
+                "Signup Unsuccessful!",
+                "error"
+            )
+
+            return render_template(
+                "sign_up.html"
+            )
+
+    return render_template(
+        "sign_up.html"
+    )
 
 
 @app.route("/logout")
@@ -566,9 +696,15 @@ def order_details(order_id):
 
 @app.route("/api/pending_orders")
 def pending_orders():
-    vendor_id = 1  # ⚠️ replace with session later
+
+    user_id = session.get("user_id")
+    vendor_id = get_vendor_id_by_user_id(user_id)
+ 
+    print("Vendor id")
+    print(vendor_id)
 
     orders = get_pending_orders(vendor_id)
+    print(orders)
 
     data = []
     for o in orders:
@@ -601,7 +737,9 @@ def reject_order():
 
 @app.route("/api/dashboard_stats")
 def dashboard_stats():
-    vendor_id = 1  # ⚠️ replace with session later
+
+    user_id = session.get("user_id")
+    vendor_id = get_vendor_id_by_user_id(user_id)
 
     stats = get_dashboard_stats(vendor_id)
 
@@ -616,7 +754,8 @@ def dashboard_stats():
 @app.route("/api/active_orders")
 def active_orders():
 
-    vendor_id = 1   # replace with session later
+    user_id = session.get("user_id")
+    vendor_id = get_vendor_id_by_user_id(user_id)
 
     orders = get_active_orders(vendor_id)
 
@@ -650,7 +789,7 @@ def update_order_status_route():
 @app.route("/api/active_stats")
 def active_stats():
 
-    vendor_id = 1
+    vendor_id = session.get("vendor_id")
     
 
     stats = get_active_orders_stats(vendor_id)
@@ -666,7 +805,7 @@ def active_stats():
 @app.route("/api/history_orders")
 def history_orders():
 
-    vendor_id = 1
+    vendor_id = session.get("vendor_id")
 
     orders = get_history_orders(vendor_id)
 
@@ -688,7 +827,7 @@ def history_orders():
 @app.route("/api/history_stats")
 def history_stats():
 
-    vendor_id = 1
+    vendor_id = session.get("vendor_id")
 
     stats = get_history_stats(vendor_id)
 
@@ -703,7 +842,7 @@ def history_stats():
 @app.route("/add_service", methods=["POST"])
 def add_service_route():
 
-    vendor_id = 1
+    vendor_id = session.get("vendor_id")
 
     data = request.json
 
@@ -723,7 +862,8 @@ def add_service_route():
 @app.route("/api/vendor_services")
 def vendor_services():
 
-    vendor_id = 1   # replace with session later
+    user_id = session.get("user_id")
+    vendor_id = get_vendor_id_by_user_id(user_id)
 
     services = get_vendor_services(vendor_id)
 
@@ -747,7 +887,8 @@ def vendor_services():
 )
 def delete_service(service_id):
 
-    vendor_id = 1   # replace with session later
+    user_id = session.get("user_id")
+    vendor_id = get_vendor_id_by_user_id(user_id)
 
     delete_vendor_service(
         service_id,
@@ -766,7 +907,9 @@ def delete_service(service_id):
 )
 def save_vendor_address_route():
 
-    vendor_id = 1   # replace with session later
+    user_id = session.get("user_id")
+    vendor_id = get_vendor_id_by_user_id(user_id)
+
 
     data = request.json
 
@@ -789,7 +932,7 @@ def save_vendor_address_route():
 @app.route("/api/vendor_address")
 def vendor_address():
 
-    vendor_id = 1
+    vendor_id = session.get("vendor_id")
 
     address = get_vendor_address(vendor_id)
 

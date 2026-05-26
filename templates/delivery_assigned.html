@@ -166,34 +166,29 @@
                                     <span class="badge badge-green">Paid</span>
                                     {% endif %}
                                 </td>
+
                                 <!-- PAYMENT ACTION -->
-                                <td>
+                                 {% if (order.status == "picked_from_vendor" ) and order.payment_status != "paid" %}
+                                    <td>
 
-                                    {% if (order.status == "picked_from_vendor" ) and order.payment_status != "paid" %}
+                                        <button type="button"
+                                            class="btn btn-green btn-sm"
+                                            onclick="openPaymentModal('{{ order.id }}', '{{ order.total_amount }}')">
 
-                                    <button type="button"
-                                        class="btn btn-green btn-sm"
-                                        onclick="openPaymentModal('{{ order.id }}', '{{ order.total_amount }}')">
+                                            Collect Payment
 
-                                        Collect Payment
+                                        </button>
 
-                                    </button>
+                                        {% elif order.payment_status == "paid" %}
 
-                                    {% elif order.payment_status == "paid" %}
+                                        <span class="badge badge-green">
+                                            Paid
+                                        </span>
 
-                                    <span class="badge badge-green">
-                                        Paid
-                                    </span>
+    
+                                    </td>
+                                {% endif %}
 
-                                    {% else %}
-
-                                    <span style="color:#999;">
-                                        Waiting
-                                    </span>
-
-                                    {% endif %}
-
-                                </td>
 
                                 <!-- STATUS -->
                                 <td>
@@ -213,46 +208,42 @@
                                         <!-- ACCEPTED -->
                                         {% if order.status == "accepted" %}
 
-                                        <button type="submit" name="order_status" value="picked_up"
-                                            class="btn btn-navy btn-sm">
+                                            <button type="submit" name="order_status" value="picked_up"
+                                                class="btn btn-navy btn-sm">
 
-                                            Picked Up
+                                                Picked Up
 
-                                        </button>
+                                            </button>
 
-                                        <!-- PICKED UP -->
-                                        {% elif order.status == "picked_up" %}
+                                            <!-- PICKED UP -->
+                                            {% elif order.status == "picked_up" %}
 
-                                        <button type="submit" name="order_status" value="delivered_to_vendor"
-                                            class="btn btn-navy btn-sm">
+                                            <button type="submit" name="order_status" value="delivered_to_vendor"
+                                                class="btn btn-navy btn-sm">
 
-                                            Delivered to Vendor
+                                                Delivered to Vendor
 
-                                        </button>
+                                            </button>
 
-                                        <!-- READY -->
-                                        {% elif order.status == "delivered_to_vendor" %}
+                                            <!-- READY -->
+                                            {% elif order.status == "delivered_to_vendor" %}
 
-                                        <button type="submit" name="order_status" value="picked_from_vendor"
-                                            class="btn btn-navy btn-sm">
+                                            <button type="submit" name="order_status" value="picked_from_vendor"
+                                                class="btn btn-navy btn-sm">
 
-                                            Picked From Vendor
+                                                Picked From Vendor
 
-                                        </button>
+                                            </button>
 
-                                        <!-- PICKED FROM VENDOR -->
-                                        {% elif order.status == "picked_from_vendor" %}
+                                            <!-- PICKED FROM VENDOR -->
+                                            {% elif order.status == "picked_from_vendor" %}
 
-                                        <button type="submit" name="order_status" value="delivered"
-                                            class="btn btn-navy btn-sm">
+                                            <button type="submit" name="order_status" value="delivered"
+                                                class="btn btn-navy btn-sm">
 
-                                            Delivered to Customer
+                                                Delivered to Customer
 
-                                        </button>
-
-                                        <span style="color:#999;">
-                                            Waiting
-                                        </span>
+                                            </button>
 
                                         {% endif %}
 

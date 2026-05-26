@@ -1,6 +1,7 @@
 from sqlalchemy import create_engine, text
-from flask import flash, redirect, url_for, session
+from flask import session
 import os
+
 
 DB_USER = "avnadmin"
 DB_PASSWORD = os.getenv("DB_PASSWORD")
@@ -29,13 +30,27 @@ def load_orders_from_db(user_id):
 
 
 def add_user_to_db(form_data):
+
     with engine.connect() as conn:
+
         query = text("""
-            INSERT INTO users (email, username, passwords)
-            VALUES (:email, :username, :passwords)
+            INSERT INTO users (
+                email,
+                username,
+                password_hash,
+                role
+            )
+
+            VALUES (
+                :email,
+                :username,
+                :password_hash,
+                :role
+            )
         """)
 
         conn.execute(query, form_data)
+
         conn.commit()
 
 
@@ -43,14 +58,21 @@ def add_user_to_db(form_data):
 def login_user_from_db(email, passwords):
 
     with engine.connect() as conn:
-        querry_login = text("""
-            SELECT id, passwords, username, email FROM users
-            WHERE email = :email
-                """)
-        
-        result = conn.execute(querry_login, {"email": email}).fetchone()
 
-        return result
+        query = text("""
+            SELECT *
+            FROM users
+            WHERE email = :email
+        """)
+
+        result = conn.execute(query, {
+            "email": email
+        }).fetchone()
+
+        if result:
+            return dict(result._mapping)
+
+        return None
     
 def user_from_addresses_db(user_id):
 
@@ -218,9 +240,36 @@ def delete_address_from_db(address_id, user_id):
 
 def get_all_services():
     with engine.connect() as conn:
-        result = conn.execute(text("SELECT * FROM services"))
-        return result.fetchall()
-    
+
+        query = text("""
+            SELECT
+
+                s.id,
+                s.name,
+                s.badge,
+                s.icon,
+                s.description,
+
+                MIN(vs.price) AS starting_price,
+
+                COUNT(DISTINCT vs.vendor_id) AS vendors_count
+
+            FROM services s
+
+            LEFT JOIN vendor_services vs
+                ON s.id = vs.service_id
+
+            GROUP BY
+                s.id,
+                s.name,
+                s.badge,
+                s.icon,
+                s.description
+
+            ORDER BY s.name
+        """)
+
+        return conn.execute(query).fetchall()
 
 def get_vendors(service_id, city, pincode):
     with engine.connect() as conn:
@@ -375,10 +424,21 @@ def assign_delivery_boy(order_id, delivery_boy_id):
             WHERE id = :order_id
         """)
 
+        query2 = text("""
+            UPDATE delivery_boys
+            SET is_busy = true
+            WHERE id = :delivery_boy_id
+        """)
+
         conn.execute(query, {
             "delivery_boy_id": delivery_boy_id,
             "order_id": order_id
         })
+
+        conn.execute(query2, {
+            "delivery_boy_id": delivery_boy_id
+        })
+
 
         conn.commit()
 
@@ -406,6 +466,7 @@ def get_admin_orders():
         JOIN services s ON o.service_id = s.id
         LEFT JOIN order_items oi ON oi.order_id = o.id
         WHERE o.status IN ('accepted','ready')
+        AND delivery_boy_id IS NULL
 
         GROUP BY o.id
         ORDER BY o.id DESC;
@@ -545,6 +606,111 @@ def delete_user_db(user_id):
         conn.execute(text("DELETE FROM users_table WHERE id = :id"), {"id": user_id})
         conn.commit()
 
+def create_vendor(name,phone,city,state,pincode,street_address,status,service_ids,email,password,user_id):
+    with engine.begin() as conn:
+
+        vendor_query = text("""
+            INSERT INTO vendors (
+                name,
+                phone,
+                city,
+                pincode,
+                rating,
+                status,
+                active_orders,
+                street_address,
+                state,
+                owner_user_id
+            )
+            VALUES (
+                :name,
+                :phone,
+                :city,
+                :pincode,
+                0,
+                :status,
+                0,
+                :street_address,
+                :state,
+                :owner_user_id
+            )
+        """)
+
+        result = conn.execute(vendor_query, {
+            "name": name,
+            "phone": phone,
+            "city": city,
+            "pincode": pincode,
+            "status": status,
+            "street_address": street_address,
+            "state": state,
+            "owner_user_id": user_id
+        })
+
+        vendor_id = result.lastrowid
+
+        service_query = text("""
+            INSERT INTO vendor_services (
+                vendor_id,
+                service_id,
+                item_type_id,
+                price
+            )
+            VALUES (
+                :vendor_id,
+                :service_id,
+                1,
+                0
+            )
+        """)
+
+        for service_id in service_ids:
+
+            conn.execute(service_query, {
+                "vendor_id": vendor_id,
+                "service_id": service_id
+            })
+
+
+        users_querry = text("""
+            INSERT INTO  users (
+                email,
+                username,
+                role,
+                password_hash
+            )
+            VALUES (
+                :email,
+                :name,
+                'vendor',
+                :password           
+            )
+                            
+        """)
+
+        result = conn.execute(users_querry, {
+            "email":email,
+            "name": name,
+            "password":password
+        })
+
+def get_vendor_id_by_user_id(user_id):
+
+    with engine.connect() as conn:
+
+        query = text("""
+            SELECT id
+            FROM vendors
+            WHERE owner_user_id = :user_id
+        """)
+
+        result = conn.execute(query, {
+            "user_id": user_id
+        }).fetchone()
+
+        return result.id if result else None
+
+
 #Function for delivery boys page
 
 def get_delivery_boy_orders(boy_id):
@@ -580,7 +746,6 @@ def get_delivery_boy_orders(boy_id):
 
             WHERE o.delivery_boy_id = :boy_id
             AND o.status IN ('accepted', 'picked_up', 'ready', 'delivered_to_vendor', 'picked_from_vendor')
-
             ORDER BY o.id DESC
         """)
 
