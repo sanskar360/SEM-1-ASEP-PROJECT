@@ -380,9 +380,7 @@ document.addEventListener('click', function(e) {
     }
 });
 
-document
-.querySelectorAll('#serviceOptions input[type="checkbox"]')
-.forEach(cb => {
+document.querySelectorAll('#serviceOptions input[type="checkbox"]').forEach(cb => {
 
     cb.addEventListener('change', function() {
 
@@ -458,9 +456,7 @@ function filterVendors() {
         });
 }
 
-document
-.getElementById('addVendorModal')
-.addEventListener('click', function(e) {
+document.getElementById('addVendorModal').addEventListener('click', function(e) {
 
     if (e.target === this) {
 
@@ -468,40 +464,27 @@ document
     }
 });
 
-document
-.getElementById("addVendorForm")
-.addEventListener("submit", async function(e) {
+document.getElementById("addVendorForm").addEventListener("submit", async function(e) {
 
     e.preventDefault();
 
     const service_ids = [];
 
-    document
-    .querySelectorAll('input[name="service_id"]:checked')
-    .forEach(cb => {
+    document.querySelectorAll('input[name="service_id"]:checked').forEach(cb => {
         service_ids.push(cb.value);
     });
 
     const data = {
 
         name: document.querySelector('[name="name"]').value,
-
         owner_name: document.querySelector('[name="owner_name"]').value,
-
         phone: document.querySelector('[name="phone"]').value,
-
         email: document.querySelector('[name="email"]').value,
-
         street_address: document.querySelector('[name="street_address"]').value,
-
         city: document.querySelector('[name="city"]').value,
-
         state: document.querySelector('[name="state"]').value,
-
         pincode: document.querySelector('[name="pincode"]').value,
-
         status: document.querySelector('[name="status"]').value,
-
         service_ids: service_ids
     };
 

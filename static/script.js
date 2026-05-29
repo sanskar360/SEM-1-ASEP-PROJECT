@@ -228,6 +228,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const name = document.getElementById("newName").value.trim();
     const phone = document.getElementById("newPhone").value.trim();
     const status = document.getElementById("newStatus").value;
+    const email = document.getElementById("newEmail").value;
 
     if (!name || !phone) {
       alert("Please fill all fields");
@@ -247,7 +248,8 @@ document.addEventListener("DOMContentLoaded", function () {
       body: JSON.stringify({
         name: name,
         phone: phone,
-        status: status
+        status: status,
+        email:email
       })
     })
       .then(res => res.json())
@@ -260,7 +262,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 });
 
-console.log(document.getElementById("addDeliveryForm"));
 
 function deactivate(btn, code) {
 

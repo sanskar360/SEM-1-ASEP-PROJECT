@@ -152,26 +152,22 @@ def add_vendor():
 
     try:
         data = request.get_json()
-        id = session.get("user_id")
-        
+
         generated_password = data.get("email") + "23"
         hashed_password = generate_password_hash(generated_password)
 
         create_vendor(
             name=data.get("name"),
             email=data.get("email"),
-            password = hashed_password,
+            password=hashed_password,
             phone=data.get("phone"),
             city=data.get("city"),
             state=data.get("state"),
             pincode=data.get("pincode"),
             street_address=data.get("street_address"),
             status=data.get("status"),
-            service_ids=data.get("service_ids", []),
-            user_id=id
+            service_ids=data.get("service_ids", [])
         )
-
-
 
         return jsonify({
             "success": True,
@@ -180,12 +176,12 @@ def add_vendor():
 
     except Exception as e:
 
-        print(e)
+        print("ERROR:", e)
 
         return jsonify({
             "success": False,
-            "message": "Something went wrong"
-        })
+            "message": str(e)
+        }), 500
     
 
 # How it works section
@@ -228,7 +224,6 @@ def delivery_update_status():
 
     new_status = request.form.get("order_status")
 
-
     # ───────── UPDATE ORDER STATUS ─────────
 
     update_delivery_order_status(
@@ -236,11 +231,9 @@ def delivery_update_status():
         new_status
     )
 
-
     # ───────── GET DELIVERY BOY ID ─────────
 
     boy_id = get_delivery_boy_id(order_id)
-
 
     # ───────── BUSY STATES ─────────
 
@@ -254,13 +247,12 @@ def delivery_update_status():
             True
         )
 
-
     # ───────── FREE STATES ─────────
 
     elif new_status in [
         "delivered_to_vendor",
         "delivered"
-    ]:
+        ]:
 
         update_delivery_boy_busy_status(
             boy_id,
@@ -325,7 +317,6 @@ def vendors_services():
 @app.route("/vendors_address")
 def vendors_addresses():
     return render_template("vendors_addresses.html")
-
 
 
 @app.route("/")
@@ -638,8 +629,7 @@ def assign_delivery():
 
     return {"status": "success"}
 
-
-@app.route("/add_delivery_boy",  methods=["GET", "POST"])
+@app.route("/add_delivery_boy", methods=["GET", "POST"])
 def add_delivery_boy():
 
     if request.method == "POST":
@@ -648,11 +638,12 @@ def add_delivery_boy():
         name = data.get("name")
         phone = data.get("phone")
         status = data.get("status")
+        email = data.get("email")
 
-        insert_delivery_boy(name, phone, status)
+        insert_delivery_boy(name, phone, email, status)
 
         return {"status": "success"}
-    
+
     return render_template("admin_delivery_boys.html")
 
 @app.route("/toggle_delivery_status", methods=["POST"])

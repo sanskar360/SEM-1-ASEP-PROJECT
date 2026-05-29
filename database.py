@@ -1,4 +1,5 @@
 from sqlalchemy import create_engine, text
+from werkzeug.security import generate_password_hash
 from flask import session
 import os
 
@@ -503,29 +504,68 @@ def get_admin_orders2():
 
         return conn.execute(query).fetchall()
     
-def insert_delivery_boy(name, phone, status):
+def insert_delivery_boy(name, phone, email, status):
 
     with engine.connect() as conn:
 
-        # 🔥 generate code like DB-006
-        result = conn.execute(text("SELECT COUNT(*) FROM delivery_boys"))
-        count = result.scalar() + 1
+        trans = conn.begin()
 
-        code = f"DB-{str(count).zfill(3)}"
+        try:
+            # Generate code
+            result = conn.execute(
+                text("SELECT COUNT(*) FROM delivery_boys")
+            )
 
-        query = text("""
-            INSERT INTO delivery_boys (code, name, phone, status)
-            VALUES (:code, :name, :phone, :status)
-        """)
+            count = result.scalar() + 1
+            code = f"DB-{str(count).zfill(3)}"
 
-        conn.execute(query, {
-            "code": code,
-            "name": name,
-            "phone": phone,
-            "status": status
-        })
+            # Login credentials
+            username = email
+            raw_password = f"{email}23"
+            password_hash = generate_password_hash(raw_password)
 
-        conn.commit()
+            # Insert into users table
+            user_result = conn.execute(text("""
+                INSERT INTO users
+                (email, username, role, password_hash)
+                VALUES
+                (:email, :username, :role, :password_hash)
+            """), {
+                "email": email,
+                "username": username,
+                "role": "delivery_boy",
+                "password_hash": password_hash
+            })
+
+            # Get generated users.id
+            user_id = user_result.lastrowid
+
+            # Insert into delivery_boys table
+            conn.execute(text("""
+                INSERT INTO delivery_boys
+                (code, name, phone, email, status, owner_id)
+                VALUES
+                (:code, :name, :phone, :email, :status, :owner_id)
+            """), {
+                "code": code,
+                "name": name,
+                "phone": phone,
+                "email": email,
+                "status": status,
+                "owner_id": user_id
+            })
+
+            trans.commit()
+
+            print(f"Delivery Boy Created")
+            print(f"Email: {email}")
+            print(f"Password: {raw_password}")
+            print(f"User ID: {user_id}")
+
+        except Exception as e:
+            trans.rollback()
+            print("ERROR:", e)
+            raise
 
 def toggle_delivery_boy_status(code):
 
@@ -606,10 +646,44 @@ def delete_user_db(user_id):
         conn.execute(text("DELETE FROM users_table WHERE id = :id"), {"id": user_id})
         conn.commit()
 
-def create_vendor(name,phone,city,state,pincode,street_address,status,service_ids,email,password,user_id):
+def create_vendor(
+    name,
+    phone,
+    city,
+    state,
+    pincode,
+    street_address,
+    status,
+    service_ids,
+    email,
+    password
+):
     with engine.begin() as conn:
 
-        vendor_query = text("""
+        # Create login account first
+        user_result = conn.execute(text("""
+            INSERT INTO users (
+                email,
+                username,
+                role,
+                password_hash
+            )
+            VALUES (
+                :email,
+                :username,
+                'vendor',
+                :password
+            )
+        """), {
+            "email": email,
+            "username": name,
+            "password": password
+        })
+
+        user_id = user_result.lastrowid
+
+        # Create vendor
+        vendor_result = conn.execute(text("""
             INSERT INTO vendors (
                 name,
                 phone,
@@ -634,9 +708,7 @@ def create_vendor(name,phone,city,state,pincode,street_address,status,service_id
                 :state,
                 :owner_user_id
             )
-        """)
-
-        result = conn.execute(vendor_query, {
+        """), {
             "name": name,
             "phone": phone,
             "city": city,
@@ -647,7 +719,7 @@ def create_vendor(name,phone,city,state,pincode,street_address,status,service_id
             "owner_user_id": user_id
         })
 
-        vendor_id = result.lastrowid
+        vendor_id = vendor_result.lastrowid
 
         service_query = text("""
             INSERT INTO vendor_services (
@@ -665,34 +737,10 @@ def create_vendor(name,phone,city,state,pincode,street_address,status,service_id
         """)
 
         for service_id in service_ids:
-
             conn.execute(service_query, {
                 "vendor_id": vendor_id,
                 "service_id": service_id
             })
-
-
-        users_querry = text("""
-            INSERT INTO  users (
-                email,
-                username,
-                role,
-                password_hash
-            )
-            VALUES (
-                :email,
-                :name,
-                'vendor',
-                :password           
-            )
-                            
-        """)
-
-        result = conn.execute(users_querry, {
-            "email":email,
-            "name": name,
-            "password":password
-        })
 
 def get_vendor_id_by_user_id(user_id):
 
