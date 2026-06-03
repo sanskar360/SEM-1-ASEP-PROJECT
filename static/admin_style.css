@@ -284,6 +284,7 @@ body {
 .badge-blue   { background: var(--sky-light); color: #0369a1; }
 .badge-gray   { background: #f1f5f9; color: #64748b; }
 
+
 /* ── Buttons ─────────────────────────────── */
 .btn {
     display: inline-flex;

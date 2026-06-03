@@ -1,5 +1,5 @@
 from flask import Flask, render_template,request, redirect, url_for, flash, session,jsonify
-from database import load_orders_from_db, add_user_to_db, get_admin_orders2,  update_delivery_order_status, login_user_from_db, user_from_addresses_db, get_addresses_from_db, add_address_to_db,delete_address_from_db,get_all_services,get_vendors,get_vendors2, get_address_by_id,get_items_for_vendor,get_address_by_id, insert_order, insert_order_items,get_delivery_boys,assign_delivery_boy,get_admin_orders,insert_delivery_boy, toggle_delivery_boy_status,get_payments,  update_user_db, delete_user_db,get_users,get_delivery_boy_orders,get_delivery_records,get_user_orders,get_order_details,update_order_status,get_pending_orders, get_dashboard_stats,get_active_orders,update_active_order_status,get_active_orders_stats,get_history_stats,get_history_orders,add_vendor_service, get_vendor_services,delete_vendor_service,get_vendor_address,save_vendor_address, get_delivery_boy_id, update_delivery_boy_busy_status,mark_order_payment_paid,create_vendor,get_vendor_id_by_user_id
+from database import  add_user_to_db, get_admin_orders2,  update_delivery_order_status, login_user_from_db, user_from_addresses_db, get_addresses_from_db, add_address_to_db,delete_address_from_db,get_all_services,get_vendors,get_vendors2, get_address_by_id,get_items_for_vendor,get_address_by_id, insert_order, insert_order_items,get_delivery_boys,assign_delivery_boy,get_admin_orders,insert_delivery_boy, toggle_delivery_boy_status,get_payments,  update_user_db, delete_user_db,get_users,get_delivery_boy_orders,get_delivery_records,get_user_orders,get_order_details,update_order_status,get_pending_orders, get_dashboard_stats,get_active_orders,update_active_order_status,get_active_orders_stats,get_history_stats,get_history_orders,add_vendor_service, get_vendor_services,delete_vendor_service,get_vendor_address,save_vendor_address, get_delivery_boy_id, update_delivery_boy_busy_status,mark_order_payment_paid,create_vendor,get_vendor_id_by_user_id
 
 
 
@@ -337,16 +337,6 @@ def track_orders():
     )
 
 
-@app.route("/payments", methods=["GET", "POST"])
-def payments():
-    user_id = session.get("user_id")
-
-    if user_id is None:
-        flash("Login First","error")
-        return redirect(url_for("login"))
-        
-    orders = load_orders_from_db(user_id)
-    return render_template("payments.html", orders = orders)
 
 
 @app.route("/profile")
@@ -589,30 +579,47 @@ def place_order():
     address_id = request.form.get("address_id")
     payment_method = request.form.get("payment_method")
     suggestion = request.form.get("suggestion")
-    
 
     item_ids = request.form.getlist("item_ids[]")
     qtys = request.form.getlist("qtys[]")
     prices = request.form.getlist("prices[]")
 
-    if payment_method == "COD":
-        payment_status = "pending"
-    else:
-        payment_status = "paid"
+    payment_status = "pending"
 
-    # calculate total
+    # Calculate total and check if any item was selected
     total = 0
+    has_items = False
+
     for i in range(len(item_ids)):
         qty = int(qtys[i])
         price = float(prices[i])
+
+        if qty > 0:
+            has_items = True
+
         total += qty * price
 
-    # insert order
-    order_id = insert_order(vendor_id, service_id, address_id, total, payment_method, payment_status, user_id, suggestion)
+    # Validation
+    if not has_items:
+        flash("Please Enter Items", "error")
+        return redirect(request.referrer)
 
-    # insert items
+    # Insert order
+    order_id = insert_order(
+        vendor_id,
+        service_id,
+        address_id,
+        total,
+        payment_method,
+        payment_status,
+        user_id,
+        suggestion
+    )
+
+    # Insert order items
     insert_order_items(order_id, item_ids, qtys, prices)
 
+    flash("Order placed successfully!", "success")
     return redirect(url_for("track_orders"))
 
 # admin function routes

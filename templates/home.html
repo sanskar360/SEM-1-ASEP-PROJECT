@@ -209,7 +209,7 @@
         <div class="footer-container">
 
             <div class="footer-brand">
-                <img src="{{ url_for('static', filename='Logo.png') }}" class="logo">
+                <img src=" {{ url_for('static', filename='images/Logo.png') }}" class="logo">
                 <p class="tagline">
                     Designed and built with love by the <b>Vega Vastra Team</b>.
                 </p>
@@ -219,7 +219,6 @@
                 <h3>Quick Links</h3>
                 <a href="{{ url_for('services') }}">Add Orders</a>
                 <a href="{{ url_for('track_orders') }}">Track Orders</a>
-                <a href="{{ url_for('payments') }}">Payment</a>
                 <a href="{{ url_for('profile') }}">Profile</a>
             </div>
 

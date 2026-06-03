@@ -78,10 +78,8 @@
                                 <tr>
                                     <th>#</th>
                                     <th>Name</th>
-                                    <th>Date Created</th>
+                                    <th>Email id</th>
                                     <th>Role</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -94,38 +92,17 @@
                                     <td>
                                         <div class="user-cell">
                                             <div class="user-avatar-placeholder">
-                                                {{ user.name[:2].upper() }}
+                                                {{ user.username[:2].upper() }}
                                             </div>
-                                            <span class="user-name">{{ user.name }}</span>
+                                            <span class="user-name">{{ user.username }}</span>
                                         </div>
                                     </td>
 
                                     <td class="td-num">
-                                        {{ user.created_at.strftime('%d/%m/%Y') if user.created_at else '-' }}
+                                      {{ user.email}}
                                     </td>
 
                                     <td class="role-text">{{ user.role }}</td>
-
-                                    <td>
-                                        <span class="status-dot 
-                                        {% if user.status == 'active' %}status-active{% else %}status-inactive{% endif %}">
-                                            {{ user.status.capitalize() }}
-                                        </span>
-                                    </td>
-
-                                    <td>
-                                        <div class="action-btns">
-                                            <button class="btn-action btn-gear"
-                                                onclick="openEditUser('{{ user.id }}', '{{ user.role }}', '{{ user.status }}')">
-                                                ⚙️
-                                            </button>
-
-                                            <button class="btn-action btn-delete"
-                                                onclick="confirmDelete('{{ user.id }}', '{{ user.name }}')">
-                                                ✕
-                                            </button>
-                                        </div>
-                                    </td>
 
                                 </tr>
                                 {% endfor %}
@@ -133,75 +110,11 @@
                             </tbody>
                         </table>
                     </div>
-
-                    <div class="table-footer">
-                        <span class="table-info">Showing 5 out of 25 entries</span>
-                        <div class="pagination">
-                            <button class="page-btn prev-next">Previous</button>
-                            <button class="page-btn active">1</button>
-                            <button class="page-btn">2</button>
-                            <button class="page-btn">3</button>
-                            <button class="page-btn">4</button>
-                            <button class="page-btn">5</button>
-                            <button class="page-btn prev-next">Next</button>
-                        </div>
-                    </div>
-
                 </div>
-
             </main>
         </div>
     </div>
-    <div id="editModal">
-        <div id="editBox">
-
-            <h3>Edit User</h3>
-
-            <input type="hidden" id="editUserId">
-
-            <div id="editBody">
-
-                <div id="editField1">
-                    <label>Role</label>
-                    <select id="editRole">
-                        <option value="admin">Admin</option>
-                        <option value="user">User</option>
-                    </select>
-                </div>
-
-                <div id="editField2">
-                    <label>Status</label>
-                    <select id="editStatus">
-                        <option value="active">Active</option>
-                        <option value="inactive">Inactive</option>
-                    </select>
-                </div>
-
-            </div>
-
-            <div id="editFooter">
-                <button onclick="closeEditModal()">Cancel</button>
-                <button onclick="updateUser()">Save</button>
-            </div>
-
-        </div>
-    </div>
-    <div id="deleteModal">
-        <div id="deleteBox">
-
-            <h3>Delete User</h3>
-            <p id="deleteText"></p>
-
-            <input type="hidden" id="deleteUserId">
-
-            <div id="deleteFooter">
-                <button onclick="closeDeleteModal()">Cancel</button>
-                <button onclick="deleteUser()">OK</button>
-            </div>
-
-        </div>
-    </div>
-
+    
    <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 

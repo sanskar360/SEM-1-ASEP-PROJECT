@@ -614,13 +614,10 @@ def get_users():
 
         query = text("""
             SELECT 
-                id,
-                name,
-                role,
-                status,
-                created_at
-            FROM users_table
-            ORDER BY id DESC
+                email,
+                username,
+                role
+            FROM users
         """)
 
         return conn.execute(query).fetchall()
@@ -771,33 +768,54 @@ def get_delivery_boy_orders(boy_id):
                 o.created_at,
                 o.status,
                 o.payment_method,
+                o.payment_status,
+                o.total_amount,
 
                 a.user_name,
                 a.phone_no,
                 a.city,
                 a.state,
                 a.pincode,
+                a.house_no,
 
                 s.name AS service_name,
 
-                -- total items
+                v.name AS vendor_name,
+                v.street_address,
+                v.phone AS vendor_phone,
+
                 (
-                    SELECT SUM(quantity) 
-                    FROM order_items 
+                    SELECT SUM(quantity)
+                    FROM order_items
                     WHERE order_id = o.id
                 ) AS total_items
 
             FROM addd_orders o
 
-            JOIN address a ON o.address_id = a.id
-            JOIN services s ON o.service_id = s.id
+            JOIN address a
+                ON o.address_id = a.id
+
+            JOIN services s
+                ON o.service_id = s.id
+
+            LEFT JOIN vendors v
+                ON o.vendor_id = v.id
 
             WHERE o.delivery_boy_id = :boy_id
-            AND o.status IN ('accepted', 'picked_up', 'ready', 'delivered_to_vendor', 'picked_from_vendor')
+            AND o.status IN (
+                'accepted',
+                'picked_up',
+                'ready',
+                'picked_from_vendor'
+            )
+
             ORDER BY o.id DESC
         """)
 
-        return conn.execute(query, {"boy_id": boy_id}).fetchall()
+        return conn.execute(
+            query,
+            {"boy_id": boy_id}
+        ).fetchall()
 
 
     
@@ -1111,7 +1129,7 @@ def get_active_orders(vendor_id):
             JOIN services s 
                 ON o.service_id = s.id
             WHERE o.vendor_id = :vendor_id
-            AND o.status IN ('accepted', 'processing', 'ready')
+            AND o.status IN ('delivered_to_vendor', 'processing')
             ORDER BY o.created_at DESC
         """)
 

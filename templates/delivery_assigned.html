@@ -19,7 +19,7 @@
         <aside class="db-sidebar">
             <div class="sidebar-brand">
                 <a href="{{ url_for('delivery_assigned') }}" class="brand-name"><img
-                        src="{{ url_for('static', filename='Logo.png') }}" alt="Vega Vastra"
+                        src=" {{ url_for('static', filename='images/Logo.png') }}" alt="Vega Vastra"
                         class="sidebar-logo-img"></a>
                 <span class="brand-role">🛵 Delivery Portal</span>
             </div>
@@ -103,17 +103,12 @@
                             <tr>
                                 <th>Order</th>
                                 <th>Date</th>
-                                <th>Customer</th>
+                                <th>Name</th>
                                 <th>Phone</th>
                                 <th>Service</th>
                                 <th>Items</th>
                                 <th>Address</th>
                                 <th>Payment</th>
-                                {% for order in orders %}
-                                    {% if (order.status == "picked_from_vendor" ) and order.payment_status != "paid" %}
-                                        <th>Payment Action</th>
-                                    {% endif %}
-                                {% endfor %}
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
@@ -125,7 +120,7 @@
                             <tr>
 
                                 <!-- ORDER -->
-                                <td class="td-bold">#{{ order.id }}</td>
+                                <td class="td-bold">#{{ order.id }} </td>
 
                                 <!-- DATE -->
                                 <td class="td-muted">
@@ -133,13 +128,34 @@
                                 </td>
 
                                 <!-- CUSTOMER -->
-                                <td class="td-bold">{{ order.user_name }}</td>
+                                {% if order.status in ('accepted', 'picked_from_vendor') %}
 
+                                    <td class="td-bold">{{ order.user_name }}</td>
+
+                                {% else %}
+
+                                    <td class="td-bold">{{ order.vendor_name }}</td>
+
+                                {% endif %}
                                 <!-- PHONE -->
                                 <td>
-                                    <a href="tel:{{ order.phone_no }}" style="color:var(--sky); font-weight:600;">
-                                        {{ order.phone_no }}
-                                    </a>
+
+                                    {% if order.status in ('accepted', 'picked_from_vendor') %}
+
+                                        <a href="tel:{{ order.phone_no }}"
+                                        style="color:var(--sky); font-weight:600;">
+                                            {{ order.phone_no }}
+                                        </a>
+
+                                    {% else %}
+
+                                        <a href="tel:{{ order.vendor_phone }}"
+                                        style="color:var(--sky); font-weight:600;">
+                                            {{ order.vendor_phone }}
+                                        </a>
+
+                                    {% endif %}
+
                                 </td>
 
                                 <!-- SERVICE -->
@@ -149,27 +165,33 @@
                                 <td>{{ order.total_items }}</td>
 
                                 <!-- ADDRESS -->
+                                {% if order.status in ('accepted', 'picked_from_vendor') %}
+
                                 <td style="font-size:12.5px; color:var(--text-muted); line-height:1.5;">
-                                    {{ order.city }},<br>
-                                    {{ order.state }} — {{ order.pincode }}
+                                    {{ order.house_no }},<br>
+                                    {{ order.city }} — {{ order.pincode }},<br>
+                                    {{ order.state }}
                                 </td>
 
-                                <!-- PAYMENT -->
-                                <td>
-                                    <div style="font-size:12.5px;">
-                                        {{ order.payment_method }}
-                                    </div>
+                                {% else %}
 
-                                    {% if order.payment_method == "Cash on Delivery" %}
-                                    <span class="badge badge-red">Collect</span>
-                                    {% else %}
-                                    <span class="badge badge-green">Paid</span>
-                                    {% endif %}
+                                <td style="font-size:12.5px; color:var(--text-muted); line-height:1.5;">
+                                    {{ order.street_address }},<br>
+                                    {{ order.city }} — {{ order.pincode }},<br>
+                                    {{ order.state }}
                                 </td>
+
+                                {% endif %}
+
+                                
+
 
                                 <!-- PAYMENT ACTION -->
-                                 {% if (order.status == "picked_from_vendor" ) and order.payment_status != "paid" %}
-                                    <td>
+                                <td>
+
+                                    {% if order.status == "picked_from_vendor"
+
+                                        and order.payment_status != "paid" %}
 
                                         <button type="button"
                                             class="btn btn-green btn-sm"
@@ -179,15 +201,20 @@
 
                                         </button>
 
-                                        {% elif order.payment_status == "paid" %}
+                                    {% elif order.payment_status == "paid" %}
 
                                         <span class="badge badge-green">
                                             Paid
                                         </span>
 
-    
-                                    </td>
-                                {% endif %}
+                                    {% else %}
+                                        <span class="badge badge-orange">
+                                            Pending
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
 
 
                                 <!-- STATUS -->
@@ -226,7 +253,7 @@
                                             </button>
 
                                             <!-- READY -->
-                                            {% elif order.status == "delivered_to_vendor" %}
+                                            {% elif order.status == "ready" %}
 
                                             <button type="submit" name="order_status" value="picked_from_vendor"
                                                 class="btn btn-navy btn-sm">
@@ -294,6 +321,9 @@
 
         function openPaymentModal(orderId, amount){
 
+        console.log("Order ID:", orderId);
+        console.log("Amount:", amount);
+
             document.getElementById("paymentModal").style.display = "flex";
 
             document.getElementById("paymentAmount").innerHTML =
@@ -340,7 +370,7 @@
 
         <p id="paymentAmount"></p>
 
-        <img src="/static/images/upi_qr.png" class="upi-qr">
+        <img src="{{ url_for('static', filename='images/upi_qr.jpeg') }}" class="upi-qr">
 
         <div class="payment-actions">
 
