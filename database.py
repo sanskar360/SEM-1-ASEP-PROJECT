@@ -410,7 +410,6 @@ def get_delivery_boys():
                 ) AS completed_today
 
             FROM delivery_boys db
-            WHERE db.is_busy = false
             ORDER BY db.id DESC
         """)
 
