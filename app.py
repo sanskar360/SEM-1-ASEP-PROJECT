@@ -1,5 +1,5 @@
 from flask import Flask, render_template,request, redirect, url_for, flash, session,jsonify
-from database import  add_user_to_db, get_admin_orders2,  update_delivery_order_status, login_user_from_db, user_from_addresses_db, get_addresses_from_db, add_address_to_db,delete_address_from_db,get_all_services,get_vendors,get_vendors2, get_address_by_id,get_items_for_vendor,get_address_by_id, insert_order, insert_order_items,get_delivery_boys,assign_delivery_boy,get_admin_orders,insert_delivery_boy, toggle_delivery_boy_status,get_payments,  update_user_db, delete_user_db,get_users,get_delivery_boy_orders,get_delivery_records,get_user_orders,get_order_details,update_order_status,get_pending_orders, get_dashboard_stats,get_active_orders,update_active_order_status,get_active_orders_stats,get_history_stats,get_history_orders,add_vendor_service, get_vendor_services,delete_vendor_service,get_vendor_address,save_vendor_address, get_delivery_boy_id, update_delivery_boy_busy_status,mark_order_payment_paid,create_vendor,get_vendor_id_by_user_id,get_delivery_boy_profile1,get_recent_deliveries,get_delivery_boy_profile
+from database import  add_user_to_db, get_admin_orders2,  update_delivery_order_status, login_user_from_db, user_from_addresses_db, get_addresses_from_db, add_address_to_db,delete_address_from_db,get_all_services,get_vendors,get_vendors2, get_address_by_id,get_items_for_vendor,get_address_by_id, insert_order, insert_order_items,get_delivery_boys,assign_delivery_boy,get_admin_orders,insert_delivery_boy, toggle_delivery_boy_status,get_payments,  update_user_db, delete_user_db,get_users,get_delivery_boy_orders,get_delivery_records,get_user_orders,get_order_details,update_order_status,get_pending_orders, get_dashboard_stats,get_active_orders,update_active_order_status,get_active_orders_stats,get_history_stats,get_history_orders,add_vendor_service, get_vendor_services,delete_vendor_service,get_vendor_address,save_vendor_address, get_delivery_boy_id, update_delivery_boy_busy_status,mark_order_payment_paid,create_vendor,get_vendor_id_by_user_id,get_delivery_boy_profile1,get_recent_deliveries,get_delivery_boy_profile,get_order_delivery_boy_id
 
 
 
@@ -236,44 +236,48 @@ def delivery_assigned():
 def delivery_update_status():
 
     order_id = request.form.get("order_id")
-
     new_status = request.form.get("order_status")
 
-    # ───────── UPDATE ORDER STATUS ─────────
+    print("================================")
+    print("Order ID:", order_id)
+    print("New Status:", new_status)
 
+    # Update order status
     update_delivery_order_status(
         order_id,
         new_status
     )
 
-    # ───────── GET DELIVERY BOY ID ─────────
+    # Get assigned delivery boy
+    boy_id = get_order_delivery_boy_id(
+        order_id
+    )
 
-    boy_id = get_delivery_boy_id(order_id)
+    print("Boy ID:", boy_id)
 
-    # ───────── BUSY STATES ─────────
-
+    # Delivery boy remains busy throughout the process
     if new_status in [
         "picked_up",
+        "delivered_to_vendor",
         "picked_from_vendor"
     ]:
+
+        print("SETTING BUSY = TRUE")
 
         update_delivery_boy_busy_status(
             boy_id,
             True
         )
 
-    # ───────── FREE STATES ─────────
+    # Delivery completed → free the delivery boy
+    elif new_status == "delivered":
 
-    elif new_status in [
-        "delivered_to_vendor",
-        "delivered"
-        ]:
+        print("SETTING BUSY = FALSE")
 
         update_delivery_boy_busy_status(
             boy_id,
             False
         )
-
 
     return redirect("/delivery_assigned")
 

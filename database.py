@@ -972,7 +972,23 @@ def get_recent_deliveries(boy_id):
             query,
             {"boy_id": boy_id}
         ).mappings().fetchall()
+    
+def get_order_delivery_boy_id(order_id):
 
+    with engine.connect() as conn:
+
+        query = text("""
+            SELECT delivery_boy_id
+            FROM addd_orders
+            WHERE id = :order_id
+        """)
+
+        result = conn.execute(
+            query,
+            {"order_id": order_id}
+        ).fetchone()
+
+        return result[0] if result else None
     
 def update_delivery_boy_busy_status(
     boy_id,
