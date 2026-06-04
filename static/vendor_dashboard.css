@@ -226,7 +226,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
   .admin-main{margin-left:0}
   .hamburger{display:flex}
   .admin-content{padding:16px}
-  .stats-row{grid-template-columns:1fr 1fr}
+  .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
   .search-bar{width:100%}
   .table-card-header{flex-direction:column;align-items:flex-start}
   .modal-box{margin:0;border-radius:12px}
@@ -241,4 +241,10 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 @media(max-width:480px){
   .stats-row{grid-template-columns:1fr 1fr}
   .services-grid{grid-template-columns:1fr}
+  .topbar-store{display:none}
+  .topbar-title{font-size:15px}
+  .admin-content{padding:12px}
+  .table-card-header{padding:12px 14px}
+  .stat-value{font-size:22px}
+  .stat-card{padding:14px 16px}
 }
