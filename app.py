@@ -279,15 +279,27 @@ def delivery_update_status():
 
 @app.route("/delivery_history")
 def delivery_history():
+
     user_id = session.get("user_id")
     role = session.get("role")
-    if role ==  "delivery":
-        boy_id = user_id  
-        deliveries = get_delivery_records(boy_id)
-        return render_template(
-            "delivery_history.html",
-             deliveries=deliveries
-            )
+
+    if role != "delivery":
+        return redirect(url_for("login"))
+
+    boy_id = get_delivery_boy_id(user_id)
+
+    if not boy_id:
+        return "Delivery boy not found", 404
+
+    deliveries = get_delivery_records(boy_id)
+
+    profile = get_delivery_boy_profile(boy_id)
+
+    return render_template(
+        "delivery_history.html",
+        deliveries=deliveries,
+        profile=profile
+    )
     
 @app.route("/mark-payment-paid/<int:order_id>", methods=["POST"])
 def mark_payment_paid(order_id):

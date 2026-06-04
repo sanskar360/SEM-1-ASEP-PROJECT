@@ -21,15 +21,42 @@
         </div>
 
         <div class="sidebar-identity">
-            <div class="si-avatar">RK</div>
-            <div class="si-info">
-                <div class="si-name">Ravi Kumar</div>
-                <div class="si-id">ID: DB-001</div>
-                <div class="si-status">
-                    <span class="si-dot"></span>
-                    <span class="si-status-text">Online</span>
-                </div>
+
+            <div class="si-avatar">
+                {% if profile %}
+                    {% set words = profile.name.split() %}
+                    {{ words[0][0] }}{{ words[1][0] if words|length > 1 else '' }}
+                {% else %}
+                    DB
+                {% endif %}
             </div>
+
+            <div class="si-info">
+
+                <div class="si-name">
+                    {{ profile.name if profile else "Delivery Boy" }}
+                </div>
+
+                <div class="si-id">
+                    ID: {{ profile.code if profile else "N/A" }}
+                </div>
+
+                <div class="si-status">
+
+                    <span class="si-dot"></span>
+
+                    <span class="si-status-text">
+                        {% if profile and profile.status == "active" %}
+                            Online
+                        {% else %}
+                            Offline
+                        {% endif %}
+                    </span>
+
+                </div>
+
+            </div>
+
         </div>
 
         <nav class="sidebar-nav">
@@ -75,7 +102,14 @@
             </div>
             <div class="topbar-right">
                 <div class="topbar-notif">🔔</div>
-                <div class="topbar-avatar">RK</div>
+                <div class="topbar-avatar">
+                    {% if profile %}
+                        {% set words = profile.name.split() %}
+                        {{ words[0][0] }}{{ words[1][0] if words|length > 1 else '' }}
+                    {% else %}
+                        DB
+                    {% endif %}
+                </div>
             </div>
         </header>
 

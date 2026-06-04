@@ -282,7 +282,7 @@
                                             </button>
 
                                             <!-- PICKED FROM VENDOR -->
-                                            {% elif order.status == "picked_from_vendor" %}
+                                            {% elif order.status == "picked_from_vendor" and order.payment_status == "paid" %}
 
                                             <button type="submit" name="order_status" value="delivered"
                                                 class="btn btn-navy btn-sm">
