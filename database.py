@@ -533,7 +533,7 @@ def insert_delivery_boy(name, phone, email, status):
             """), {
                 "email": email,
                 "username": username,
-                "role": "delivery_boy",
+                "role": "delivery",
                 "password_hash": password_hash
             })
 
@@ -817,6 +817,23 @@ def get_delivery_boy_orders(boy_id):
             {"boy_id": boy_id}
         ).fetchall()
 
+def get_delivery_boy_id(owner_id):
+
+    with engine.connect() as conn:
+
+        query = text("""
+            SELECT id
+            FROM delivery_boys
+            WHERE owner_id = :owner_id
+            LIMIT 1
+        """)
+
+        result = conn.execute(
+            query,
+            {"owner_id": owner_id}
+        ).fetchone()
+
+        return result.id if result else None
 
     
 def update_delivery_order_status(
@@ -880,27 +897,82 @@ def get_delivery_records(boy_id):
         """)
 
         return conn.execute(query, {"boy_id": boy_id}).fetchall()
-    
-def get_delivery_boy_id(order_id):
+
+def get_delivery_boy_profile(boy_id):
 
     with engine.connect() as conn:
 
         query = text("""
-
-            SELECT delivery_boy_id
-
-            FROM addd_orders
-
-            WHERE id = :order_id
-
+            SELECT
+                id,
+                code,
+                name,
+                phone,
+                status,
+                is_busy
+            FROM delivery_boys
+            WHERE id = :boy_id
         """)
 
-        result = conn.execute(
+        return conn.execute(
             query,
-            {"order_id": order_id}
-        ).fetchone()
+            {"boy_id": boy_id}
+        ).mappings().fetchone()
+    
+def get_delivery_boy_profile1(boy_id):
 
-        return result.delivery_boy_id
+    with engine.connect() as conn:
+
+        query = text("""
+            SELECT
+                id,
+                code,
+                name,
+                phone,
+                email,
+                status,
+                rating,
+                created_at
+            FROM delivery_boys
+            WHERE id = :boy_id
+        """)
+
+        return conn.execute(
+            query,
+            {"boy_id": boy_id}
+        ).mappings().fetchone()
+    
+def get_recent_deliveries(boy_id):
+
+    with engine.connect() as conn:
+
+        query = text("""
+            SELECT
+                o.id,
+                o.created_at,
+                a.user_name,
+                s.name AS service_name,
+                o.status
+            FROM addd_orders o
+
+            JOIN address a
+                ON o.address_id = a.id
+
+            JOIN services s
+                ON o.service_id = s.id
+
+            WHERE o.delivery_boy_id = :boy_id
+            AND o.status = 'delivered'
+
+            ORDER BY o.created_at DESC
+            LIMIT 5
+        """)
+
+        return conn.execute(
+            query,
+            {"boy_id": boy_id}
+        ).mappings().fetchall()
+
     
 def update_delivery_boy_busy_status(
     boy_id,

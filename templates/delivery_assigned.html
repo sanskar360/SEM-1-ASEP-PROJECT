@@ -25,15 +25,37 @@
             </div>
 
             <div class="sidebar-identity">
-                <div class="si-avatar">RK</div>
-                <div class="si-info">
-                    <div class="si-name">Ravi Kumar</div>
-                    <div class="si-id">ID: DB-001</div>
-                    <div class="si-status">
-                        <span class="si-dot"></span>
-                        <span class="si-status-text">Online</span>
-                    </div>
+
+                <div class="si-avatar">
+                    {{ profile.name[:2].upper() }}
                 </div>
+
+                <div class="si-info">
+
+                    <div class="si-name">
+                        {{ profile.name }}
+                    </div>
+
+                    <div class="si-id">
+                        ID: {{ profile.code }}
+                    </div>
+
+                    <div class="si-status">
+
+                        <span class="si-dot"></span>
+
+                        <span class="si-status-text">
+                            {% if profile.status == "active" %}
+                                Online
+                            {% else %}
+                                Offline
+                            {% endif %}
+                        </span>
+
+                    </div>
+
+                </div>
+
             </div>
 
             <nav class="sidebar-nav">
@@ -65,8 +87,8 @@
         <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
         <!-- ═══════════════════════════════════════════════════════
-         MAIN
-    ════════════════════════════════════════════════════════ -->
+             MAIN
+        ════════════════════════════════════════════════════════ -->
         <div class="db-main">
 
             <header class="db-topbar">
@@ -181,10 +203,7 @@
                                     {{ order.state }}
                                 </td>
 
-                                {% endif %}
-
-                                
-
+                                {% endif %}       
 
                                 <!-- PAYMENT ACTION -->
                                 <td>

@@ -1,5 +1,5 @@
 from flask import Flask, render_template,request, redirect, url_for, flash, session,jsonify
-from database import  add_user_to_db, get_admin_orders2,  update_delivery_order_status, login_user_from_db, user_from_addresses_db, get_addresses_from_db, add_address_to_db,delete_address_from_db,get_all_services,get_vendors,get_vendors2, get_address_by_id,get_items_for_vendor,get_address_by_id, insert_order, insert_order_items,get_delivery_boys,assign_delivery_boy,get_admin_orders,insert_delivery_boy, toggle_delivery_boy_status,get_payments,  update_user_db, delete_user_db,get_users,get_delivery_boy_orders,get_delivery_records,get_user_orders,get_order_details,update_order_status,get_pending_orders, get_dashboard_stats,get_active_orders,update_active_order_status,get_active_orders_stats,get_history_stats,get_history_orders,add_vendor_service, get_vendor_services,delete_vendor_service,get_vendor_address,save_vendor_address, get_delivery_boy_id, update_delivery_boy_busy_status,mark_order_payment_paid,create_vendor,get_vendor_id_by_user_id
+from database import  add_user_to_db, get_admin_orders2,  update_delivery_order_status, login_user_from_db, user_from_addresses_db, get_addresses_from_db, add_address_to_db,delete_address_from_db,get_all_services,get_vendors,get_vendors2, get_address_by_id,get_items_for_vendor,get_address_by_id, insert_order, insert_order_items,get_delivery_boys,assign_delivery_boy,get_admin_orders,insert_delivery_boy, toggle_delivery_boy_status,get_payments,  update_user_db, delete_user_db,get_users,get_delivery_boy_orders,get_delivery_records,get_user_orders,get_order_details,update_order_status,get_pending_orders, get_dashboard_stats,get_active_orders,update_active_order_status,get_active_orders_stats,get_history_stats,get_history_orders,add_vendor_service, get_vendor_services,delete_vendor_service,get_vendor_address,save_vendor_address, get_delivery_boy_id, update_delivery_boy_busy_status,mark_order_payment_paid,create_vendor,get_vendor_id_by_user_id,get_delivery_boy_profile1,get_recent_deliveries,get_delivery_boy_profile
 
 
 
@@ -71,14 +71,20 @@ def login():
     # DELIVERY
     elif result["role"] == "delivery":
 
-        boy_id = user_id
+        boy_id = get_delivery_boy_id(user_id)
+        profile = get_delivery_boy_profile(boy_id)
+
 
         orders = get_delivery_boy_orders(boy_id)
         deliveries = get_delivery_records(boy_id)
 
+        print("User ID:", user_id)
+        print("Boy ID:", boy_id)
+
         return render_template(
             "delivery_assigned.html",
             orders=orders,
+            profile=profile,
             deliveries=deliveries
         )
 
@@ -292,9 +298,22 @@ def mark_payment_paid(order_id):
 def delivery_login():
     return render_template("delivery_login.html")
 
-@app.route("/delivery_profile")
+@app.route("/delivery-profile")
 def delivery_profile():
-    return render_template("delivery_profile.html")
+
+    user_id = session["user_id"]
+
+    boy_id = get_delivery_boy_id(user_id)
+
+    profile = get_delivery_boy_profile1(boy_id)
+
+    recent_deliveries = get_recent_deliveries(boy_id)
+
+    return render_template(
+        "delivery_profile.html",
+        profile=profile,
+        recent_deliveries=recent_deliveries
+    )
 
 # Vendors panel Routes
 
