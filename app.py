@@ -202,18 +202,27 @@ def how_it_works():
 def delivery_assigned():
 
     user_id = session.get("user_id")
-    boy_id = user_id
 
-    orders = get_delivery_boy_orders(
-            boy_id
-        )
+    if not user_id:
+        return redirect(url_for("login"))
 
-    deliveries = get_delivery_records(
-            boy_id
-        )
-    return render_template("delivery_assigned.html",
-                           orders=orders,
-                           deliveries=deliveries)
+    boy_id = get_delivery_boy_id(user_id)
+
+    if not boy_id:
+        return "Delivery boy not found", 404
+
+    profile = get_delivery_boy_profile(boy_id)
+
+    orders = get_delivery_boy_orders(boy_id)
+
+    deliveries = get_delivery_records(boy_id)
+
+    return render_template(
+        "delivery_assigned.html",
+        orders=orders,
+        profile=profile,
+        deliveries=deliveries
+    )
 
 @app.route(
     "/delivery_update_status",
