@@ -1,155 +1,122 @@
-Vega Vastra – Smart Laundry Management System
-Vega Vastra is a Smart Laundry Management System designed to simplify and digitize the complete laundry process.
-The platform connects customers, vendors, and delivery boys in a single system for efficient order management, tracking,
-and delivery operations.
-The project focuses on creating a smooth laundry booking experience with real-time order handling, vendor management,
-delivery tracking, and payment integration.
+# 🧺 Vega Vastra – Smart Laundry Management System
 
-Features
-Customer Features
-User registration and login
-Service selection
-Vendor selection
-Order placement
-Order tracking
-Address management
-Payment support
-Order history
-Vendor Features
-Vendor dashboard
-Accept/reject orders
-Service management
-Price management
-Order status updates
-Delivery Boy Features
-Assigned orders management
-Pickup and delivery tracking
-Busy/available status system
-Payment collection support
+A web-based laundry management system that streamlines the complete laundry workflow by connecting customers, vendors, and delivery personnel on a single platform.
 
+---
 
-//  Technologies Used  //
+## 📌 Overview
 
-1. Frontend
-   HTML
-   CSS
-   JavaScript
-   
-3. Backend
-  Python
-  Flask
+Vega Vastra digitizes the laundry process from order placement to final delivery. The platform enables customers to book laundry services, vendors to manage orders, and delivery personnel to handle pickups and deliveries efficiently.
 
-4. Database
-  MySQL
-  SQLAlchemy
+---
 
-5. Deployment
-  Render
-  Aiven Cloud Database
+## ✨ Features
 
+### 👤 Customer
+- User Registration & Login
+- Service Selection
+- Vendor Selection
+- Address Management
+- Place Laundry Orders
+- Order Tracking
+- Payment Support
+- Order History
 
-Order Flow
+### 🏪 Vendor
+- Vendor Dashboard
+- Accept/Reject Orders
+- Manage Laundry Services
+- Update Pricing
+- Update Order Status
 
-Customer selects laundry service
-           |
-Customer selects address
-           |
-Customer chooses vendor
-           |
-Order is placed
-           |
-Vendor accepts order
-           |
-Delivery boy gets assigned
-           |
-Pickup and delivery process starts
-           |           
-Payment completed
-           |
-Order delivered successfully
+### 🚚 Delivery Boy
+- Assigned Orders
+- Pickup & Delivery Tracking
+- Busy/Available Status
+- Payment Collection
 
+---
 
-Installation
+## ⚙️ Tech Stack
 
-Clone Repository
-git clone https://github.com/your-username/your-repository-name.git
-Move into Project Folder
-cd your-project-folder
-Install Dependencies
-pip install -r requirements.txt
-Run Application
-python app.py
+| Category | Technology |
+|----------|------------|
+| Frontend | HTML, CSS, JavaScript |
+| Backend | Python, Flask |
+| Database | MySQL, SQLAlchemy |
+| Deployment | Render, Aiven Cloud Database |
 
+---
 
-Project Structure
+## 🔄 Order Workflow
 
+Customer → Select Service → Select Address → Choose Vendor → Place Order → Vendor Accepts → Delivery Boy Assigned → Pickup → Payment → Successful Delivery
+
+---
+
+## 📂 Project Structure
+
+```
 project/
 │
 ├── static/
-│   ├── icons/
-│   ├── About Us.png
-│   ├── admin_style.css
-│   ├── booking.css
-│   ├── delivery_style.css
-│   ├── how_it_works.css
-│   ├── image3.jpg
-│   ├── Logo.png
-│   ├── navbar.css
-│   ├── script.js
-│   ├── style.css
-│   ├── track_orders.css
-│   └── vendor_dashboard.css
-│
 ├── templates/
-│   ├── add_orders.html
-│   ├── admin_delivery_boys.html
-│   ├── admin_orders_table.html
-│   ├── admin_payments.html
-│   ├── admin_users_table.html
-│   ├── admin_vendors.html
-│   ├── containers.html
-│   ├── delivery_assigned.html
-│   ├── delivery_history.html
-│   ├── delivery_login.html
-│   ├── delivery_profile.html
-│   ├── home.html
-│   ├── how_it_works.html
-│   ├── login.html
-│   ├── manage_addresses.html
-│   ├── nav.html
-│   ├── payments.html
-│   ├── profile.html
-│   ├── select_address.html
-│   ├── services.html
-│   ├── sign_up.html
-│   ├── track_orders.html
-│   ├── vendors_address.html
-│   ├── vendors_history.html
-│   ├── vendors_incoming.html
-│   ├── vendors_processing.html
-│   ├── vendors_services.html
-│   └── vendors.html
-│
 ├── app.py
 ├── database.py
-├── ca1.pem
-└── README.md
-Future Improvements
-AI-based load prediction
-GPS delivery tracking
-RFID locker integration
-Route optimization system
-Responsive mobile UI
-Notification system
-Online payment gateway
-Analytics dashboard
+├── README.md
+└── requirements.txt
+```
 
+---
 
-Developer
+## 🚀 Installation
 
-Developed by Sanskar Bhilavade and Sanskar Hedau
+### Clone the Repository
 
+```bash
+git clone https://github.com/your-username/Vega-Vastra.git
+```
 
-License
+### Move into the Project
 
-This project is developed for educational and learning purposes.
+```bash
+cd Vega-Vastra
+```
+
+### Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### Run the Application
+
+```bash
+python app.py
+```
+
+---
+
+## 🚀 Future Improvements
+
+- AI-based Load Prediction
+- GPS Delivery Tracking
+- RFID Locker Integration
+- Route Optimization
+- Responsive Mobile UI
+- Notification System
+- Online Payment Gateway
+- Analytics Dashboard
+
+---
+
+## 👨‍💻 Developers
+
+- Sanskar Bhilavade
+- Sanskar Hedau
+
+---
+
+## 📄 License
+
+This project was developed for educational and learning purposes.
